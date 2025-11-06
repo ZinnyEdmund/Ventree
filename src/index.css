@@ -170,6 +170,12 @@
   .h4 {
     @apply text-2xl font-semibold tracking-wide;
   }
+  .label {
+    @apply text-sm font-semibold tracking-wide;
+  }
+  .password-small {
+    @apply text-sm font-light tracking-wide;
+  }
 
   .body {
     @apply text-lg;

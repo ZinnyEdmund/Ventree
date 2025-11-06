@@ -8,6 +8,7 @@ export default function DesignSystem() {
         <h2 className="h2"> Header 2 </h2>
         <h3 className="h3"> Header 3 </h3>
         <h4 className="h4"> Header 4 </h4>
+        <h4 className="label"> Label </h4>
 
         <p className="body"> Subtitle/Body Large </p>
         <p className="body-bold"> Body BOLD</p>
@@ -16,6 +17,7 @@ export default function DesignSystem() {
         <p className="body-subtle"> Body SUBTLE</p>
 
         <p className="web-small"> web small</p>
+        <p className="password-small"> password small</p>
         <p className="web-body"> web Body</p>
         <p className="web-bold"> web body-bold</p>
       </div>

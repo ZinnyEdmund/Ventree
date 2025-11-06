@@ -5,14 +5,14 @@ export default function Signup() {
   const [password, setPassword] = useState("");
 
   return (
-    <div className="w-full flex flex-col justify-between p-8 ">
-      <div className="text-center">
-        <h2 className="text-2xl font-semibold pb-2">Welcome Back!</h2>
+    <div className="w-full flex flex-col md:space-y-16 space-y-16 justify-between md:p-6">
+      <div className="text-center text-[var(--color-secondary)]">
+        <h2 className="h3 pb-2">Welcome Back!</h2>
       </div>
 
       <div className="w-full max-w-sm mx-auto space-y-6">
         <div>
-          <label className="block text-sm font-medium mb-1">
+          <label className="block text-[var(--color-black)] label md:mb-1 mb-2">
             Business Name
           </label>
           <input
@@ -20,28 +20,33 @@ export default function Signup() {
             value={phoneNumber}
             onChange={(e) => setPhoneNumber(e.target.value)}
             placeholder="Put your business number"
-            className="w-full border rounded-md p-2 outline-none"
+            className="w-full text-[var(--color-subtle)] border border-[var(--color-secondary-4)] body-small rounded-lg p-3 outline-none"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium mb-1">Password</label>
+          <label className="block text-[var(--color-black)] label md:mb-1 mb-2">Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Put your password"
-            className="w-full border rounded-md p-2 outline-none"
+            className="w-full text-[var(--color-subtle)] border border-[var(--color-secondary-4)] body-small rounded-md p-2 outline-none"
           />
+          <p className="text-sm pt-1 text-right">
+            <a href="/reset-password" className="font-medium text-[var(--color-secondary)]">
+              Forgot password?{" "}
+            </a>
+          </p>
         </div>
       </div>
 
       <div className="w-full max-w-sm mx-auto space-y-4">
-        <button className="w-full py-2 rounded-md font-medium border">
+        <button className="w-full btn btn-primary">
           Login
         </button>
-        <p className="text-sm text-center">
+        <p className="password-small text-[var(--color-subtle-text)]  text-center">
           Don't have an account?{" "}
-          <a href="/signup" className="font-medium underline">
+          <a href="/signup" className="font-medium text-[var(--color-secondary)] underline">
             Create Account
           </a>
         </p>
