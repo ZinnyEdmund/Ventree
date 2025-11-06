@@ -1,1 +1,218 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap");
 @import "tailwindcss";
+
+/* Tailwind layers (optional in v4, but fine to keep) */
+/* No be optional o, If u no put am like this u go suffer */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Theme */
+@theme {
+  --color-bg: var(--color-bg);
+  --color-white: var(--color-white);
+  --color-black: var(--color-black);
+  --color-grey: var(--color-grey);
+  --color-subtle-text: var(--color-subtle-text);
+  --color-subtle: var(--color-subtle);
+  --color-subtle-2: var(--color-subtle-2);
+
+  /* Primary Colors */
+  --color-primary-1: var(--color-primary-1);
+  --color-primary-2: var(--color-primary-2);
+  --color-primary-3: var(--color-primary-3);
+  --color-primary-4: var(--color-primary-4);
+  --color-primary-5: var(--color-primary-5);
+
+  /* Secondary Colors */
+  --color-secondary: var(--color-secondary);
+  --color-secondary-2: var(--color-secondary-2);
+  --color-secondary-3: var(--color-secondary-3);
+  --color-secondary-4: var(--color-secondary-4);
+  --color-secondary-5: var(--color-secondary-5);
+
+  /* Tertiary Colors */
+  --color-tertiary: var(--color-Tertiary);
+  --color-tertiary-2: var(--color-Tertiary-2);
+  --color-tertiary-3: var(--color-Tertiary-3);
+  --color-tertiary-4: var(--color-Tertiary-4);
+  --color-tertiary-5: var(--color-Tertiary-5);
+
+  /* Supporting */
+  --color-SB: var(--color-SB);
+  --color-button-primary: var(--color-button-primary);
+
+  /* Light states */
+  --color-light: var(--color-light);
+  --color-light-hover: var(--color-light-hover);
+  --color-light-active: var(--color-light-active);
+
+  /* Normal states (Primary in UI use) */
+  --color-normal: var(--color-normal);
+  --color-normal-hover: var(--color-normal-hover);
+  --color-normal-active: var(--color-normal-active);
+
+  /* Dark states */
+  --color-dark: var(--color-dark);
+  --color-dark-hover: var(--color-dark-hover);
+  --color-dark-active: var(--color-dark-active);
+
+  --color-darker: var(--color-darker);
+
+  /* Feedback / Status */
+  --color-success: var(--color-success);
+  --color-error: var(--color-error);
+  --color-error-2: var(--color-error-2);
+  --color-foundation: var(--color-secondary-5);
+}
+
+/* Light theme */
+:root {
+  /* Random */
+  --color-bg: #f9faf9;
+  --color-white: #fefffd;
+
+  /* Feedback */
+  --color-success: #1ec131;
+  --color-error: #e51717;
+  --color-error-2: #dc2727;
+
+  /* Black Colors */
+  --color-black: #191919;
+  --color-grey: #474747;
+  --color-subtle-text: #757574;
+  --color-subtle: #a2a3a2;
+  --color-subtle-2: #d0d1cf;
+
+  /* Primary colors*/
+  --color-primary-1: #59dc59;
+  --color-primary-2: #7ae37a;
+  --color-primary-3: #9bea9b;
+  --color-primary-4: #bcf1bb;
+  --color-primary-5: #f3fff3;
+
+  /* Secondary Colors */
+  --color-secondary: #073e1e;
+  --color-secondary-2: #38654b;
+  --color-secondary-3: #6a8b77;
+  --color-secondary-4: #9bb2a4;
+  --color-secondary-5: #cdd8d0;
+
+  /* Tertiary Colors */
+  --color-Tertiary: #cdfc54;
+  --color-Tertiary-2: #d7fd76;
+  --color-Tertiary-3: #e1fd98;
+  --color-Tertiary-4: #eafeb9;
+  --color-Tertiary-5: #f4fedb;
+
+  /* Supporting */
+  --color-SB: hsla(192, 70%, 43%, 1);
+  --color-button-primary: hsl(32, 100%, 49%);
+
+  /* Light states */
+  --color-light: hsl(31, 100%, 95%);
+  --color-light-hover: hsl(32, 95%, 92%);
+  --color-light-active: hsl(32, 98%, 84%);
+
+  /* Normal states */
+  --color-normal: hsl(32, 100%, 49%);
+  --color-normal-hover: hsl(32, 100%, 44%);
+  --color-normal-active: hsl(32, 100%, 39%);
+
+  /* Dark states */
+  --color-dark: hsl(32, 100%, 37%);
+  --color-dark-hover: hsl(32, 100%, 28%);
+  --color-dark-active: hsl(32, 100%, 23%);
+
+  --color-darker: hsl(30, 100%, 17%);
+}
+
+/* Dark mode overrides */
+.dark {
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer;
+  }
+  .btn-primary {
+    @apply bg-secondary text-white shadow-lg hover:bg-secondary-2 ;
+  }
+  .btn-sec {
+    @apply bg-primary-2 text-secondary hover:bg-primary-3;
+  }
+  .btn-tertiary {
+    @apply  bg-transparent text-secondary border-[1px] border-secondary hover:bg-tertiary-3
+  }
+  .btn-error {
+    @apply bg-error text-white hover:bg-primary-1/90;
+  }
+
+  .btn-outline {
+    @apply bg-transparent text-primary-1 border border-primary-1 hover:border-primary-1/90 hover:bg-light;
+  }
+
+  .btn-outline-grey {
+    @apply bg-transparent text-grey border border-grey hover:border-primary-1/90;
+  }
+
+  .btn-disabled {
+    @apply bg-foundation text-grey cursor-not-allowed opacity-70;
+  }
+
+  .h1 {
+    @apply text-6xl font-bold tracking-wide;
+  }
+  .h2 {
+    @apply text-4xl font-bold tracking-wide;
+  }
+  .h3 {
+    @apply text-3xl font-bold tracking-wide;
+  }
+  .h4 {
+    @apply text-2xl font-semibold tracking-wide;
+  }
+
+  .body {
+    @apply text-lg;
+  }
+  .body-bold {
+    @apply text-lg font-semibold;
+  }
+  .body-small {
+    @apply text-lg text-sm;
+  }
+  .body-subtle {
+    @apply text-lg text-xs;
+  }
+  .web-body {
+    @apply text-xl;
+  }
+  .web-small {
+    @apply text-lg;
+  }
+  .web-bold {
+    @apply text-xl font-semibold;
+  }
+
+  .modal-bg {
+    @apply fixed inset-0 bg-[#023040]/50 backdrop-blur-sm flex items-center justify-center z-50;
+  }
+
+  .sm-text {
+    @apply text-sm mb-2 tracking-wide;
+  }
+}
+
+.button-glow-primary {
+    box-shadow: 0 0 5px 3px #CDFC54;
+}
+
+.button-glow-sec {
+    box-shadow: 0 0 5px 3px #0FB25A;
+}
+
+.button-glow-tertiary {
+    box-shadow: 0 0 1px 1px var(--color-secondary);
+    background-color: var(--color-Tertiary-2);
+}
