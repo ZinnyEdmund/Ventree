@@ -1,5 +1,4 @@
 import { useState } from "react";
-import ventreebg from "../../assets/ventreebg.png";
 
 export default function Signup() {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -11,7 +10,7 @@ export default function Signup() {
         {/* Left side */}
         <div className="hidden md:flex w-1/2 relative">
           <img
-            src={ventreebg}
+            src="/images/logo-white.svg"
             alt="Ventree Background"
             className="absolute inset-0 w-full h-full object-cover"
           />

@@ -1,4 +1,5 @@
 import { LoaderCircle } from "lucide-react";
+import TextInput from "../../components/ui/textInput";
 
 export default function DesignSystem() {
   return (
@@ -46,6 +47,14 @@ export default function DesignSystem() {
           <button className="btn btn-disabled"> Disable</button>
           <button className="my-3 btn btn-tertiary flex gap-2">Button Loading <LoaderCircle width={20} className="animate-spin" /></button>
         </div>
+
+        <TextInput 
+            label="Textfield/Default"
+            placeholder="Placeholder Text"
+            value=""
+            className=""
+            onChange={() => {}}
+        />
       </section>
     </div>
   );

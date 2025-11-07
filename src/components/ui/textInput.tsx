@@ -38,8 +38,8 @@ const TextInput: React.FC<TextInputProps> = ({
         placeholder={placeholder}
         required={required}
         className={clsx(
-          "w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2",
-          error ? "border-error focus:ring-error" : "border-grey focus:ring-SB"
+          "w-full px-4 py-2 border border-secondary-4 rounded-lg focus:outline-none focus:ring-2",
+          error ? "border-error focus:ring-error" : "border-grey focus:ring-glow"
         )}
         disabled={disabled}
       />

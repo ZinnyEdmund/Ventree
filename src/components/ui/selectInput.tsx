@@ -76,3 +76,36 @@ export function SelectInputGrey({
     </div>
   );
 }
+
+export function SelectInputBorderless({
+  name,
+  value,
+  onChange,
+  options,
+  placeholder,
+  required,
+  className, // 👈 new
+}: SelectInputProps) {
+  return (
+    <div className={clsx("relative w-full", className)}>
+      <select
+        name={name}
+        value={value}
+        onChange={onChange}
+        className="appearance-none bg-gray rounded-full px-3 py-2 w-full "
+        required={required}
+      >
+        <option value="">{placeholder}</option>
+        {options.map((opt) => (
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
+        size={18}
+      />
+    </div>
+  );
+}
