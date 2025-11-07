@@ -1,19 +1,17 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import { LoaderCircle } from "lucide-react";
 
 export default function Login() {
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [businessNumber, setBusinessNumber] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
     let isValid = true;
 
-    if (!phoneNumber.trim()) {
-      isValid = false;
-      toast.error("Phone number is required");
-    } else if (!/^\+?[\d\s-()]+$/.test(phoneNumber)) {
-      toast.error("Please enter a valid phone number");
+    if (!businessNumber.trim()) {
+      toast.error("Business number is required");
       isValid = false;
     }
 
@@ -60,7 +58,7 @@ export default function Login() {
       toast.success("Login successful!");
 
       //Clears the form after successful login
-      setPhoneNumber("");
+      setBusinessNumber("");
       setPassword("");
 
       // Redirect the user to the dashboard(We don't have any yet)
@@ -97,8 +95,8 @@ export default function Login() {
           </label>
           <input
             type="text"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            value={businessNumber}
+            onChange={(e) => setBusinessNumber(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your business number"
             className="w-full text-[var(--color-subtle)] border border-[var(--color-secondary-4)] body-small rounded-lg p-3 outline-none"
@@ -130,12 +128,13 @@ export default function Login() {
       </div>
 
       <div className="w-full max-w-sm mx-auto space-y-4">
-        <button 
+        <button
           onClick={handleSubmit}
-          className="w-full btn btn-primary"
+          className="w-full btn btn-primary flex items-center justify-center gap-2"
           disabled={isLoading}
         >
-          {isLoading ? "Logging in..." : "Login"}
+          {isLoading ? "Logging in" : "Login"}
+          {isLoading && <LoaderCircle width={20} className="animate-spin" />}
         </button>
         <p className="password-small text-[var(--color-subtle-text)]  text-center">
           Don't have an account?{" "}

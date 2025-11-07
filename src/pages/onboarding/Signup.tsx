@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { toast } from 'sonner';
+import { toast } from "sonner";
+import { LoaderCircle } from "lucide-react";
 
 export default function Signup() {
   const [BusinessName, setBusinessName] = useState("");
@@ -65,7 +66,7 @@ export default function Signup() {
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
       toast.success("Account created successfully!");
-      
+
       // Clears the form after successful signup
       setBusinessName("");
       setPhoneNumber("");
@@ -73,7 +74,6 @@ export default function Signup() {
 
       // Redirect the user to the dashboard
       // window.location.href = '/dashboard';
-
     } catch (error) {
       const message =
         error instanceof Error
@@ -87,8 +87,8 @@ export default function Signup() {
     }
   };
 
-  const handleKeyPress = (e: { key: string; }) => {
-    if (e.key === 'Enter') {
+  const handleKeyPress = (e: { key: string }) => {
+    if (e.key === "Enter") {
       handleSubmit();
     }
   };
@@ -150,10 +150,11 @@ export default function Signup() {
       <div className="w-full max-w-sm mx-auto space-y-4">
         <button
           onClick={handleSubmit}
-          className="w-full btn btn-primary"
+          className="w-full btn btn-primary flex items-center justify-center gap-2"
           disabled={isLoading}
         >
-          {isLoading ? "Creating Account..." : "Create Account"}
+          {isLoading ? "Creating Account" : "Create Account"}
+          {isLoading && <LoaderCircle width={20} className="animate-spin" />}
         </button>
         <p className="password-small text-[var(--color-subtle-text)] text-center">
           Already have an account?{" "}
