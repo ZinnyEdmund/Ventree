@@ -8,6 +8,8 @@ import OnboardWrapper from "../layouts/onboardWrapper";
 import OnboardLayout from "../layouts/onboardLayout";
 import MainWrapper from "../layouts/mainWrapper";
 import MainLayout from "../layouts/mainLayout";
+import { Home } from "../pages/home";
+import { ManageStocks } from "../pages/stocks";
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
 const LoginPage = lazy(() => import("../pages/onboarding/Login"));
@@ -39,7 +41,9 @@ function AppRoutes() {
 
           {/* Main Application */}
           <Route path="/" element={<MainWrapper component={<MainLayout />} />}>
-            {/* Post main application components here!! */}
+            <Route path="/home" element={<Home />} />
+            <Route path="/stocks" element={<ManageStocks />} />
+
           </Route>
           
         </Routes>
