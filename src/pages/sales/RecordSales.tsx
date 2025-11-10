@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Edit2, Check, X } from "lucide-react";
+import { toast } from "sonner"; // or react-toastify
 
 export default function RecordSale() {
   const [goods, setGoods] = useState<
@@ -9,61 +10,68 @@ export default function RecordSale() {
   const [isEditing, setIsEditing] = useState(false);
 
   const handleAdd = () => {
-    if (!name.trim()) return;
-    // Add item with default values - user will fill quantity and price in table
+    if (!name.trim()) {
+      toast.error("Please enter the name of the good.");
+      return;
+    }
+
     const newGood = { name: name.trim(), quantity: 0, price: 0 };
     setGoods([...goods, newGood]);
     setName("");
-    // Automatically enable edit mode when first item is added
-    if (goods.length === 0) {
-      setIsEditing(true);
-    }
+
+    if (goods.length === 0) setIsEditing(true);
   };
 
   const handleDelete = (index: number) => {
     setGoods(goods.filter((_, i) => i !== index));
   };
 
-  const handleQuantityChange = (index: number, value: number) => {
+  const handleQuantityChange = (index: number, value: string) => {
+    const num = Number(value);
+    if (isNaN(num) || num < 0) {
+      toast.error("Quantity must be a positive number.");
+      return;
+    }
+
     const updated = [...goods];
-    updated[index].quantity = value;
+    updated[index].quantity = num;
     setGoods(updated);
   };
 
-  const handlePriceChange = (index: number, value: number) => {
+  const handlePriceChange = (index: number, value: string) => {
+    const num = Number(value);
+    if (isNaN(num) || num < 0) {
+      toast.error("Price must be a positive number.");
+      return;
+    }
+
     const updated = [...goods];
-    updated[index].price = value;
+    updated[index].price = num;
     setGoods(updated);
   };
 
   const handleRecord = () => {
     if (goods.length === 0) {
-      alert("Please add at least one item");
+      toast.error("Please add at least one item before recording a sale.");
       return;
     }
 
-    // Check if all items have quantity and price
-    const incomplete = goods.some(
-      (item) => item.quantity === 0 || item.price === 0
-    );
+    const incomplete = goods.some((item) => item.quantity <= 0 || item.price <= 0);
     if (incomplete) {
-      alert("Please enter quantity and price for all items");
+      toast.error("Please make sure every item has a quantity and price greater than 0.");
       return;
     }
 
-    alert("Sale Recorded Successfully!");
+    toast.success("Sale Recorded Successfully!");
   };
 
-  const total = goods.reduce(
-    (sum, item) => sum + item.quantity * item.price,
-    0
-  );
+  const total = goods.reduce((sum, item) => sum + item.quantity * item.price, 0);
 
   return (
     <section className="flex flex-col w-full max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-6">
       {/* Header */}
       <div className="text-center mb-6">
-        <h2 className="text-xl font-semibold text-[var(--color-secondary)]">
+        <h2 className="h4 font-semibold text-[var(--color-secondary)]">
           Sale 000001
         </h2>
       </div>
@@ -71,8 +79,7 @@ export default function RecordSale() {
       {/* Input for adding goods */}
       <div className="mb-6 flex flex-col items-center">
         <div className="w-full max-w-md">
-          <label className="block label text-gray-700 mb-2">Name of Good</label>
-
+          <label className="block link-small text-[var(--color-black)] mb-2">Name of Good</label>
           <div className="flex items-center gap-2">
             <input
               type="text"
@@ -80,11 +87,11 @@ export default function RecordSale() {
               onChange={(e) => setName(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleAdd()}
               placeholder="Put the name of good"
-              className="grow border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
+              className="grow bg-[var(--color-white)] body-small border border-[var(--color-secondary-4)] rounded-md px-3 py-3 password-small focus:ring-2 focus:ring-[var(--color-tertiary)] outline-none"
             />
             <button
               onClick={handleAdd}
-              className="bg-black text-white px-6 py-2 rounded-md text-sm hover:bg-opacity-90 transition"
+              className="btn btn-primary body px-8 rounded-md border active:border-[var(--color-tertiary)] transition"
             >
               Add
             </button>
@@ -102,10 +109,7 @@ export default function RecordSale() {
             </button>
           ) : (
             <button onClick={() => setIsEditing(false)}>
-              <Check
-                size={20}
-                className="text-green-600 hover:text-green-700"
-              />
+              <Check size={20} className="text-green-600 hover:text-green-700" />
             </button>
           )}
         </div>
@@ -113,15 +117,15 @@ export default function RecordSale() {
         {/* Desktop Table */}
         <div className="hidden md:block rounded-md overflow-hidden bg-white">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-white border-b border-gray-200">
+            <thead className="bg-white border-b border-[var(--color-secondary-4)]">
               <tr>
                 <th className="px-6 py-3 body-bold text-[var(--color-secondary)] min-w-[180px]">
                   Name
                 </th>
-                <th className="px-6 py-3 body-bold text-[var(--color-secondary)] min-w-[150px]">
+                <th className="px-6 py-3 body-bold text-[var(--color-secondary)] min-w-[180px]">
                   Quantity
                 </th>
-                <th className="px-6 py-3 body-bold text-[var(--color-secondary)] min-w-[150px]">
+                <th className="px-6 py-3 body-bold text-[var(--color-secondary)] min-w-[180px]">
                   Price
                 </th>
                 {isEditing && <th className="px-6 py-3"></th>}
@@ -141,45 +145,37 @@ export default function RecordSale() {
                 goods.map((item, index) => (
                   <tr
                     key={index}
-                    className="border-b border-gray-200 hover:bg-gray-50 transition"
+                    className="border-b border-[var(--color-secondary-4)] hover:bg-gray-50 transition"
                   >
                     <td className="px-6 py-4 body text-[var(--color-black)] whitespace-nowrap">
                       {item.name}
                     </td>
-                    <td className="px-6py-4">
+                    <td className="px-6 py-4">
                       {isEditing ? (
                         <input
                           type="number"
-                          value={item.quantity || ""}
-                          onChange={(e) =>
-                            handleQuantityChange(index, Number(e.target.value))
-                          }
+                          value={item.quantity}
+                          onChange={(e) => handleQuantityChange(index, e.target.value)}
                           placeholder="0"
-                          className="w-full max-w-[130px] border border-[var(--color-secondary-3)] text-[var(--color-black)] rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                           min="0"
+                          className="w-full border border-[var(--color-secondary-3)] text-[var(--color-black)] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                         />
                       ) : (
-                        <span className="body-small text-gray-700">
-                          {item.quantity}
-                        </span>
+                        <span className="body-small text-gray-700">{item.quantity}</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       {isEditing ? (
                         <input
                           type="number"
-                          value={item.price || ""}
-                          onChange={(e) =>
-                            handlePriceChange(index, Number(e.target.value))
-                          }
+                          value={item.price}
+                          onChange={(e) => handlePriceChange(index, e.target.value)}
                           placeholder="0"
-                          className="w-full max-w-[130px] border border-[var(--color-secondary-3)] text-[var(--color-black)] rounded-lg px-3 py-1.5 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                           min="0"
+                          className="w-full border border-[var(--color-secondary-4)] text-[var(--color-black)] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                         />
                       ) : (
-                        <span className="body-small text-gray-700">
-                          ₦{item.price}
-                        </span>
+                        <span className="body-small text-gray-700">₦{item.price}</span>
                       )}
                     </td>
                     {isEditing && (
@@ -188,10 +184,7 @@ export default function RecordSale() {
                           onClick={() => handleDelete(index)}
                           className="text-red-500 hover:text-red-700"
                         >
-                          <X
-                            size={20}
-                            className="border border-red-500 rounded-full p-0.5"
-                          />
+                          <X size={20} className="border border-red-500 rounded-full p-0.5" />
                         </button>
                       </td>
                     )}
@@ -205,15 +198,10 @@ export default function RecordSale() {
         {/* Mobile Cards */}
         <div className="md:hidden space-y-3">
           {goods.length === 0 ? (
-            <p className="text-center py-8 text-gray-400 text-sm">
-              No items added yet
-            </p>
+            <p className="text-center py-8 text-gray-400 text-sm">No items added yet</p>
           ) : (
             goods.map((item, index) => (
-              <div
-                key={index}
-                className="border border-gray-300 rounded-lg p-4"
-              >
+              <div key={index} className="border border-gray-300 rounded-lg p-4">
                 <div className="flex items-start justify-between mb-3">
                   <span className="font-medium text-gray-800">{item.name}</span>
                   {isEditing && (
@@ -221,54 +209,39 @@ export default function RecordSale() {
                       onClick={() => handleDelete(index)}
                       className="text-red-500"
                     >
-                      <X
-                        size={20}
-                        className="border-2 border-red-500 rounded-full p-0.5"
-                      />
+                      <X size={20} className="border-2 border-red-500 rounded-full p-0.5" />
                     </button>
                   )}
                 </div>
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
-                      Quantity
-                    </label>
+                    <label className="block text-xs text-gray-500 mb-1">Quantity</label>
                     {isEditing ? (
                       <input
                         type="number"
-                        value={item.quantity || ""}
-                        onChange={(e) =>
-                          handleQuantityChange(index, Number(e.target.value))
-                        }
+                        value={item.quantity}
+                        onChange={(e) => handleQuantityChange(index, e.target.value)}
                         placeholder="0"
-                        className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                         min="0"
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                       />
                     ) : (
-                      <span className="text-sm text-gray-700">
-                        {item.quantity}
-                      </span>
+                      <span className="text-sm text-gray-700">{item.quantity}</span>
                     )}
                   </div>
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
-                      Price
-                    </label>
+                    <label className="block text-xs text-gray-500 mb-1">Price</label>
                     {isEditing ? (
                       <input
                         type="number"
-                        value={item.price || ""}
-                        onChange={(e) =>
-                          handlePriceChange(index, Number(e.target.value))
-                        }
+                        value={item.price}
+                        onChange={(e) => handlePriceChange(index, e.target.value)}
                         placeholder="0"
-                        className="w-full border border-gray-300 rounded px-3 py-1.5 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                         min="0"
+                        className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                       />
                     ) : (
-                      <span className="text-sm text-gray-700">
-                        ₦{item.price}
-                      </span>
+                      <span className="text-sm text-gray-700">₦{item.price}</span>
                     )}
                   </div>
                 </div>
@@ -279,7 +252,7 @@ export default function RecordSale() {
       </main>
 
       {/* Total */}
-      <div className="flex items-center justify-between py-4 border-t border-gray-300">
+      <div className="flex items-center justify-between py-4">
         <p className="body text-[var(--color-secondary)]">TOTAL</p>
         <p className="h4 text-[var(--color-secondary)]">₦{total}</p>
       </div>
@@ -288,7 +261,7 @@ export default function RecordSale() {
       <div className="flex justify-center mt-6">
         <button
           onClick={handleRecord}
-          className="btn btn-primary text-white px-19 rounded-md font-medium hover:bg-opacity-90 transition text-sm"
+          className="btn btn-primary text-white px-19 rounded-md font-medium border active:border-[var(--color-tertiary)] transition text-sm"
         >
           Record
         </button>

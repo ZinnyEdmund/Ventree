@@ -76,7 +76,7 @@ export default function Logout() {
               <button
                 onClick={handleLogout}
                 disabled={isLoading}
-                className="flex-1 py-3 px-6 btn btn-primary"
+                className="flex-1 py-3 px-6 btn btn-primary border active:border-[var(--color-tertiary)]"
               >
                 {isLoading ? "Logging out..." : "Log Out"}
               </button>

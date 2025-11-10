@@ -9,8 +9,8 @@ export default function DesignSystem() {
         <h2 className="h2"> Header 2 </h2>
         <h3 className="h3"> Header 3 </h3>
         <h4 className="h4"> Header 4 </h4>
-        <h4 className="label"> Label </h4>
-
+        
+        <p className="label"> Label </p>
         <p className="body"> Subtitle/Body Large </p>
         <p className="body-bold"> Body BOLD</p>
         <p className="body"> Body REGULAR</p>

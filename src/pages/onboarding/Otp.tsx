@@ -164,7 +164,7 @@ export default function OtpPage() {
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
               disabled={isLoading}
-              className="w-12 h-12 border border-[var(--color-secondary-4)] rounded text-center text-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-secondary)]"
+              className="w-12 h-12 border border-[var(--color-secondary-4)] h4 rounded text-center text-[var(--color-black)] focus:outline-[var(--color-success)] focus:ring-1 focus:ring-[var(--color-Tertiary)]"
             />
           ))}
         </div>

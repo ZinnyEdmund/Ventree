@@ -119,7 +119,7 @@ export default function Login() {
             onChange={(e) => setBusinessNumber(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your business number"
-            className="w-full border border-[var(--color-secondary-4)] body-small rounded-lg p-3 outline-none"
+            className="w-full border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] body-small rounded-lg p-3 outline-none"
             disabled={isLoading}
           />
         </div>
@@ -133,7 +133,7 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your password"
-            className="w-full border border-[var(--color-secondary-4)] body-small rounded-md p-2 outline-none"
+            className="w-full border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] body-small rounded-md p-2 outline-none"
             disabled={isLoading}
           />
           <p className="text-sm pt-1 text-right">
@@ -150,7 +150,7 @@ export default function Login() {
       <div className="w-full max-w-sm mx-auto space-y-4">
         <button
           onClick={handleSubmit}
-          className="w-full btn btn-primary flex items-center justify-center gap-2"
+          className="w-full btn btn-primary flex items-center justify-center gap-2 border active:border-[var(--color-tertiary)]" 
           disabled={isLoading}
         >
           {isLoading ? "Logging in" : "Login"}

@@ -122,7 +122,7 @@ export default function ResetPassword() {
       <div className="w-full max-w-sm mx-auto space-y-4">
         <button
           onClick={handleSubmit}
-          className="w-full btn btn-primary flex items-center justify-center gap-2"
+          className="w-full btn btn-primary flex items-center justify-center border active:border-[var(--color-tertiary)] gap-2"
           disabled={isLoading}
         >
           {isLoading ? "Logging in" : "Reset"}

@@ -111,7 +111,7 @@ export default function Signup() {
             onChange={(e) => setBusinessName(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your business name"
-            className="w-full text[var(--color-subtle)] border border-[var(--color-secondary-4)] rounded-lg p-3 outline-none body-small"
+            className="w-full text[var(--color-subtle)] border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] rounded-lg p-3 outline-none body-small"
             disabled={isLoading}
           />
         </div>
@@ -126,7 +126,7 @@ export default function Signup() {
             onChange={(e) => setPhoneNumber(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your phone number"
-            className="w-full text[var(--color-subtle)] border border-[var(--color-secondary-4)] rounded-lg p-3 outline-none body-small"
+            className="w-full text[var(--color-subtle)] border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] rounded-lg p-3 outline-none body-small"
             disabled={isLoading}
           />
         </div>
@@ -141,7 +141,7 @@ export default function Signup() {
             onChange={(e) => setPassword(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your password"
-            className="w-full text-[var(--color-subtle)] border border-[var(--color-secondary-4)] rounded-lg p-3 outline-none body-small"
+            className="w-full text-[var(--color-subtle)] border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] rounded-lg p-3 outline-none body-small"
             disabled={isLoading}
           />
         </div>
@@ -150,7 +150,7 @@ export default function Signup() {
       <div className="w-full max-w-sm mx-auto space-y-4">
         <button
           onClick={handleSubmit}
-          className="w-full btn btn-primary flex items-center justify-center gap-2"
+          className="w-full btn btn-primary flex items-center justify-center gap-2 border active:border-[var(--color-tertiary)]"
           disabled={isLoading}
         >
           {isLoading ? "Creating Account" : "Create Account"}
