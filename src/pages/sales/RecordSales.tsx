@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { Edit2, Check, X } from "lucide-react";
-import { toast } from "sonner"; // or react-toastify
+import { toast } from "sonner"
 
 export default function RecordSale() {
   const [goods, setGoods] = useState<
-    { name: string; quantity: number; price: number }[]
+    { name: string; quantity: string; price: number }[]
   >([]);
   const [name, setName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -15,7 +15,7 @@ export default function RecordSale() {
       return;
     }
 
-    const newGood = { name: name.trim(), quantity: 0, price: 0 };
+    const newGood = { name: name.trim(), quantity: "", price: 0 };
     setGoods([...goods, newGood]);
     setName("");
 
@@ -27,27 +27,29 @@ export default function RecordSale() {
   };
 
   const handleQuantityChange = (index: number, value: string) => {
-    const num = Number(value);
-    if (isNaN(num) || num < 0) {
-      toast.error("Quantity must be a positive number.");
-      return;
-    }
-
     const updated = [...goods];
-    updated[index].quantity = num;
+    updated[index].quantity = value;
     setGoods(updated);
   };
 
   const handlePriceChange = (index: number, value: string) => {
-    const num = Number(value);
-    if (isNaN(num) || num < 0) {
+    // Remove commas and parse
+    const cleanValue = value.replace(/,/g, "");
+    const num = Number(cleanValue);
+    
+    if (value !== "" && (isNaN(num) || num < 0)) {
       toast.error("Price must be a positive number.");
       return;
     }
 
     const updated = [...goods];
-    updated[index].price = num;
+    updated[index].price = value === "" ? 0 : num;
     setGoods(updated);
+  };
+
+  const formatPrice = (price: number) => {
+    if (price === 0) return "";
+    return price.toLocaleString();
   };
 
   const handleRecord = () => {
@@ -56,7 +58,11 @@ export default function RecordSale() {
       return;
     }
 
-    const incomplete = goods.some((item) => item.quantity <= 0 || item.price <= 0);
+    const incomplete = goods.some((item) => {
+      const qty = parseFloat(item.quantity);
+      return !item.quantity || isNaN(qty) || qty <= 0 || item.price <= 0;
+    });
+    
     if (incomplete) {
       toast.error("Please make sure every item has a quantity and price greater than 0.");
       return;
@@ -65,7 +71,10 @@ export default function RecordSale() {
     toast.success("Sale Recorded Successfully!");
   };
 
-  const total = goods.reduce((sum, item) => sum + item.quantity * item.price, 0);
+  const total = goods.reduce((sum, item) => {
+    const qty = parseFloat(item.quantity) || 0;
+    return sum + qty * item.price;
+  }, 0);
 
   return (
     <section className="flex flex-col w-full max-w-5xl mx-auto px-4 sm:px-6 md:px-8 py-6">
@@ -117,7 +126,7 @@ export default function RecordSale() {
         {/* Desktop Table */}
         <div className="hidden md:block rounded-md overflow-hidden bg-white">
           <table className="w-full text-left border-collapse">
-            <thead className="bg-white border-b border-[var(--color-secondary-4)]">
+            <thead className="bg-[var(--color-white)]">
               <tr>
                 <th className="px-6 py-3 body-bold text-[var(--color-secondary)] min-w-[180px]">
                   Name
@@ -153,29 +162,27 @@ export default function RecordSale() {
                     <td className="px-6 py-4">
                       {isEditing ? (
                         <input
-                          type="number"
+                          type="text"
                           value={item.quantity}
                           onChange={(e) => handleQuantityChange(index, e.target.value)}
-                          placeholder="0"
-                          min="0"
+                          placeholder=""
                           className="w-full border border-[var(--color-secondary-3)] text-[var(--color-black)] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                         />
                       ) : (
-                        <span className="body-small text-gray-700">{item.quantity}</span>
+                        <span className="body-small text-gray-700">{item.quantity || "0"}</span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       {isEditing ? (
                         <input
-                          type="number"
-                          value={item.price}
+                          type="text"
+                          value={formatPrice(item.price)}
                           onChange={(e) => handlePriceChange(index, e.target.value)}
-                          placeholder="0"
-                          min="0"
+                          placeholder=""
                           className="w-full border border-[var(--color-secondary-4)] text-[var(--color-black)] rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                         />
                       ) : (
-                        <span className="body-small text-gray-700">₦{item.price}</span>
+                        <span className="body-small text-gray-700">₦{item.price.toLocaleString()}</span>
                       )}
                     </td>
                     {isEditing && (
@@ -203,7 +210,7 @@ export default function RecordSale() {
             goods.map((item, index) => (
               <div key={index} className="border border-gray-300 rounded-lg p-4">
                 <div className="flex items-start justify-between mb-3">
-                  <span className="font-medium text-gray-800">{item.name}</span>
+                  <span className="font-medium text-[var(--color-black)]">{item.name}</span>
                   {isEditing && (
                     <button
                       onClick={() => handleDelete(index)}
@@ -218,30 +225,28 @@ export default function RecordSale() {
                     <label className="block text-xs text-gray-500 mb-1">Quantity</label>
                     {isEditing ? (
                       <input
-                        type="number"
+                        type="text"
                         value={item.quantity}
                         onChange={(e) => handleQuantityChange(index, e.target.value)}
-                        placeholder="0"
-                        min="0"
+                        placeholder=""
                         className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                       />
                     ) : (
-                      <span className="text-sm text-gray-700">{item.quantity}</span>
+                      <span className="text-sm text-[var(--color-black)]">{item.quantity || "0"}</span>
                     )}
                   </div>
                   <div>
                     <label className="block text-xs text-gray-500 mb-1">Price</label>
                     {isEditing ? (
                       <input
-                        type="number"
-                        value={item.price}
+                        type="text"
+                        value={formatPrice(item.price)}
                         onChange={(e) => handlePriceChange(index, e.target.value)}
-                        placeholder="0"
-                        min="0"
+                        placeholder=""
                         className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                       />
                     ) : (
-                      <span className="text-sm text-gray-700">₦{item.price}</span>
+                      <span className="text-sm text-gray-700">₦{item.price.toLocaleString()}</span>
                     )}
                   </div>
                 </div>
@@ -254,14 +259,14 @@ export default function RecordSale() {
       {/* Total */}
       <div className="flex items-center justify-between py-4">
         <p className="body text-[var(--color-secondary)]">TOTAL</p>
-        <p className="h4 text-[var(--color-secondary)]">₦{total}</p>
+        <p className="h4 text-[var(--color-secondary)]">₦{total.toLocaleString()}</p>
       </div>
 
       {/* Record Button */}
       <div className="flex justify-center mt-6">
         <button
           onClick={handleRecord}
-          className="btn btn-primary text-white px-19 rounded-md font-medium border active:border-[var(--color-tertiary)] transition text-sm"
+          className="btn btn-primary px-19 rounded-md font-medium border active:border-[var(--color-tertiary)] transition text-sm"
         >
           Record
         </button>
