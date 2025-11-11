@@ -135,7 +135,7 @@
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer;
+    @apply px-4 py-3 rounded-lg font-medium transition-colors cursor-pointer;
   }
   .btn-primary {
     @apply bg-black text-white shadow-lg hover:bg-grey ;
@@ -174,8 +174,13 @@
   .h4 {
     @apply text-2xl font-semibold tracking-wide;
   }
+  .h5 {
+    @apply text-xl font-semibold tracking-wide;
+  }
+  .h6 {
+    @apply text-lg font-semibold tracking-wide;
   .label {
-    @apply text-sm font-semibold tracking-wide;
+    @apply text-sm font-bold tracking-wide;
   }
   .link-small {
     @apply text-sm font-semibold tracking-wide;
@@ -207,7 +212,7 @@
   }
 
   .modal-bg {
-    @apply fixed inset-0 bg-[#023040]/50 backdrop-blur-sm flex items-center justify-center z-50;
+    @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
   }
 
   .sm-text {
@@ -226,4 +231,5 @@
 .button-glow-tertiary {
     box-shadow: 0 0 1px 1px var(--color-secondary);
     background-color: var(--color-Tertiary-2);
+  }
 }

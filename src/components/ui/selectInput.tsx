@@ -26,7 +26,10 @@ export default function SelectInput({
         name={name}
         value={value}
         onChange={onChange}
-        className="appearance-none border rounded-lg px-3 py-2 pr-8 w-full"
+        className={clsx(
+          "appearance-none w-full border border-secondary-4  px-4 py-3 border rounded-lg focus:outline-none focus:ring-2",
+          "border- focus:ring-glow"
+        )}
         required={required}
       >
         <option value="">{placeholder}</option>

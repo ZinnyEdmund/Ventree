@@ -7,8 +7,8 @@ export default function Signup() {
         {/* Left side */}
         <div
           className="hidden md:flex justify-center items-center mx-auto w-1/2 relative 
-             bg-black bg-[url('/images/onboard-pattern.svg')] 
-             bg-cover bg-center bg-no-repeat bg-blend-overlay"
+            bg-black bg-cover"
+          style={{ backgroundImage: "url('images/onboarding-pattern.svg')" }}
         >
           <img
             src="/images/logo-white.svg"

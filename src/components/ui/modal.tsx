@@ -32,10 +32,7 @@ const Modal: React.FC<ModalProps> = ({
     <div className="modal-bg">
       <div
         className={clsx(
-          "relative bg-white rounded-xl shadow-lg p-6 transition-all",
-          size === "sm" && "w-1/4",
-          size === "md" && "w-1/3",
-          size === "lg" && "w-1/2"
+          "relative bg-white rounded-xl shadow-lg p-6 transition-all w-2/3 md:w-1/3",
         )}
       >
         {/* Close button */}
@@ -51,13 +48,13 @@ const Modal: React.FC<ModalProps> = ({
 
         {/* Image */}
         {status === "success" ? (
-          <div className="flex justify-center items-center h-20 mb-4">
+          <div className="flex justify-center items-center h-20 ">
             {/* Outer Octagon */}
-            <div className="relative w-20 h-20 bg-success-bg rotate-25 [clip-path:polygon(30%_0%,70%_0%,100%_30%,100%_70%,70%_100%,30%_100%,0%_70%,0%_30%)] flex items-center justify-center">
+            <div className="relative w-20 h-20 bg-success-bg rounded-full flex items-center justify-center">
               {/* Inner Octagon */}
-              <div className="w-14 h-14 bg-success [clip-path:polygon(30%_0%,70%_0%,100%_30%,100%_70%,70%_100%,30%_100%,0%_70%,0%_30%)] flex items-center justify-center">
+              <div className="w-14 h-14 bg-success rounded-full  flex items-center justify-center">
                 {/* Icon */}
-                <Check className="text-white -rotate-25" size={28} />
+                <Check className="text-white" size={28} />
               </div>
             </div>
           </div>
@@ -111,8 +108,8 @@ const Modal: React.FC<ModalProps> = ({
         {title && (
           <h2
             className={`${
-              titleColor || "text-text"
-            } xl-head font-medium text-center mb-2`}
+              titleColor || "text-secondary"
+            } h4 font-medium text-center mb-2`}
           >
             {title}
           </h2>

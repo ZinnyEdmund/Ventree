@@ -30,7 +30,7 @@ export const Home = () => {
       </article>
 
       {/* Stats Grid */}
-      <main className="py-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <main className="py-3 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
           <StatCard
             key={index}
