@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Fingerprint } from "lucide-react";
+import { Eye, EyeOff, Fingerprint } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface PasswordInputProps {
@@ -31,37 +31,26 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           value={value}
           onChange={onChange}
           placeholder="Password"
-          className="w-full px-4 py-2 pr-12 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full px-4 py-3 pr-12 border border-secondary-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-glow"
         />
 
-        {/* Fingerprint icon */}
-        {noFP ? (
-            <Fingerprint className="absolute right-5 top-3 text-gray-500 w-5 h-5" />
-        ) : null} 
-
+       
         {/* Toggle password visibility */}
-        {/* <button
+        <button
           type="button"
-          className="absolute right-3 top-3 text-gray-500"
+          className="absolute right-3 top-4 text-gray-500"
           onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-        </button> */}
+        </button>
       </div>
 
       {/* Show password toggle */}
       <div className="flex justify-between mt-2 text-sm">
-        <label className="flex items-center gap-1">
-          <input
-            type="checkbox"
-            checked={showPassword}
-            onChange={() => setShowPassword(!showPassword)}
-          />
-          Show Password
-        </label>
+        <div></div>
 
         {noFP ? (
-          <Link to="/forgot-password" className="text-SB hover:underline">
+          <Link to="/forgot-password" className="text-black hover:underline">
             Forgot Password?
           </Link>
         ) : null}

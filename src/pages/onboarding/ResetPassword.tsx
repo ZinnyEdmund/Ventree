@@ -2,31 +2,22 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 
-export default function Signup() {
-  const [BusinessName, setBusinessName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+export default function ResetPassword() {
+  const [businessNumber, setBusinessNumber] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const validateForm = () => {
     let isValid = true;
 
-    if (!BusinessName.trim()) {
-      toast.error("Business name is required");
+    if (!businessNumber.trim()) {
+      toast.error("Business number is required");
       isValid = false;
     }
 
-    if (!phoneNumber.trim()) {
-      toast.error("Phone number is required");
+    if (!password.trim()) {
       isValid = false;
-    } else if (!/^\+?[\d\s-()]+$/.test(phoneNumber)) {
-      toast.error("Please enter a valid phone number");
-      isValid = false;
-    }
-
-    if (!password) {
       toast.error("Password is required");
-      isValid = false;
     } else if (password.length < 6) {
       toast.error("Password must be at least 6 characters");
       isValid = false;
@@ -50,14 +41,13 @@ export default function Signup() {
       //     'Content-Type': 'application/json',
       //   },
       //   body: JSON.stringify({
-      //     businessName: BusinessName,
       //     phoneNumber: phoneNumber,
       //     password: password,
       //   }),
       // });
       //
       // if (!response.ok) {
-      //   toast.error('Signup failed');
+      //   toast.error('Reset failed');
       // }
       //
       // const data = await response.json();
@@ -65,14 +55,13 @@ export default function Signup() {
       // Simulating API call
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      toast.success("Account created successfully!");
+      toast.success("Reset successful!");
 
-      // Clears the form after successful signup
-      setBusinessName("");
-      setPhoneNumber("");
+      //Clears the form after successful reset
+      setBusinessNumber("");
       setPassword("");
 
-      // Redirect the user to the dashboard
+      // Redirect the user to the dashboard(We don't have any yet)
       // window.location.href = '/dashboard';
     } catch (error) {
       const message =
@@ -94,10 +83,9 @@ export default function Signup() {
   };
 
   return (
-    <section className="w-full flex flex-col md:space-y-6 space-y-16 justify-between md:p-6">
-      <div className="text-center text-[var(--color-black)] md:pb-7 ">
-        <h2 className="h3 pb-2">Less Stress</h2>
-        <p className="h3">More Business</p>
+    <section className="w-full flex flex-col md:space-y-16 space-y-16 justify-between md:p-6">
+      <div className="text-center text-[var(--color-black)]">
+        <h2 className="h3 pb-2">Reset Password</h2>
       </div>
 
       <div className="w-full max-w-sm mx-auto space-y-6">
@@ -107,30 +95,14 @@ export default function Signup() {
           </label>
           <input
             type="text"
-            value={BusinessName}
-            onChange={(e) => setBusinessName(e.target.value)}
+            value={businessNumber}
+            onChange={(e) => setBusinessNumber(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Put your business name"
-            className="w-full text[var(--color-subtle)] border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] rounded-lg p-3 outline-none body-small"
+            placeholder="Put your business number"
+            className="w-full border border-[var(--color-secondary-4)] body-small rounded-lg p-3 outline-none"
             disabled={isLoading}
           />
         </div>
-
-        <div>
-          <label className="block text-[var(--color-black)] label md:mb-1 mb-2">
-            Phone Number
-          </label>
-          <input
-            type="text"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Put your phone number"
-            className="w-full text[var(--color-subtle)] border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] rounded-lg p-3 outline-none body-small"
-            disabled={isLoading}
-          />
-        </div>
-
         <div>
           <label className="block text-[var(--color-black)] label md:mb-1 mb-2">
             Password
@@ -141,7 +113,7 @@ export default function Signup() {
             onChange={(e) => setPassword(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your password"
-            className="w-full text-[var(--color-subtle)] border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] rounded-lg p-3 outline-none body-small"
+            className="w-full border border-[var(--color-secondary-4)] body-small rounded-md p-2 outline-none"
             disabled={isLoading}
           />
         </div>
@@ -150,21 +122,12 @@ export default function Signup() {
       <div className="w-full max-w-sm mx-auto space-y-4">
         <button
           onClick={handleSubmit}
-          className="w-full btn btn-primary flex items-center justify-center gap-2 border active:border-[var(--color-tertiary)]"
+          className="w-full btn btn-primary flex items-center justify-center border active:border-[var(--color-tertiary)] gap-2"
           disabled={isLoading}
         >
-          {isLoading ? "Creating Account" : "Create Account"}
+          {isLoading ? "Logging in" : "Reset"}
           {isLoading && <LoaderCircle width={20} className="animate-spin" />}
         </button>
-        <p className="password-small text-[var(--color-subtle-text)] text-center">
-          Already have an account?{" "}
-          <a
-            href="/login"
-            className="link-small text-[var(--color-black)] underline"
-          >
-            Login
-          </a>
-        </p>
       </div>
     </section>
   );

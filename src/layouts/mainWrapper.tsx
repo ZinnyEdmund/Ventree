@@ -2,7 +2,7 @@ import type { ReactElement, ReactNode } from 'react'
 import { useSelector } from 'react-redux';
 import type { RootState } from '../state/store';
 import { toast } from 'sonner';
-import { Navigate } from 'react-router-dom';
+// import { Navigate } from 'react-router-dom';
 import LoadingSpinner from '../components/shared/LoadingSpinner';
 
 type Props = {
@@ -18,7 +18,7 @@ const MainWrapper = ({ component }: Props): ReactElement => {
   
   if (!isAuthenticated) {
     toast.warning('Login to access this page')
-    return <Navigate to="/login" replace />;
+    // return <Navigate to="/login" replace />;
   }
 
   return <>{component}</>;
