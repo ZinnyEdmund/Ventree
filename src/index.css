@@ -135,7 +135,7 @@
 
 @layer components {
   .btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer;
+    @apply px-4 py-3 rounded-lg font-medium transition-colors cursor-pointer;
   }
   .btn-primary {
     @apply bg-secondary text-white shadow-lg hover:bg-secondary-2 ;
@@ -174,6 +174,12 @@
   .h4 {
     @apply text-2xl font-semibold tracking-wide;
   }
+  .h5 {
+    @apply text-xl font-semibold tracking-wide;
+  }
+  .h6 {
+    @apply text-lg font-semibold tracking-wide;
+  }
 
   .body {
     @apply text-lg;
@@ -198,7 +204,7 @@
   }
 
   .modal-bg {
-    @apply fixed inset-0 bg-[#023040]/50 backdrop-blur-sm flex items-center justify-center z-50;
+    @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
   }
 
   .sm-text {

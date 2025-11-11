@@ -43,7 +43,6 @@ function AppRoutes() {
           <Route path="/" element={<MainWrapper component={<MainLayout />} />}>
             <Route path="/home" element={<Home />} />
             <Route path="/stocks" element={<ManageStocks />} />
-
           </Route>
           
         </Routes>

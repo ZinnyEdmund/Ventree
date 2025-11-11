@@ -1,5 +1,5 @@
 export const stats = [
-  { title: "Sales",  Icon: "mdi:monetization_on", value: "₦540,000", description: "What you have sold" },
+  { title: "Sales",  Icon: "mdi:monetization_on", value: "₦540,000,000", description: "What you have sold" },
   { title: "Expenses",  Icon: "", value: "₦50,000", description: "What you spent" },
   {
     title: "Low Stock",

@@ -71,7 +71,7 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
     <>
       {/* Backdrop */}
       <div
-        className="lg:hidden  fixed inset-0 bg-opacity-50 z-40"
+        className="modal-bg "
         onClick={onClose}
       />
 
@@ -310,7 +310,7 @@ function DesktopSidebar() {
           label="Home"
         />
         <SidebarItem
-          to="#"
+          to="/stocks"
           icon={
             <Icon
               icon="material-symbols-light:home-repair-service-rounded"
@@ -450,7 +450,7 @@ export default function MainLayout() {
   // const menuRef = useRef<HTMLDivElement | null>(null);
 
   console.log(isMobileMenuOpen);
- 
+
 
   // Prevent body scroll when open
   useEffect(() => {
@@ -491,7 +491,7 @@ export default function MainLayout() {
         </div>
 
         {/* Body (scrollable Outlet area) */}
-        <main className="flex-1  pt-10 lg:px-0 lg:pt-4">
+        <main className="flex-1 pt-10 lg:px-0 lg:pt-4">
           <Outlet />
         </main>
       </div>

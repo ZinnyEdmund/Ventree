@@ -4,7 +4,7 @@ import clsx from "clsx";
 interface TextInputProps {
   label?: string;
   type?: string;
-  value: string;
+  value: string | number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   error?: string; // error messages
@@ -27,7 +27,7 @@ const TextInput: React.FC<TextInputProps> = ({
   return (
     <div className={clsx("w-full", className)}>
       {label && (
-        <label className="block mb-2 text-sm font-medium text-gray-700">
+        <label className="block mb-2 text-sm font-medium text-black">
           {label}
         </label>
       )}
@@ -38,7 +38,7 @@ const TextInput: React.FC<TextInputProps> = ({
         placeholder={placeholder}
         required={required}
         className={clsx(
-          "w-full px-4 py-2 border border-secondary-4 rounded-lg focus:outline-none focus:ring-2",
+          "w-full px-4 py-3 border border-secondary-4 rounded-lg focus:outline-none focus:ring-2",
           error ? "border-error focus:ring-error" : "border-grey focus:ring-glow"
         )}
         disabled={disabled}
@@ -63,7 +63,7 @@ const DateInput: React.FC<TextInputProps> = ({
   return (
     <div className={clsx("w-full", className)}>
       {label && (
-        <label className="block mb-2 text-sm font-medium text-gray-700">
+        <label className="block mb-2 text-sm font-medium text-black">
           {label}
         </label>
       )}
