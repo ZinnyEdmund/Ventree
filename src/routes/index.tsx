@@ -11,6 +11,7 @@ import MainLayout from "../layouts/mainLayout";
 import { Home } from "../pages/home";
 import { ManageStocks } from "../pages/stocks";
 import RecordSale from "../pages/sales/RecordSales";
+import { SetupShopPage } from "../pages/shop";
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
 const LoginPage = lazy(() => import("../pages/onboarding/Login"));
@@ -52,6 +53,7 @@ function AppRoutes() {
             <Route path="/home" element={<Home />} />
             <Route path="/stocks" element={<ManageStocks />} />
             <Route path="/record-sales" element={<RecordSale />} />
+            <Route path="/setup-shop" element={<SetupShopPage />} />
           </Route>
           
         </Routes>

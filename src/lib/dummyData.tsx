@@ -1,25 +1,25 @@
 export const stats = [
-  { title: "Sales",  Icon: "mdi:monetization_on", value: "₦540,000,000", description: "What you have sold" },
-  { title: "Expenses",  Icon: "", value: "₦50,000", description: "What you spent" },
+  { title: "Sales",  Icon: "ic:outline-monetization-on", value: "₦540,000,000", description: "What you have sold" },
+  { title: "Expenses",  Icon: "ic:outline-monetization-on", value: "₦50,000", description: "What you spent" },
   {
     title: "Low Stock",
-     Icon: "", value: "10 Items",
+     Icon: "ic:outline-trending-down", value: "10 Items",
     description: "Almost Finished",
     variant: "warning" as const,
   },
   {
     title: "Profit",
-     Icon: "", value: "₦100,000",
+     Icon: "ic:outline-trending-up", value: "₦100,000",
     description: "How much you made",
     variant: "success" as const,
   },
 ];
 
 export const actions = [
-  { title: "Record Sale", description: "Add a new sale quickly" },
-  { title: "Add Goods", description: "Add new items to your stock" },
-  { title: "Manage Employees", description: "View or add shop attendants" },
-  { title: "View Report", description: "See your shop's performance" },
+  { title: "Record Sale", icon: "ic:outline-list-alt", description: "Add a new sale quickly" },
+  { title: "Add Goods", icon: "ic:outline-shopping-bag", description: "Add new items to your stock" },
+  { title: "Manage Employees", icon: "ic:outline-person-add-alt", description: "View or add shop attendants" },
+  { title: "View Report", icon: "ic:outline-remove", description: "See your shop's performance" },
 ];
 
 export const salesHistory = [

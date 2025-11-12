@@ -204,7 +204,6 @@ import { stats } from "../../lib/dummyData";
 import { useAddGoodsModal } from "../../hooks/useAddGoodsModal";
 import { AddGoodsModal, type GoodsFormData } from "./components/AddGoodsModal";
 import Modal from "../../components/ui/modal";
-import { Link } from "react-router-dom";
 
 export const ManageStocks = () => {
   const { isOpen, openModal, closeModal } = useAddGoodsModal();

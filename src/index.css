@@ -179,6 +179,7 @@
   }
   .h6 {
     @apply text-lg font-semibold tracking-wide;
+  } 
   .label {
     @apply text-sm font-bold tracking-wide;
   }
@@ -196,7 +197,7 @@
     @apply text-lg font-semibold;
   }
   .body-small {
-    @apply text-sm;
+    @apply text-xs;
   }
   .body-subtle {
     @apply text-xs;
@@ -212,7 +213,7 @@
   }
 
   .modal-bg {
-    @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+    @apply fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 lg:p-0;
   }
 
   .sm-text {
@@ -232,4 +233,3 @@
     box-shadow: 0 0 1px 1px var(--color-secondary);
     background-color: var(--color-Tertiary-2);
   }
-}

@@ -114,14 +114,14 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               onClick={onClose}
             />
             <MobileNavLink
-              to="#"
+              to="/stocks"
               icon="material-symbols-light:home-repair-service-rounded"
               label="Manage Stocks"
               isActive={isActive("#")}
               onClick={onClose}
             />
             <MobileNavLink
-              to="#"
+              to="/record-sales"
               icon="material-symbols-light:shoppingmode"
               label="Record Sales"
               isActive={isActive("#")}
@@ -135,7 +135,7 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               onClick={onClose}
             />
             <MobileNavLink
-              to="/notification"
+              to="/setup-shop"
               icon="material-symbols-light:notifications-rounded"
               label="Set Up Shop"
               isActive={isActive("/notification")}
@@ -230,7 +230,7 @@ function DesktopHeader({
   setShowSupport: (show: boolean) => void;
 }) {
   return (
-    <header className="hidden  bg-white w-full lg:block border border-accent-g2 rounded-lg">
+    <header className="hidden bg-white w-full lg:block border border-accent-g2 rounded-lg">
       <div className="flex items-center bg-transparent justify-between  py-3 px-5 rounded-lg">
         {/* Search Bar */}
         <div className="flex items-center gap-2 border border-subtle-2 px-3 py-2 rounded-full w-1/4">
@@ -262,10 +262,10 @@ function DesktopHeader({
             </div>
 
             <div>
-              <h2 className="body-small">
+              <h2 className="text-xs">
                 {truncateTextWithStringMethod("Okafor Ifeanyi", 15)}
               </h2>
-              <p className="text-accent body-small">Client</p>
+              <p className="text-accent text-xs">Client</p>
             </div>
           </div>
           <div>
@@ -292,7 +292,7 @@ function DesktopHeader({
 // Desktop Sidebar Component
 function DesktopSidebar() {
   return (
-    <aside className="hidden lg:flex w-3/12 bg-black py-6 px-3 flex-col">
+    <aside className="hidden lg:flex w-[280px] bg-black py-6 px-3 flex-col">
       <div className="text-2xl font-bold mb-8 px-6">
         <img src="/images/logo-white.svg" alt="logo" width={100} />
       </div>
@@ -302,7 +302,7 @@ function DesktopSidebar() {
           to="/home"
           icon={
             <Icon
-              icon="material-symbols-light:home-rounded"
+              icon="ic:outline-house"
               width="24"
               height="24"
             />
@@ -313,7 +313,7 @@ function DesktopSidebar() {
           to="/stocks"
           icon={
             <Icon
-              icon="material-symbols-light:home-repair-service-rounded"
+              icon="ic:outline-shopping-bag"
               width="24"
               height="24"
             />
@@ -321,10 +321,10 @@ function DesktopSidebar() {
           label="Manage Stocks"
         />
         <SidebarItem
-          to="#"
+          to="/record-sales"
           icon={
             <Icon
-              icon="material-symbols-light:shoppingmode"
+              icon="ic:outline-add"
               width="24"
               height="24"
             />
@@ -335,7 +335,7 @@ function DesktopSidebar() {
           to="/notification"
           icon={
             <Icon
-              icon="material-symbols-light:notifications-rounded"
+              icon="ic:outline-assessment"
               width="24"
               height="24"
             />
@@ -343,10 +343,10 @@ function DesktopSidebar() {
           label="Business Insights"
         />
         <SidebarItem
-          to="/notification"
+          to="/setup-shop"
           icon={
             <Icon
-              icon="material-symbols-light:notifications-rounded"
+              icon="ic:outline-store"
               width="24"
               height="24"
             />
@@ -357,7 +357,7 @@ function DesktopSidebar() {
           to="/notification"
           icon={
             <Icon
-              icon="material-symbols-light:notifications-rounded"
+              icon="ic:outline-notifications"
               width="24"
               height="24"
             />
@@ -372,7 +372,7 @@ function DesktopSidebar() {
             to="/settings"
             icon={
               <Icon
-                icon="material-symbols-light:settings-rounded"
+                icon="ic:outline-settings"
                 width="24"
                 height="24"
               />
@@ -476,7 +476,7 @@ export default function MainLayout() {
       <DesktopSidebar />
 
       {/* Main Content */}
-      <div className="flex relative flex-col w-full overflow-y-auto lg:w-9/12 h-screen p-6">
+      <div className="flex relative flex-col w-full overflow-y-auto lg:w-10/12 h-screen m-6 ">
         {/* Desktop Header */}
         <div className="sticky top-0 z-10 bg-white">
           <DesktopHeader

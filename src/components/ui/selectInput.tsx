@@ -90,12 +90,12 @@ export function SelectInputBorderless({
   className, // 👈 new
 }: SelectInputProps) {
   return (
-    <div className={clsx("relative w-full", className)}>
+    <div className={clsx("relative", className)}>
       <select
         name={name}
         value={value}
         onChange={onChange}
-        className="appearance-none bg-gray rounded-full px-3 py-2 w-full "
+        className="appearance-none border-none bg-gray rounded-full py-2 w-full "
         required={required}
       >
         <option value="">{placeholder}</option>

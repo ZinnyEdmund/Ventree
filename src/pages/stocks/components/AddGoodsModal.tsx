@@ -139,12 +139,12 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
     <>
       {/* Backdrop */}
       <div
-        className="modal-bg"
+        className="modal-b"
         onClick={handleClose}
       />
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 lg:p-0">
+      <div className="modal-bg">
         <div
           className="bg-white rounded-lg shadow-xl w-full lg:w-[400px] max-h-[90vh] overflow-y-auto"
           onClick={(e) => e.stopPropagation()}
