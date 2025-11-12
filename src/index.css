@@ -62,10 +62,9 @@
   --color-error: var(--color-error);
   --color-error-2: var(--color-error-2);
   --color-foundation: var(--color-secondary-5);
-  --color-glow: #CDFC54;
-  --color-accent: #8A8A8A;
-  --color-accent-g2: #E6E6E6; 
-
+  --color-glow: #cdfc54;
+  --color-accent: #8a8a8a;
+  --color-accent-g2: #e6e6e6;
 }
 
 /* Light theme */
@@ -91,7 +90,7 @@
   --color-primary-2: #7ae37a;
   --color-primary-3: #9bea9b;
   --color-primary-4: #bcf1bb;
-  --color-primary-5: #f3fff3;
+  --color-primary-5: #F3FFF3;
 
   /* Secondary Colors */
   --color-secondary: #073e1e;
@@ -138,13 +137,13 @@
     @apply px-4 py-3 rounded-lg font-medium transition-colors cursor-pointer;
   }
   .btn-primary {
-    @apply bg-black text-white shadow-lg hover:bg-grey ;
+    @apply bg-black text-white shadow-lg hover:bg-grey;
   }
   .btn-sec {
     @apply bg-primary-2 text-secondary hover:bg-primary-3;
   }
   .btn-tertiary {
-    @apply  bg-transparent text-secondary border-[1px] border-secondary hover:bg-tertiary-3
+    @apply bg-transparent text-secondary border-[1px] border-secondary hover:bg-tertiary-3;
   }
   .btn-error {
     @apply bg-error text-white hover:bg-primary-1/90;
@@ -179,56 +178,56 @@
   }
   .h6 {
     @apply text-lg font-semibold tracking-wide;
-  .label {
-    @apply text-sm font-bold tracking-wide;
-  }
-  .link-small {
-    @apply text-sm font-semibold tracking-wide;
-  }
-  .password-small {
-    @apply text-sm font-light tracking-wide;
+    .label {
+      @apply text-sm font-bold tracking-wide;
+    }
+    .link-small {
+      @apply text-sm font-semibold tracking-wide;
+    }
+    .password-small {
+      @apply text-sm font-light tracking-wide;
+    }
+
+    .body {
+      @apply text-lg;
+    }
+    .body-bold {
+      @apply text-lg font-semibold;
+    }
+    .body-small {
+      @apply text-sm;
+    }
+    .body-subtle {
+      @apply text-xs;
+    }
+    .web-body {
+      @apply text-xl;
+    }
+    .web-small {
+      @apply text-lg;
+    }
+    .web-bold {
+      @apply text-xl font-semibold;
+    }
+
+    .modal-bg {
+      @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+    }
+
+    .sm-text {
+      @apply text-sm mb-2 tracking-wide;
+    }
   }
 
-  .body {
-    @apply text-lg;
-  }
-  .body-bold {
-    @apply text-lg font-semibold;
-  }
-  .body-small {
-    @apply text-sm;
-  }
-  .body-subtle {
-    @apply text-xs;
-  }
-  .web-body {
-    @apply text-xl;
-  }
-  .web-small {
-    @apply text-lg;
-  }
-  .web-bold {
-    @apply text-xl font-semibold;
+  .button-glow-primary {
+    box-shadow: 0 0 5px 3px #cdfc54;
   }
 
-  .modal-bg {
-    @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+  .button-glow-sec {
+    box-shadow: 0 0 5px 3px #0fb25a;
   }
 
-  .sm-text {
-    @apply text-sm mb-2 tracking-wide;
-  }
-}
-
-.button-glow-primary {
-    box-shadow: 0 0 5px 3px #CDFC54;
-}
-
-.button-glow-sec {
-    box-shadow: 0 0 5px 3px #0FB25A;
-}
-
-.button-glow-tertiary {
+  .button-glow-tertiary {
     box-shadow: 0 0 1px 1px var(--color-secondary);
     background-color: var(--color-Tertiary-2);
   }

@@ -173,7 +173,7 @@ export default function OtpPage() {
           <button
             onClick={handleSubmit}
             disabled={isLoading}
-            className="w-full py-2 btn btn-primary flex items-center justify-center gap-2"
+            className="w-full py-2 btn btn-primary flex items-center justify-center gap-2 border active:border-tertiary"
           >
             {isLoading ? "Verifying" : "Enter"}
             {isLoading && <LoaderCircle width={20} className="animate-spin" />}
