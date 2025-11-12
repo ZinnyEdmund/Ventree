@@ -141,10 +141,10 @@ export default function OtpPage() {
   return (
     <section className="w-full flex flex-col md:space-y-6 space-y-16 justify-between md:p-6">
       <div className="text-center">
-        <h2 className="h3 text-[var(--color-black)] mb-2">
+        <h2 className="h3 text-black mb-2">
           Confirm Your Phone Number
         </h2>
-        <p className="body-small text-[var(--color-subtle)] mb-8">
+        <p className="body-small text-subtle mb-8">
           An SMS with an OTP code has been sent to your phone number. Kindly
           input the OTP in the boxes below.
         </p>
@@ -164,7 +164,7 @@ export default function OtpPage() {
               onKeyDown={(e) => handleKeyDown(index, e)}
               onPaste={handlePaste}
               disabled={isLoading}
-              className="w-12 h-12 border border-[var(--color-secondary-4)] h4 rounded text-center text-[var(--color-black)] focus:outline-[var(--color-success)] focus:ring-1 focus:ring-[var(--color-Tertiary)]"
+              className="w-12 h-12 border border-secondary-4 h4 rounded text-center text-black focus:outline-success focus:ring-1 focus:ring-Tertiary"
             />
           ))}
         </div>
@@ -179,13 +179,13 @@ export default function OtpPage() {
             {isLoading && <LoaderCircle width={20} className="animate-spin" />}
           </button>
 
-          <p className="text-[var(--color-subtle-text)] text-center mt-4">
+          <p className="text-subtle-text text-center mt-4">
             Did not receive code?{" "}
             <button
               type="button"
               onClick={handleResendCode}
               disabled={isResending}
-              className="link-small text-[var(--color-black)] underline"
+              className="link-small text-black underline"
             >
               {isResending ? "Resending" : "Resend Code"}
             </button>

@@ -67,7 +67,7 @@ export default function Logout() {
             </div>
 
             {/* Text */}
-            <h2 className="body-bold text-center text-[var(--color-secondary)] mb-8">
+            <h2 className="body-bold text-center text-secondary mb-8">
               Are you sure you want to Log Out?
             </h2>
 
@@ -76,7 +76,7 @@ export default function Logout() {
               <button
                 onClick={handleLogout}
                 disabled={isLoading}
-                className="flex-1 py-3 px-6 btn btn-primary border active:border-[var(--color-tertiary)]"
+                className="flex-1 py-3 px-6 btn btn-primary border active:border-tertiary"
               >
                 {isLoading ? "Logging out..." : "Log Out"}
               </button>

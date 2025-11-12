@@ -95,14 +95,14 @@ export default function Signup() {
 
   return (
     <section className="w-full flex flex-col md:space-y-6 space-y-16 justify-between md:p-6">
-      <div className="text-center text-[var(--color-black)] md:pb-7 ">
+      <div className="text-center text-black md:pb-7 ">
         <h2 className="h3 pb-2">Less Stress</h2>
         <p className="h3">More Business</p>
       </div>
 
       <div className="w-full max-w-sm mx-auto space-y-6">
         <div>
-          <label className="block text-[var(--color-black)] label md:mb-1 mb-2">
+          <label className="block text-black label md:mb-1 mb-2">
             Business Name
           </label>
           <input
@@ -111,13 +111,13 @@ export default function Signup() {
             onChange={(e) => setBusinessName(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your business name"
-            className="w-full text[var(--color-subtle)] border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] rounded-lg p-3 outline-none body-small"
+            className="w-full text-subtle border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body-small"
             disabled={isLoading}
           />
         </div>
 
         <div>
-          <label className="block text-[var(--color-black)] label md:mb-1 mb-2">
+          <label className="block text-black)] label md:mb-1 mb-2">
             Phone Number
           </label>
           <input
@@ -126,13 +126,13 @@ export default function Signup() {
             onChange={(e) => setPhoneNumber(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your phone number"
-            className="w-full text[var(--color-subtle)] border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] rounded-lg p-3 outline-none body-small"
+            className="w-full text-subtle border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body-small"
             disabled={isLoading}
           />
         </div>
 
         <div>
-          <label className="block text-[var(--color-black)] label md:mb-1 mb-2">
+          <label className="block text-black)] label md:mb-1 mb-2">
             Password
           </label>
           <input
@@ -141,7 +141,7 @@ export default function Signup() {
             onChange={(e) => setPassword(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your password"
-            className="w-full text-[var(--color-subtle)] border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] rounded-lg p-3 outline-none body-small"
+            className="w-full text-subtle border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body-small"
             disabled={isLoading}
           />
         </div>
@@ -150,17 +150,17 @@ export default function Signup() {
       <div className="w-full max-w-sm mx-auto space-y-4">
         <button
           onClick={handleSubmit}
-          className="w-full btn btn-primary flex items-center justify-center gap-2 border active:border-[var(--color-tertiary)]"
+          className="w-full btn btn-primary flex items-center justify-center gap-2 border active:border-tertiary"
           disabled={isLoading}
         >
           {isLoading ? "Creating Account" : "Create Account"}
           {isLoading && <LoaderCircle width={20} className="animate-spin" />}
         </button>
-        <p className="password-small text-[var(--color-subtle-text)] text-center">
+        <p className="password-small text-subtle-text)] text-center">
           Already have an account?{" "}
           <a
             href="/login"
-            className="link-small text-[var(--color-black)] underline"
+            className="link-small text-black underline"
           >
             Login
           </a>

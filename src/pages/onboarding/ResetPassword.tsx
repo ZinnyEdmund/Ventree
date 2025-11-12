@@ -84,13 +84,13 @@ export default function ResetPassword() {
 
   return (
     <section className="w-full flex flex-col md:space-y-16 space-y-16 justify-between md:p-6">
-      <div className="text-center text-[var(--color-black)]">
+      <div className="text-center text-black">
         <h2 className="h3 pb-2">Reset Password</h2>
       </div>
 
       <div className="w-full max-w-sm mx-auto space-y-6">
         <div>
-          <label className="block text-[var(--color-black)] label md:mb-1 mb-2">
+          <label className="block text-black label md:mb-1 mb-2">
             Business Name
           </label>
           <input
@@ -99,12 +99,12 @@ export default function ResetPassword() {
             onChange={(e) => setBusinessNumber(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your business number"
-            className="w-full border border-[var(--color-secondary-4)] body-small rounded-lg p-3 outline-none"
+            className="w-full border border-secondary-4 body-small rounded-lg p-3 outline-none"
             disabled={isLoading}
           />
         </div>
         <div>
-          <label className="block text-[var(--color-black)] label md:mb-1 mb-2">
+          <label className="block text-black label md:mb-1 mb-2">
             Password
           </label>
           <input
@@ -113,7 +113,7 @@ export default function ResetPassword() {
             onChange={(e) => setPassword(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your password"
-            className="w-full border border-[var(--color-secondary-4)] body-small rounded-md p-2 outline-none"
+            className="w-full border border-secondary-4 body-small rounded-md p-2 outline-none"
             disabled={isLoading}
           />
         </div>
@@ -122,7 +122,7 @@ export default function ResetPassword() {
       <div className="w-full max-w-sm mx-auto space-y-4">
         <button
           onClick={handleSubmit}
-          className="w-full btn btn-primary flex items-center justify-center border active:border-[var(--color-tertiary)] gap-2"
+          className="w-full btn btn-primary flex items-center justify-center border active:border-tertiary gap-2"
           disabled={isLoading}
         >
           {isLoading ? "Logging in" : "Reset"}

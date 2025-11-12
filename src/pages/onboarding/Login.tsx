@@ -143,7 +143,7 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder="Put your password"
-            className="w-full border border-[var(--color-secondary-4)] focus:ring-2 focus:ring-[var(--color-tertiary)] body-small rounded-md p-2 outline-none"
+            className="w-full border border-secondary-4 focus:ring-2 focus:ring-tertiary body-small rounded-md p-2 outline-none"
             disabled={isLoading}
           /> */}
           <PasswordInput 
@@ -154,7 +154,7 @@ export default function Login() {
           {/* <p className="text-sm pt-1 text-right">
             <a
               href="/reset-password"
-              className="font-medium text-[var(--color-black)]"
+              className="font-medium text-black"
             >
               Forgot password?{" "}
             </a>
@@ -165,17 +165,17 @@ export default function Login() {
       <div className="w-full max-w-sm mx-auto space-y-4">
         <button
           onClick={handleSubmit}
-          className="w-full btn btn-primary flex items-center justify-center gap-2 border active:border-[var(--color-tertiary)]" 
+          className="w-full btn btn-primary flex items-center justify-center gap-2 border active:border-tertiary" 
           disabled={isLoading}
         >
           {isLoading ? "Logging in" : "Login"}
           {isLoading && <LoaderCircle width={20} className="animate-spin" />}
         </button>
-        <p className="password-small text-[var(--color-subtle-text)]  text-center">
+        <p className="password-small text-subtle-text)]  text-center">
           Don't have an account?{" "}
           <a
             href="/register"
-            className="link-small text-[var(--color-black)] underline"
+            className="link-small text-black underline"
           >
             Create Account
           </a>
