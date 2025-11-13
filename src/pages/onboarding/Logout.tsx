@@ -83,7 +83,7 @@ export default function Logout() {
               <button
                 onClick={() => setIsOpen(false)}
                 disabled={isLoading}
-                className="flex-1 py-3 px-6 btn btn-primary"
+                className="flex-1 py-3 px-6 btn btn-primary border active:border-tertiary"
               >
                 Cancel
               </button>

@@ -11,6 +11,7 @@ import MainLayout from "../layouts/mainLayout";
 import { Home } from "../pages/home";
 import { ManageStocks } from "../pages/stocks";
 import RecordSale from "../pages/sales/RecordSales";
+import Notification from "../pages/notification/Notification";
 import { SetupShopPage } from "../pages/shop";
 import { BusinessInsightsPage } from "../pages/insights";
 import { ExpensesPage } from "../pages/expenses";
@@ -55,6 +56,7 @@ function AppRoutes() {
             <Route path="/home" element={<Home />} />
             <Route path="/stocks" element={<ManageStocks />} />
             <Route path="/record-sales" element={<RecordSale />} />
+            <Route path="/notification" element={<Notification />} />
             <Route path="/setup-shop" element={<SetupShopPage />} />
             <Route path="/insights" element={<BusinessInsightsPage />} />
             <Route path="/home/expenses" element={<ExpensesPage />} />
