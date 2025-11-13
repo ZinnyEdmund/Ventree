@@ -5,6 +5,7 @@ import { ActionCard } from "./components/ActionButtons";
 import { SectionHeader } from "./components/SectionHeader";
 import { SalesHistoryItem } from "./components/SaleHistorytable";
 import { NotificationItem } from "./components/NotificationTable";
+import { Link } from "react-router-dom";
 
 // Main Home Component
 export const Home = () => {
@@ -15,7 +16,7 @@ export const Home = () => {
     <section className="py-6">
       {/* Header */}
       <article className="mb-2">
-        <h1 className="h3 text-secondary mb-4">Welcome, Owner</h1>
+        <h1 className="h4 md:text-3xl text-secondary mb-4">Welcome, Owner</h1>
 
         {/* Time Filter */}
         <div className="flex items-center gap-2 h4 text-secondary ">
@@ -66,7 +67,7 @@ export const Home = () => {
             icon={action.icon}
             title={action.title}
             description={action.description}
-            onClick={() => console.log(`Clicked: ${action.title}`)}
+            to={action.to}
           />
         ))}
       </main>
@@ -98,9 +99,9 @@ export const Home = () => {
               ))}
             </div>
             <div className="flex justify-end mt-4">
-              <button className="text-secondary font-semibold hover:underline">
+              <Link to="/history" className="text-secondary font-semibold hover:underline">
                 View All
-              </button>
+              </Link>
             </div>
           </>
         )}
@@ -124,9 +125,9 @@ export const Home = () => {
               ))}
             </div>
             <div className="flex justify-end mt-4">
-              <button className="text-secondary font-semibold hover:underline">
+              <Link to="/notification" className="text-secondary font-semibold hover:underline">
                 View All
-              </button>
+              </Link>
             </div>
           </>
         )}

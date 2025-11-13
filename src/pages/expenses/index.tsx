@@ -4,18 +4,18 @@
 import { Icon } from "@iconify/react";
 
 interface GoodsListItemProps {
-  product: string;
-  costPrice: number;
-  sellingPrice: number;
+  category: string;
+  amount: number;
+  date: string;
   quantity?: number;
   className?: string;
   onMenuClick?: () => void;
 }
 
 export const GoodsListItem: React.FC<GoodsListItemProps> = ({
-  product,
-  costPrice,
-  sellingPrice,
+  category,
+  amount,
+  date,
   quantity,
   className,
   onMenuClick,
@@ -26,9 +26,9 @@ export const GoodsListItem: React.FC<GoodsListItemProps> = ({
       <div
         className={`hidden lg:grid lg:grid-cols-[2fr_1fr_1fr_auto] gap-4 items-center py-2 px-4 lg:px-6 ${className}`}
       >
-        <div className="text-gray-900">{product}</div>
-        <div className="text-gray-700">₦{costPrice.toLocaleString()}</div>
-        <div className="text-gray-700">₦{sellingPrice.toLocaleString()}</div>
+        <div className="text-gray-900">{category}</div>
+        <div className="text-gray-700">₦{amount.toLocaleString()}</div>
+        <div className="text-gray-700">{date}</div>
         <button
           onClick={onMenuClick}
           className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -41,10 +41,8 @@ export const GoodsListItem: React.FC<GoodsListItemProps> = ({
       <div className="lg:hidden bg-white rounded-lg p-4 border border-gray-200 mb-3">
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="font-medium text-gray-900">{product}</h3>
-            {quantity && (
-              <span className="text-xs text-gray-500">({quantity} left)</span>
-            )}
+            <h3 className="font-medium text-gray-900">{category}</h3>
+            
           </div>
           <button
             onClick={onMenuClick}
@@ -55,15 +53,14 @@ export const GoodsListItem: React.FC<GoodsListItemProps> = ({
         </div>
         <div className="flex items-center justify-between text-sm">
           <div>
-            <span className="text-gray-600">Costs: </span>
+            {/* <span className="text-gray-600">Costs: </span> */}
             <span className="text-gray-900 font-medium">
-              ₦{costPrice.toLocaleString()}
+              ₦{amount.toLocaleString()}
             </span>
           </div>
           <div>
-            <span className="text-gray-600">Sells: </span>
             <span className="text-gray-900 font-medium">
-              ₦{sellingPrice.toLocaleString()}
+              {date.toLocaleString()}
             </span>
           </div>
         </div>
@@ -78,9 +75,9 @@ export const GoodsListItem: React.FC<GoodsListItemProps> = ({
 export const GoodsListHeader: React.FC = () => {
   return (
     <div className="hidden bg-white lg:grid lg:grid-cols-[2fr_1fr_1fr_auto] gap-4 px-6 py-4 border-b border-subtle-2 font-semibold text-grey">
-      <div>Product</div>
-      <div>Cost Price</div>
-      <div>Selling Price</div>
+      <div>Category</div>
+      <div>Amount</div>
+      <div>Date</div>
       <div>Action</div>
     </div>
   );
@@ -91,9 +88,9 @@ export const GoodsListHeader: React.FC = () => {
 // ============================================
 interface Good {
   id: string;
-  product: string;
-  costPrice: number;
-  sellingPrice: number;
+  category: string;
+  amount: number;
+  date: string;
   quantity?: number;
 }
 
@@ -112,7 +109,7 @@ export const GoodsList: React.FC<GoodsListProps> = ({
     <div className="lg:py-6 p-0 overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between mb-4 px-4 lg:px-0 pt-4 lg:pt-0">
-        <h2 className="h4 text-secondary">Goods List</h2>
+        <h2 className="h4 text-secondary">List of Expenses</h2>
       </div>
 
       {/* Desktop Table Header */}
@@ -125,9 +122,9 @@ export const GoodsList: React.FC<GoodsListProps> = ({
             <GoodsListItem
               key={item.id}
               className="border-b border-accent-g2 last:border-b-0"
-              product={item.product}
-              costPrice={item.costPrice}
-              sellingPrice={item.sellingPrice}
+              category={item.category}
+              amount={item.amount}
+              date={item.date}
               quantity={item.quantity}
               onMenuClick={() => onItemMenuClick?.(item.id)}
             />
@@ -143,7 +140,7 @@ export const GoodsList: React.FC<GoodsListProps> = ({
       {/* Add New Button */}
       <div className="mt-6 px-4 lg:px-0 pb-4 lg:pb-0 md:flex md:justify-end">
         <button onClick={onAddNew} className="btn btn-primary w-full md:w-1/4">
-          Add New Goods
+          Add New Expense
         </button>
       </div>
     </div>
@@ -200,12 +197,14 @@ export const StatsSummary: React.FC<StatsSummaryProps> = ({
 // ============================================
 import { useState } from "react";
 import { StatCard } from "../home/components/StatCard";
-import { stats } from "../../lib/dummyData";
+import { expenseStats } from "../../lib/dummyData";
 import { useAddGoodsModal } from "../../hooks/useAddGoodsModal";
 import { AddGoodsModal } from "./components/AddGoodsModal";
 import Modal from "../../components/ui/modal";
+import { SelectInputBorderless } from "../../components/ui/selectInput";
+import { Link } from "react-router-dom";
 
-export const ManageStocks = () => {
+export const ExpensesPage = () => {
   const { isOpen, openModal, closeModal } = useAddGoodsModal();
   const [salesSuccessModal, setSalesSuccessModal] = useState(false);
 
@@ -213,45 +212,77 @@ export const ManageStocks = () => {
   const [goods] = useState<Good[]>([
     {
       id: "1",
-      product: "Coca-Cola 50cl",
-      costPrice: 700,
-      sellingPrice: 900,
-      quantity: 36,
+      category: "Product Purchase",
+      amount: 725000,
+      date: "28/10/2025",
+      quantity: 120,
     },
     {
       id: "2",
-      product: "Coca-Cola 50cl",
-      costPrice: 700,
-      sellingPrice: 900,
-      quantity: 36,
+      category: "Transportation / Delivery",
+      amount: 15000,
+      date: "30/10/2025",
     },
     {
       id: "3",
-      product: "Coca-Cola 50cl",
-      costPrice: 700,
-      sellingPrice: 900,
-      quantity: 36,
+      category: "Shop Rent",
+      amount: 80000,
+      date: "01/11/2025",
     },
     {
       id: "4",
-      product: "Coca-Cola 50cl",
-      costPrice: 700,
-      sellingPrice: 900,
-      quantity: 36,
+      category: "Utilities (Electricity, Water, Internet)",
+      amount: 22000,
+      date: "02/11/2025",
     },
     {
       id: "5",
-      product: "Coca-Cola 50cl",
-      costPrice: 700,
-      sellingPrice: 900,
-      quantity: 36,
+      category: "Repairs & Maintenance",
+      amount: 10500,
+      date: "03/11/2025",
     },
     {
       id: "6",
-      product: "Coca-Cola 50cl",
-      costPrice: 700,
-      sellingPrice: 900,
-      quantity: 36,
+      category: "Staff Salary / Wages",
+      amount: 150000,
+      date: "05/11/2025",
+    },
+    {
+      id: "7",
+      category: "Advertising & Promotion",
+      amount: 12000,
+      date: "07/11/2025",
+    },
+    {
+      id: "8",
+      category: "Packaging Materials",
+      amount: 7000,
+      date: "08/11/2025",
+      quantity: 50,
+    },
+    {
+      id: "9",
+      category: "Cleaning & Sanitation",
+      amount: 4500,
+      date: "09/11/2025",
+    },
+    {
+      id: "10",
+      category: "Equipment & Tools",
+      amount: 25000,
+      date: "10/11/2025",
+    },
+    {
+      id: "11",
+      category: "Taxes & Licenses",
+      amount: 32000,
+      date: "11/11/2025",
+    },
+    {
+      id: "12",
+      category: "Miscellaneous",
+      amount: 3500,
+      date: "12/11/2025",
     },
   ]);
 
@@ -277,31 +308,55 @@ export const ManageStocks = () => {
     <section className="py-6">
       {/* Header */}
       <article className="mb-2">
-        <h1 className="h4 md:text-3xl  text-secondary mb-2">Goods Management</h1>
-        <p className="text-black">Easily track and manage your shop items</p>
+        <div className="flex gap-2 items-center mb-2">
+            {/* <Icon icon="mynaui:chevron-left-circle" width="24" height="24" /> */}
+            <Link to='/home'> <Icon icon="ic:outline-arrow-circle-left" width="24px" className="text-secondary" /> </Link>
+            <h1 className="h4 md:text-3xl text-secondary">Expense Management</h1>
+        </div>
+        <p className="text-black">Easily track and manage what you have spent</p>
       </article>
+
+       {/* Time Filter */}
+        <SelectInputBorderless 
+          placeholder="Today"
+          options={[
+            { value: 'today', label: 'Today' },
+            { value: 'yesterday', label: 'Yesterday' },
+            { value: 'last-7-days', label: 'Last 7 days' },
+            { value: 'last-30-days', label: 'Last 30 days' },
+            { value: 'custom', label: 'Custom' },
+          ]}
+          name="time-filter"
+          value={"today"}
+          onChange={(e) => console.log(e.target.value)}
+          className="w-30 flex items-center gap-2 h4 text-secondary border-none"
+        />
 
       {/* Stats Grid */}
       <main className="py-3 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
+        {expenseStats.map((stat, index) => (
           <StatCard
             key={index}
             icon={stat.Icon}
             title={stat.title}
             value={stat.value}
             description={stat.description}
-            variant={stat.variant}
           />
         ))}
       </main>
 
       {/* Goods List */}
       <div className="py-3">
-        <GoodsList
-          goods={goods}
-          onAddNew={openModal}
-          onItemMenuClick={handleItemMenu}
-        />
+        { goods.length > 0 ? (
+            <GoodsList
+            goods={goods}
+            onAddNew={openModal}
+            onItemMenuClick={handleItemMenu}
+          />
+        ) : (
+            <div></div>
+        )}
+        
       </div>
 
       {/* Add Goods Modal */}

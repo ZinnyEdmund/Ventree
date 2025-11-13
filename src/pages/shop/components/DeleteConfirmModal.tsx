@@ -33,10 +33,10 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
   
     return (
       <>
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50" onClick={onCancel} />
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="modal-bg" onClick={onCancel} />
+        <div className="modal-bg">
           <div
-            className="bg-white rounded-lg w-full max-w-md p-6"
+            className="bg-white rounded-lg w-full lg:w-1/2 p-6"
             onClick={(e) => e.stopPropagation()}
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-3">
@@ -47,22 +47,24 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
               your shop? This action cannot be undone.
             </p>
   
-            <div className="flex gap-3">
+            <article className="w-full flex justify-end">
+            <div className="flex flex-col w-full md:w-1/2 md:flex-row gap-3 pt-4">
               <button
                 onClick={onCancel}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="flex-1 btn btn-tertiary"
                 disabled={loading}
               >
                 Cancel
               </button>
               <button
                 onClick={handleConfirm}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 transition-colors"
+                className="flex-1 px-4 py-2 btn btn-error"
                 disabled={loading}
               >
                 {loading ? "Deleting..." : "Delete"}
               </button>
             </div>
+            </article>
           </div>
         </div>
       </>

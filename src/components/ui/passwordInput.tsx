@@ -50,7 +50,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         <div></div>
 
         {noFP ? (
-          <Link to="/forgot-password" className="text-black hover:underline">
+          <Link to="/reset-password" className="text-black hover:underline">
             Forgot Password?
           </Link>
         ) : null}
