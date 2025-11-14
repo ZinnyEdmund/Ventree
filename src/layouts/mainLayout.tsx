@@ -32,7 +32,7 @@ function MobileHeader({
           <div className="flex items-center gap-3">
             <button onClick={onNotificationClick} className="p-1">
               <Icon
-                icon="ic:twotone-notifications"
+                icon="ic:outline-notifications"
                 width="24"
                 height="24"
                 className="text-black"
@@ -43,7 +43,7 @@ function MobileHeader({
                 icon="material-symbols:menu"
                 width="24"
                 height="24"
-                className="text-black"
+                className="text-secondary"
               />
             </button>
           </div>
@@ -108,42 +108,42 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
           <nav className="space-y-2 mb-6">
             <MobileNavLink
               to="/home"
-              icon="material-symbols-light:home-rounded"
+              icon="ic:outline-house"
               label="Home"
               isActive={isActive("/home")}
               onClick={onClose}
             />
             <MobileNavLink
               to="/stocks"
-              icon="material-symbols-light:home-repair-service-rounded"
+              icon="ic:outline-shopping-bag"
               label="Manage Stocks"
-              isActive={isActive("#")}
+              isActive={isActive("/stocks")}
               onClick={onClose}
             />
             <MobileNavLink
               to="/record-sales"
-              icon="material-symbols-light:shoppingmode"
+              icon="ic:outline-add"
               label="Record Sales"
-              isActive={isActive("#")}
+              isActive={isActive("/record-sales")}
               onClick={onClose}
             />
             <MobileNavLink
-              to="/notification"
-              icon="material-symbols-light:notifications-rounded"
+              to="/insights"
+              icon="ic:outline-assessment"
               label="Business Insights"
-              isActive={isActive("/notification")}
+              isActive={isActive("/insights")}
               onClick={onClose}
             />
             <MobileNavLink
               to="/setup-shop"
-              icon="material-symbols-light:notifications-rounded"
+              icon="ic:outline-store"
               label="Set Up Shop"
-              isActive={isActive("/notification")}
+              isActive={isActive("/setup-shop")}
               onClick={onClose}
             />
             <MobileNavLink
               to="/notification"
-              icon="material-symbols-light:notifications-rounded"
+              icon="ic:outline-notifications"
               label="Notification"
               isActive={isActive("/notification")}
               onClick={onClose}
@@ -230,7 +230,7 @@ function DesktopHeader({
   setShowSupport: (show: boolean) => void;
 }) {
   return (
-    <header className="hidden bg-white w-full lg:block border border-accent-g2 rounded-lg">
+    <header className="hidden bg-white w-full lg:block border border-secondary-5 rounded-lg">
       <div className="flex items-center bg-transparent justify-between  py-3 px-5 rounded-lg">
         {/* Search Bar */}
         <div className="flex items-center gap-2 border border-subtle-2 px-3 py-2 rounded-full w-1/4">
@@ -245,7 +245,7 @@ function DesktopHeader({
         <div className="flex items-center gap-4 relative">
           <button onClick={onNotificationClick}>
             <Icon
-              icon="ic:twotone-notifications"
+              icon="ic:outline-notifications"
               width="24"
               height="24"
               className="text-black"
@@ -332,7 +332,7 @@ function DesktopSidebar() {
           label="Record Sales"
         />
         <SidebarItem
-          to="/notification"
+          to="/insights"
           icon={
             <Icon
               icon="ic:outline-assessment"

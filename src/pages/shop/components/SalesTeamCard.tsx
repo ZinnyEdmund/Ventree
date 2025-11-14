@@ -5,6 +5,7 @@ import { Icon } from "@iconify/react";
 import { useState } from "react";
 import { SalesPersonModal } from "./SalesPersonModal";
 import { SalesPersonItem } from "./SalesPersonItem";
+import { DeleteConfirmModal } from "./DeleteConfirmModal";
 
 // ============================================
 export interface SalesPerson {
@@ -31,7 +32,8 @@ export interface SalesPerson {
   }) => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingPerson, setEditingPerson] = useState<SalesPerson | null>(null);
-  
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+
     return (
       <div className="py-4">
         {/* Header */}
@@ -90,7 +92,7 @@ export interface SalesPerson {
                 key={person.id}
                 person={person}
                 onEdit={() => setEditingPerson(person)}
-                onDelete={() => onDeletePerson(person.id)}
+                onDelete={() => setDeletingId(person.id)}
               />
             ))}
           </div>
@@ -115,6 +117,18 @@ export interface SalesPerson {
             }}
           />
         )}
+
+         {/* Delete Confirmation Modal */}
+      {deletingId && (
+        <DeleteConfirmModal
+          personName={salesPersons.find((p) => p.id === deletingId)?.name || ""}
+          onConfirm={async () => {
+            await onDeletePerson(deletingId);
+            setDeletingId(null);
+          }}
+          onCancel={() => setDeletingId(null)}
+        />
+      )}
       </div>
     );
   };

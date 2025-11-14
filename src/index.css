@@ -146,7 +146,10 @@
     @apply bg-transparent text-secondary border-[1px] border-secondary hover:bg-tertiary-3;
   }
   .btn-error {
-    @apply bg-error text-white hover:bg-primary-1/90;
+    @apply bg-error text-white hover:bg-error/90;
+  }
+  .border {
+    @apply border border-[1px] border-secondary ;
   }
 
   .btn-outline {

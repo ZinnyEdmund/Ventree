@@ -145,7 +145,7 @@ export const SalesPersonModal: React.FC<SalesPersonModalProps> = ({
             </div>
 
             <article className="w-full flex justify-end">
-            <div className="flex w-1/2 gap-3 pt-4">
+            <div className="flex flex-col w-full md:w-1/2 md:flex-row gap-3 pt-4">
               <button
                 type="button"
                 onClick={onClose}

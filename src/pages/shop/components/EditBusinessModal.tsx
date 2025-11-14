@@ -102,18 +102,18 @@ export const EditBusinessModal: React.FC<EditBusinessModalProps> = ({
             />
 
             <article className="w-full flex justify-end">
-              <div className="flex w-full md:w-1/2 gap-3 pt-4">
+            <div className="flex flex-col w-full md:w-1/2 md:flex-row gap-3 pt-4">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                  className="flex-1 btn btn-tertiary"
                   disabled={loading}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 disabled:opacity-50"
+                  className="flex-1 btn btn-primary"
                   disabled={loading}
                 >
                   {loading ? "Saving..." : "Save Changes"}

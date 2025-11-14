@@ -60,7 +60,7 @@ export default function Notifications() {
   ]);
 
   return (
-    <div className="flex justify-center min-h-screen py-6 px-3 md:px-10">
+    <div className="flex justify-center py-6">
       <div className="w-full">
         <h2 className="h3 text-secondary mb-1">
           Notifications

@@ -95,7 +95,7 @@ export function SelectInputBorderless({
         name={name}
         value={value}
         onChange={onChange}
-        className="appearance-none border-none bg-gray rounded-full py-2 w-full "
+        className="appearance-none border-none bg-gray rounded-full py-2 w-full focus:outline-none"
         required={required}
       >
         <option value="">{placeholder}</option>
