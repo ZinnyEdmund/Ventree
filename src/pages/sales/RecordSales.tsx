@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Minus, Check, Plus } from "lucide-react";
+import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 
 export default function RecordSale() {
@@ -101,15 +101,17 @@ export default function RecordSale() {
                 onChange={(e) => setName(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleAdd()}
                 placeholder="Put the name of good"
-                className="w-full bg-white body-small border border-secondary-4 rounded-md px-3 py-3 pr-10 password-small focus:ring-2 focus:ring-tertiary outline-none"
+                className="w-full bg-white body-small border border-secondary-4 rounded-md px-3 py-4 pr-10 password-small focus:ring-2 focus:ring-tertiary outline-none"
               />
 
-              {/* Icon inside input box */}
-              <img
-                src="/images/arrowdown.svg"
-                alt="dropdown arrow"
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 pointer-events-none"
-              />
+              {/* Icon inside input box, positioned on the right */}
+              <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
+                <Icon
+                  icon="ic:outline-arrow-drop-down-circle"
+                  width="22"
+                  height="22"
+                />
+              </span>
             </div>
 
             <button
@@ -118,7 +120,7 @@ export default function RecordSale() {
             >
               {/* Mobile icon only */}
               <span className="block sm:hidden">
-                <Plus size={18} />
+                <Icon icon="ic:outline-add" width="24" height="24" />
               </span>
 
               {/* Text only on larger screens */}
@@ -134,15 +136,11 @@ export default function RecordSale() {
           <h3 className="h4 text-secondary">List of Goods</h3>
           {!isEditing ? (
             <button onClick={() => setIsEditing(true)}>
-              {/* <Edit2 size={18} className="text-gray-600 hover:text-gray-800" /> */}
-              <img src="/public/images/Vector.svg" alt="Edit button" />
+              <Icon icon="ic:outline-edit" width="24" height="24" />
             </button>
           ) : (
             <button onClick={() => setIsEditing(false)}>
-              <Check
-                size={20}
-                className="text-green-600 hover:text-green-700"
-              />
+              <Icon icon="ic:outline-done" width="24" height="24" />
             </button>
           )}
         </div>
@@ -225,10 +223,7 @@ export default function RecordSale() {
                           onClick={() => handleDelete(index)}
                           className="text-error hover:text-red-700"
                         >
-                          <Minus
-                            size={18}
-                            className="border border-error rounded-full p-0.5"
-                          />
+                          <Icon icon="ion:remove-circle-outline" width="24" height="24" />
                         </button>
                       </td>
                     )}
