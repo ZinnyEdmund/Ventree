@@ -80,15 +80,6 @@ export default function Settings() {
           <h1 className="h3 text-black">Settings</h1>
         </header>
 
-        {/* <div className="w-[48px] h-[48px] rounded-full bg-secondary justify-center flex items-center">
-                      <Icon
-                        icon="octicon:person-16"
-                        width="24"
-                        height="24"
-                        className="text-primary-1"
-                      />
-                    </div> */}
-
         {/* Settings Links */}
         {settingsLinks.map(({ section, items }) => (
           <section key={section} className="mb-6">
