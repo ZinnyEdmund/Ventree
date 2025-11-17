@@ -8,6 +8,7 @@ export default function RecordSale() {
   >([]);
   const [name, setName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<string>("");
 
   const handleAdd = () => {
     if (!name.trim()) {
@@ -33,7 +34,6 @@ export default function RecordSale() {
   };
 
   const handlePriceChange = (index: number, value: string) => {
-    // Remove commas and parse
     const cleanValue = value.replace(/,/g, "");
     const num = Number(cleanValue);
 
@@ -70,7 +70,17 @@ export default function RecordSale() {
       return;
     }
 
+    if (!paymentMethod) {
+      toast.error("Please select a payment method.");
+      return;
+    }
+
     toast.success("Sale Recorded Successfully!");
+    // Reset form after successful recording
+    setGoods([]);
+    setPaymentMethod("");
+    setIsEditing(false);
+    setName("");
   };
 
   const total = goods.reduce((sum, item) => {
@@ -93,7 +103,6 @@ export default function RecordSale() {
           </label>
 
           <div className="flex items-center gap-2">
-            {/* Wrapper for input + icon */}
             <div className="relative flex-1">
               <input
                 type="text"
@@ -104,7 +113,6 @@ export default function RecordSale() {
                 className="w-full bg-white body-small border border-secondary-4 rounded-md px-3 py-4 pr-10 password-small focus:ring-2 focus:ring-tertiary outline-none"
               />
 
-              {/* Icon inside input box, positioned on the right */}
               <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
                 <Icon
                   icon="ic:outline-arrow-drop-down-circle"
@@ -118,12 +126,9 @@ export default function RecordSale() {
               onClick={handleAdd}
               className="btn btn-primary body px-4 sm:px-8 rounded-md border active:border-tertiary transition flex items-center justify-center gap-2"
             >
-              {/* Mobile icon only */}
               <span className="block sm:hidden">
                 <Icon icon="ic:outline-add" width="24" height="24" />
               </span>
-
-              {/* Text only on larger screens */}
               <span className="hidden sm:inline">Add</span>
             </button>
           </div>
@@ -145,7 +150,6 @@ export default function RecordSale() {
           )}
         </div>
 
-        {/* Table for all screens */}
         <div className="rounded-md overflow-hidden bg-white">
           <table className="w-full text-left border-collapse">
             <thead className="bg-white">
@@ -223,7 +227,11 @@ export default function RecordSale() {
                           onClick={() => handleDelete(index)}
                           className="text-error hover:text-red-700"
                         >
-                          <Icon icon="ion:remove-circle-outline" width="24" height="24" />
+                          <Icon
+                            icon="ion:remove-circle-outline"
+                            width="24"
+                            height="24"
+                          />
                         </button>
                       </td>
                     )}
@@ -236,13 +244,59 @@ export default function RecordSale() {
       </main>
 
       {/* Total */}
-      <div className="flex items-center justify-between py-6 sm:py-4">
+      <div className="flex items-center justify-between py-6 sm:py-4 border-t border-secondary-4">
         <p className="body text-secondary">TOTAL</p>
         <p className="h4 text-secondary">₦{total.toLocaleString()}</p>
       </div>
 
+      {/* Payment Method */}
+      <div className="mt-6 sm:mt-4 mb-8">
+        <h3 className="h4 text-secondary mb-4">Payment Method</h3>
+        <div className="flex items-center justify-between gap-3 sm:gap-4 px-4 py-6 border border-accent-g2 rounded-md bg-white">
+          {["Credit", "Cash", "Transfer"].map((method) => (
+            <label
+              key={method}
+              className={`flex items-center justify-center gap-2 cursor-pointer transition ${
+                paymentMethod === method
+              }`}
+            >
+              <label className="flex items-center cursor-pointer gap-2">
+                <input
+                  type="radio"
+                  name="paymentMethod"
+                  value={method}
+                  checked={paymentMethod === method}
+                  onChange={(e) => setPaymentMethod(e.target.value)}
+                  className="hidden"
+                />
+
+                <div
+                  className={`
+      w-5 h-5
+      flex items-center justify-center
+      rounded-sm
+      border border-accent-g3 hover:bg-accent-g4
+      ${paymentMethod === method ? "bg-success" : "bg-transparent"}
+    `}
+                >
+                  {paymentMethod === method && (
+                    <span className="text-white">
+                      <Icon icon="stash:check-solid" width="24" height="24" />
+                    </span>
+                  )}
+                </div>
+
+                <span>{method}</span>
+              </label>
+
+              <span className="body text-black">{method}</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
       {/* Record Button */}
-      <div className="flex justify-center mt-8 sm:mt-6">
+      <div className="flex justify-center">
         <button
           onClick={handleRecord}
           className="btn btn-primary w-full sm:w-[50%] rounded-md font-medium border active:border-tertiary transition text-sm"

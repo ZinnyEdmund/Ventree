@@ -15,6 +15,16 @@ export default function Settings() {
 
   const settingsLinks = [
     {
+      section: "Profile",
+      items: [
+        {
+          to: "/change-password",
+          icon:"octicon:person-16",
+          label: "Lota Provisions",
+        },
+      ],
+    },
+    {
       section: "Account",
       items: [
         {
@@ -59,14 +69,13 @@ export default function Settings() {
     <main className="flex justify-center min-h-screen py-6 px-1 md:px-1">
       <article className="w-full bg-white rounded-xl shadow-sm p-6">
         {/* Header */}
-        <header className="flex items-center justify-center relative mb-6">
+        <header className="flex items-center justify-center relative mb-15">
           <Link
             to="/"
             className="absolute left-0 text-black hover:text-gray-800 transition"
             aria-label="Back to home"
           >
-            {/* <Icon icon="ic:outline-arrow-circle-left" width="24" height="24" /> */}
-            <img src="/public/images/leftarrow.svg" alt="Leftarrow" />
+            <img src="/images/leftarrow.svg" alt="Leftarrow" />
           </Link>
           <h1 className="h3 text-black">Settings</h1>
         </header>
@@ -129,18 +138,28 @@ export default function Settings() {
                   onClick={() => toggleNotification(key)}
                   aria-label={`Toggle ${label} notification`}
                   aria-pressed={notifications[key]}
+                  className="
+    w-[65px] h-[36px]
+    rounded-full
+    flex items-center
+    px-1
+    cursor-pointer
+    transition
+    focus:outline-none
+    disabled:opacity-50
+  "
+                  style={{
+                    backgroundColor: notifications[key] ? "#1EC131" : "#A2A3A2",
+                  }}
                 >
-                  <Icon
-                    icon={
-                      notifications[key]
-                        ? "ic:outline-toggle-on"
-                        : "ic:outline-toggle-off"
-                    }
-                    width="50"
-                    height="50"
-                    className={
-                      notifications[key] ? "text-success" : "text-black"
-                    }
+                  <div
+                    className={`
+      w-[28px] h-[28px]
+      bg-white
+      rounded-full
+      transition
+      ${notifications[key] ? "translate-x-7" : "translate-x-0"}
+    `}
                   />
                 </button>
               </div>

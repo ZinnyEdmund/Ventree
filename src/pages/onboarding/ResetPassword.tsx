@@ -1,85 +1,44 @@
 import { useState } from "react";
+import type { FormEvent } from "react"
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
+import { validateBusinessNumber, validatePassword } from "../../components/common/validation";
+import { useFormSubmit } from "../../components/common/formHooks";
 
 export default function ResetPassword() {
   const [businessNumber, setBusinessNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, submit } = useFormSubmit();
 
-  const validateForm = () => {
-    let isValid = true;
+  const validateForm = (): boolean => {
+    const errors = [
+      validateBusinessNumber(businessNumber),
+      validatePassword(password),
+    ].filter(Boolean);
 
-    if (!businessNumber.trim()) {
-      toast.error("Business number is required");
-      isValid = false;
+    if (errors.length > 0) {
+      toast.error(errors[0]!);
+      return false;
     }
-
-    if (!password.trim()) {
-      isValid = false;
-      toast.error("Password is required");
-    } else if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
-      isValid = false;
-    }
-
-    return isValid;
+    return true;
   };
 
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
+  const handleSubmit = async (e?: FormEvent) => {
+    e?.preventDefault();
+    if (!validateForm()) return;
 
-    setIsLoading(true);
-
-    try {
-      // My api call will be here...
-      // const response = await fetch('YOUR_API_ENDPOINT', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify({
-      //     phoneNumber: phoneNumber,
-      //     password: password,
-      //   }),
-      // });
-      //
-      // if (!response.ok) {
-      //   toast.error('Reset failed');
-      // }
-      //
-      // const data = await response.json();
-
-      // Simulating API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      toast.success("Reset successful!");
-
-      //Clears the form after successful reset
-      setBusinessNumber("");
-      setPassword("");
-
-      // Redirect the user to the dashboard(We don't have any yet)
-      // window.location.href = '/dashboard';
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : typeof error === "string"
-          ? error
-          : "Something went wrong. Please try again.";
-      toast.error(message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleKeyPress = (e: { key: string }) => {
-    if (e.key === "Enter") {
-      handleSubmit();
-    }
+    await submit(
+      async () => {
+        // YOUR API CALL HERE
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      },
+      "Password reset successful!",
+      () => {
+        setBusinessNumber("");
+        setPassword("");
+        // window.location.href = '/login';
+      }
+    );
   };
 
   return (
@@ -88,47 +47,48 @@ export default function ResetPassword() {
         <h2 className="h3 pb-2">Reset Password</h2>
       </div>
 
-      <div className="w-full max-w-sm mx-auto space-y-6">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm mx-auto space-y-6">
         <div>
-          <label className="block text-black label md:mb-1 mb-2">
-            Business Name
-          </label>
+          <label className="block text-black label md:mb-1 mb-2">Business Name</label>
           <input
             type="text"
             value={businessNumber}
             onChange={(e) => setBusinessNumber(e.target.value)}
-            onKeyPress={handleKeyPress}
             placeholder="Put your business number"
-            className="w-full border border-secondary-4 body-small rounded-lg p-3 outline-none"
+            className="w-full text-black border border-secondary-4 focus:ring-2 focus:ring-tertiary body rounded-lg p-3 outline-none"
             disabled={isLoading}
           />
         </div>
+
         <div>
-          <label className="block text-black label md:mb-1 mb-2">
-            Password
-          </label>
+          <label className="block text-black label md:mb-1 mb-2">New Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Put your password"
-            className="w-full border border-secondary-4 body-small rounded-md p-2 outline-none"
+            placeholder="Put your new password"
+            className="w-full border border-secondary-4 focus:ring-2 focus:ring-tertiary body rounded-lg p-3 outline-none"
             disabled={isLoading}
           />
         </div>
-      </div>
 
-      <div className="w-full max-w-sm mx-auto space-y-4">
         <button
-          onClick={handleSubmit}
-          className="w-full btn btn-primary flex items-center justify-center border active:border-tertiary gap-2"
+          type="submit"
+          className="w-full btn btn-primary flex items-center justify-center gap-2 border active:border-tertiary"
           disabled={isLoading}
         >
-          {isLoading ? "Logging in" : "Reset"}
+          {isLoading ? "Resetting" : "Reset Password"}
           {isLoading && <LoaderCircle width={20} className="animate-spin" />}
         </button>
-      </div>
+      </form>
+
+      <p className="password-small text-subtle-text text-center max-w-sm mx-auto">
+        Remember your password?{" "}
+        <a href="/login" className="link-small text-black underline">
+          Back to Login
+        </a>
+      </p>
     </section>
   );
 }
+
