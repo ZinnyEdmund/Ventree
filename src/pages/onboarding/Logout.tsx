@@ -50,7 +50,7 @@ export default function Logout() {
                 disabled={isLoading}
                 className="flex-1 py-3 px-6 btn btn-primary border active:border-tertiary flex items-center justify-center gap-2"
               >
-                {isLoading ? "Logging out..." : "Log Out"}
+                {isLoading ? "Logging out" : "Log Out"}
                 {isLoading && <LoaderCircle width={20} className="animate-spin" />}
               </button>
               <button

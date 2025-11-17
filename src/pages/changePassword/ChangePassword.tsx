@@ -138,7 +138,7 @@ export default function ChangePasswordForm() {
               disabled={isLoading}
               className="w-full md:w-80 px-6 btn btn-primary rounded-md flex items-center justify-center gap-2"
             >
-              {isLoading ? "Saving..." : "Save"}
+              {isLoading ? "Saving" : "Save"}
               {isLoading && <LoaderCircle width={20} className="animate-spin" />}
             </button>
           </div>
