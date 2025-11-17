@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { Check, LoaderCircle } from 'lucide-react';
-import ProfileInput from '../../components/ui/editProfileInput';
-import ProfileSelect from '../../components/ui/editProfileSelect';
-import { 
-  useProfileFormSubmit, 
-  useProfileFormValidation 
-} from '../../components/common/profileValidation';
+import { useState } from "react";
+import { LoaderCircle } from "lucide-react";
+import { Icon } from "@iconify/react";
+import ProfileInput from "../../components/ui/editProfileInput";
+import ProfileSelect from "../../components/ui/editProfileSelect";
+import {
+  useProfileFormSubmit,
+  useProfileFormValidation,
+} from "../../components/common/profileValidation";
 
 type FormState = {
   ownerName: string;
@@ -17,21 +18,22 @@ type FormState = {
 export default function EditProfile() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState<FormState>({
-    ownerName: 'Owner',
-    businessName: 'Owner Provisions',
-    phoneNumber: '08134775647',
-    businessType: 'Provision Store',
+    ownerName: "Owner",
+    businessName: "Owner Provisions",
+    phoneNumber: "08134775647",
+    businessType: "Provision Store",
   });
 
   const { isLoading, submit } = useProfileFormSubmit();
-  const { errors, validateField, validateAll, clearErrors } = useProfileFormValidation();
+  const { errors, validateField, validateAll, clearErrors } =
+    useProfileFormValidation();
 
   // Business type options
   const businessTypeOptions = [
-    { value: 'Provision Store', label: 'Provision Store' },
-    { value: 'Grocery Store', label: 'Grocery Store' },
-    { value: 'Supermarket', label: 'Supermarket' },
-    { value: 'Mini Mart', label: 'Mini Mart' },
+    { value: "Provision Store", label: "Provision Store" },
+    { value: "Grocery Store", label: "Grocery Store" },
+    { value: "Supermarket", label: "Supermarket" },
+    { value: "Mini Mart", label: "Mini Mart" },
   ];
 
   // ==========================================
@@ -57,16 +59,18 @@ export default function EditProfile() {
     */
 
     // Temporary placeholder
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise((resolve) => setTimeout(resolve, 1500));
   };
 
   // ==========================================
   // HANDLERS
   // ==========================================
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     // Validate field on change
     validateField(name, value);
   };
@@ -74,7 +78,7 @@ export default function EditProfile() {
   const handleSubmit = async () => {
     // Validate all fields
     const isValid = validateAll(formData);
-    
+
     if (!isValid) {
       return; // Don't submit if validation fails
     }
@@ -82,7 +86,7 @@ export default function EditProfile() {
     // Submit form
     await submit(
       () => updateProfile(formData),
-      'Profile updated successfully!',
+      "Profile updated successfully!",
       () => {
         setShowSuccess(true);
         clearErrors();
@@ -92,10 +96,10 @@ export default function EditProfile() {
 
   const handleCancel = () => {
     setFormData({
-      ownerName: 'Owner',
-      businessName: 'Owner Provisions',
-      phoneNumber: '08134775647',
-      businessType: 'Provision Store',
+      ownerName: "Owner",
+      businessName: "Owner Provisions",
+      phoneNumber: "08134775647",
+      businessType: "Provision Store",
     });
     clearErrors();
   };
@@ -157,7 +161,7 @@ export default function EditProfile() {
               type="button"
               onClick={handleCancel}
               disabled={isLoading}
-              className="w-full md:w-80 px-6 btn btn-tertiary rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full md:w-80 px-6 btn btn-tertiary rounded-md  border active:border-tertiary"
             >
               Cancel
             </button>
@@ -166,8 +170,9 @@ export default function EditProfile() {
               type="button"
               onClick={handleSubmit}
               disabled={isLoading}
-              className="w-full md:w-80 px-6 btn btn-primary rounded-md flex items-center justify-center gap-2">
-              {isLoading ? 'Saving...' : 'Save Changes'}
+              className="w-full md:w-80 px-6 btn btn-primary rounded-md flex items-center justify-center gap-2  border active:border-tertiary"
+            >
+              {isLoading ? "Saving" : "Save"}
               {isLoading && <LoaderCircle className="w-5 h-5 animate-spin" />}
             </button>
           </div>
@@ -176,17 +181,26 @@ export default function EditProfile() {
         {/* Success Modal */}
         {showSuccess && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl">
-              <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                <Check className="w-10 h-10 text-white" strokeWidth={3} />
+            <div className="bg-white rounded-2xl p-12 max-w-md w-full text-center shadow-2xl min-h-[380px] flex flex-col items-center justify-center">
+              {/* Icon */}
+              <div className="w-20 h-20 bg-success rounded-full flex items-center justify-center mx-auto mb-8">
+                <span className="text-white">
+                  <Icon icon="stash:check-solid" width="48" height="48" />
+                </span>
               </div>
-              <h2 className="text-xl font-bold text-gray-900 mb-2">Success!</h2>
-              <p className="text-gray-600 mb-6">
-                Your profile has been updated successfully
-              </p>
+
+              {/* Text Content */}
+              <div className="mb-10">
+                <h2 className="h4 text-secondary mb-3">Success!</h2>
+                <p className="body text-secondary">
+                  Sales Recorded Successfully
+                </p>
+              </div>
+
+              {/* Button */}
               <button
                 onClick={() => setShowSuccess(false)}
-                className="w-full px-6 py-3 bg-green-500 text-white rounded-lg font-medium hover:bg-green-600 transition-colors"
+                className="w-full max-w-[200px] px-8 py-3 btn btn-sec border active:border-tertiary"
               >
                 Done
               </button>

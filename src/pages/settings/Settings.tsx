@@ -18,7 +18,7 @@ export default function Settings() {
       section: "Profile",
       items: [
         {
-          to: "/change-password",
+          to: "/editprofile",
           icon:"octicon:person-16",
           label: "Lota Provisions",
         },

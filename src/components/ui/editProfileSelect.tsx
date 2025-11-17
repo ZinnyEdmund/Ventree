@@ -38,8 +38,13 @@ const ProfileSelect: React.FC<ProfileSelectProps> = ({
             </option>
           ))}
         </select>
-
-        <Icon icon="ic:outline-arrow-drop-down-circle" width="22" height="22" />
+        <div className="absolute right-3 top-1/2 -translate-y-1/2">
+          <Icon
+            icon="ic:outline-arrow-drop-down-circle"
+            width="22"
+            height="22"
+          />
+        </div>
       </div>
 
       {/* {error && (
