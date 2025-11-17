@@ -1,12 +1,12 @@
-import { useState, type ReactNode } from "react";
-import { Icon } from "@iconify/react"
+import { useState, useMemo } from "react";
+import { Icon } from "@iconify/react";
 
 type Notification = {
   id: number;
   title: string;
   message: string;
   time: string;
-  icons?: ReactNode;
+  icon: string;
 };
 
 export default function Notifications() {
@@ -17,7 +17,7 @@ export default function Notifications() {
       message:
         "You have only 3 packs of sugar left. Restock soon to avoid running out.",
       time: "10 mins ago",
-      icons: <Icon icon="ic:outline-trending-down" width="24" height="24" />,
+      icon: "ic:outline-trending-down",
     },
     {
       id: 2,
@@ -25,7 +25,7 @@ export default function Notifications() {
       message:
         "Attendant Chika sold 4 cartons of Malt today. ₦6,000 added to total sales.",
       time: "1 hr ago",
-      icons: <Icon icon="ic:outline-playlist-add" width="24" height="24" />,
+      icon: "ic:outline-playlist-add",
     },
     {
       id: 3,
@@ -33,14 +33,14 @@ export default function Notifications() {
       message:
         "View your total profit, loss, and sales performance for October.",
       time: "Yesterday",
-      icons: <Icon icon="ic:outline-assessment" width="24" height="24" />,
+      icon: "ic:outline-assessment",
     },
     {
       id: 4,
       title: "Reminder",
       message: "Keep your sales safe even without internet.",
       time: "2 days ago",
-      icons: <Icon icon="ic:outline-timer"width="24" height="24" />,
+      icon: "ic:outline-timer",
     },
     {
       id: 5,
@@ -48,50 +48,56 @@ export default function Notifications() {
       message:
         "Attendant Chika sold 4 cartons of Malt today. ₦6,000 added to total sales.",
       time: "1 hr ago",
-      icons: <Icon icon="ic:outline-playlist-add" width="24" height="24" />,
+      icon: "ic:outline-playlist-add",
     },
     {
       id: 6,
       title: "Reminder",
       message: "Keep your sales safe even without internet.",
       time: "2 days ago",
-      icons: <Icon icon="ic:outline-timer" width="24" height="24" />,
+      icon: "ic:outline-timer",
     },
   ]);
 
-  return (
-    <div className="flex justify-center py-6">
-      <div className="w-full">
-        <h2 className="h3 text-secondary mb-1">
-          Notifications
-        </h2>
-        <p className="text-black body-small mb-5">
-          Stay updated with your shop activities
-        </p>
-        <div className="flex flex-col gap-4">
-          {notifications.map((note) => (
-            <div
-              key={note.id}
-              className="flex flex-col sm:flex-row sm:items-start gap-2 sm:gap-4 md:p-6 p-4 bg-white rounded-xl hover:shadow-md transition-shadow"
-            >
-              <div className="flex items-center justify-center w-8 h-8 bg-primary-5 rounded-full">
-                {note.icons}
-              </div>
+  const notificationList = useMemo(
+    () =>
+      notifications.map((note) => (
+        <article
+          key={note.id}
+          className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white rounded-xl hover:shadow-md transition-shadow"
+        >
+          <div className="shrink-0 flex items-center justify-center w-8 h-8 bg-primary-5 rounded-full">
+            <Icon icon={note.icon} width="24" height="24" aria-hidden="true" />
+          </div>
 
-              <div className="flex-1">
-                <h3 className="h4 text-black mb-1 text-sm md:text-base">
-                  {note.title}
-                </h3>
-                <p className="text-subtle-text body-small md:text-sm">
-                  {note.message}
-                </p>
-              </div>
-              <span className="text-subtle-text body-small sm:text-sm whitespace-nowrap">
-                {note.time}
-              </span>
-            </div>
-          ))}
-        </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="h4 text-black mb-1 text-sm md:text-base">
+              {note.title}
+            </h3>
+            <p className="text-subtle-text body-small md:text-sm">
+              {note.message}
+            </p>
+          </div>
+
+          <span className="shrink-0 text-subtle-text body-small md:text-sm whitespace-nowrap">
+            {note.time}
+          </span>
+        </article>
+      )),
+    [notifications]
+  );
+
+  return (
+    <div className="flex justify-center py-6 px-4">
+      <div className="w-full max-w-5xl">
+        <header className="mb-5">
+          <h1 className="h3 text-secondary mb-1">Notifications</h1>
+          <p className="text-black body-small">
+            Stay updated with your shop activities
+          </p>
+        </header>
+
+        <div className="flex flex-col gap-4">{notificationList}</div>
       </div>
     </div>
   );
