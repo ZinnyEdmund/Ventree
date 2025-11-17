@@ -18,6 +18,7 @@ import { BusinessInsightsPage } from "../pages/insights";
 import { ExpensesPage } from "../pages/expenses";
 import ChangePassword from "../pages/changePassword/ChangePassword";
 import EditProfile from "../pages/profile/EditProfile";
+import Feedback from "../pages/feedback/Feedback";
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
 const LoginPage = lazy(() => import("../pages/onboarding/Login"));
@@ -68,6 +69,7 @@ function AppRoutes() {
 
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/editprofile" element={<EditProfile />} />
+          <Route path="/feedback" element={<Feedback />} />
           
         </Routes>
       </BrowserRouter>

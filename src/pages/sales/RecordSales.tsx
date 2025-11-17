@@ -1,39 +1,47 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
 
+interface Good {
+  name: string;
+  quantity: string;
+  price: number;
+}
+
+type PaymentMethod = "Credit" | "Cash" | "Transfer";
+
 export default function RecordSale() {
-  const [goods, setGoods] = useState<
-    { name: string; quantity: string; price: number }[]
-  >([]);
+  const [goods, setGoods] = useState<Good[]>([]);
   const [name, setName] = useState("");
   const [isEditing, setIsEditing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<string>("");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod | "">("");
 
-  const handleAdd = () => {
+  const handleAdd = useCallback(() => {
     if (!name.trim()) {
       toast.error("Please enter the name of the good.");
       return;
     }
 
-    const newGood = { name: name.trim(), quantity: "", price: 0 };
-    setGoods([...goods, newGood]);
+    const newGood: Good = { name: name.trim(), quantity: "", price: 0 };
+    setGoods((prev) => [...prev, newGood]);
     setName("");
 
     if (goods.length === 0) setIsEditing(true);
-  };
+  }, [name, goods.length]);
 
-  const handleDelete = (index: number) => {
-    setGoods(goods.filter((_, i) => i !== index));
-  };
+  const handleDelete = useCallback((index: number) => {
+    setGoods((prev) => prev.filter((_, i) => i !== index));
+  }, []);
 
-  const handleQuantityChange = (index: number, value: string) => {
-    const updated = [...goods];
-    updated[index].quantity = value;
-    setGoods(updated);
-  };
+  const handleQuantityChange = useCallback((index: number, value: string) => {
+    setGoods((prev) => {
+      const updated = [...prev];
+      updated[index].quantity = value;
+      return updated;
+    });
+  }, []);
 
-  const handlePriceChange = (index: number, value: string) => {
+  const handlePriceChange = useCallback((index: number, value: string) => {
     const cleanValue = value.replace(/,/g, "");
     const num = Number(cleanValue);
 
@@ -42,17 +50,19 @@ export default function RecordSale() {
       return;
     }
 
-    const updated = [...goods];
-    updated[index].price = value === "" ? 0 : num;
-    setGoods(updated);
-  };
+    setGoods((prev) => {
+      const updated = [...prev];
+      updated[index].price = value === "" ? 0 : num;
+      return updated;
+    });
+  }, []);
 
-  const formatPrice = (price: number) => {
+  const formatPrice = useCallback((price: number) => {
     if (price === 0) return "";
     return price.toLocaleString();
-  };
+  }, []);
 
-  const handleRecord = () => {
+  const handleRecord = useCallback(() => {
     if (goods.length === 0) {
       toast.error("Please add at least one item before recording a sale.");
       return;
@@ -76,20 +86,21 @@ export default function RecordSale() {
     }
 
     toast.success("Sale Recorded Successfully!");
-    // Reset form after successful recording
     setGoods([]);
     setPaymentMethod("");
     setIsEditing(false);
     setName("");
-  };
+  }, [goods, paymentMethod]);
 
   const total = goods.reduce((sum, item) => {
     const qty = parseFloat(item.quantity) || 0;
     return sum + qty * item.price;
   }, 0);
 
+  const paymentMethods: PaymentMethod[] = ["Credit", "Cash", "Transfer"];
+
   return (
-    <section className="flex flex-col w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8">
+    <section className="flex flex-col w-full max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8">
       {/* Header */}
       <div className="relative mb-8 sm:mb-6">
         <span className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
@@ -97,6 +108,7 @@ export default function RecordSale() {
             icon="iconamoon:arrow-left-6-circle-light"
             width="24"
             height="24"
+            aria-hidden="true"
           />
         </span>
 
@@ -108,13 +120,14 @@ export default function RecordSale() {
       {/* Input for adding goods */}
       <div className="mb-8 sm:mb-6 flex flex-col items-center">
         <div className="w-full max-w-md">
-          <label className="block link-small text-black mb-2">
+          <label htmlFor="good-name" className="block link-small text-black mb-2">
             Name of Good
           </label>
 
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
               <input
+                id="good-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -128,6 +141,7 @@ export default function RecordSale() {
                   icon="ic:outline-arrow-drop-down-circle"
                   width="22"
                   height="22"
+                  aria-hidden="true"
                 />
               </span>
             </div>
@@ -135,9 +149,10 @@ export default function RecordSale() {
             <button
               onClick={handleAdd}
               className="btn btn-primary body px-4 sm:px-8 rounded-md border active:border-tertiary transition flex items-center justify-center gap-2"
+              aria-label="Add good"
             >
               <span className="block sm:hidden">
-                <Icon icon="ic:outline-add" width="24" height="24" />
+                <Icon icon="ic:outline-add" width="24" height="24" aria-hidden="true" />
               </span>
               <span className="hidden sm:inline">Add</span>
             </button>
@@ -149,15 +164,16 @@ export default function RecordSale() {
       <main className="mb-8 sm:mb-6">
         <div className="flex items-center justify-between mb-4 sm:mb-3">
           <h3 className="h4 text-secondary">List of Goods</h3>
-          {!isEditing ? (
-            <button onClick={() => setIsEditing(true)}>
-              <Icon icon="ic:outline-edit" width="24" height="24" />
-            </button>
-          ) : (
-            <button onClick={() => setIsEditing(false)}>
-              <Icon icon="ic:outline-done" width="24" height="24" />
-            </button>
-          )}
+          <button 
+            onClick={() => setIsEditing(!isEditing)}
+            aria-label={isEditing ? "Done editing" : "Edit goods"}
+          >
+            <Icon 
+              icon={isEditing ? "ic:outline-done" : "ic:outline-edit"} 
+              width="24" 
+              height="24" 
+            />
+          </button>
         </div>
 
         <div className="rounded-md overflow-hidden bg-white">
@@ -205,7 +221,8 @@ export default function RecordSale() {
                           onChange={(e) =>
                             handleQuantityChange(index, e.target.value)
                           }
-                          placeholder=""
+                          placeholder="0"
+                          aria-label={`Quantity for ${item.name}`}
                           className="w-full border border-secondary-3 text-black rounded-lg px-2 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                         />
                       ) : (
@@ -222,7 +239,8 @@ export default function RecordSale() {
                           onChange={(e) =>
                             handlePriceChange(index, e.target.value)
                           }
-                          placeholder=""
+                          placeholder="0"
+                          aria-label={`Price for ${item.name}`}
                           className="w-full border border-secondary-3 text-black rounded-lg px-2 py-2 text-sm focus:ring-2 focus:ring-green-500 outline-none"
                         />
                       ) : (
@@ -236,6 +254,7 @@ export default function RecordSale() {
                         <button
                           onClick={() => handleDelete(index)}
                           className="text-error hover:text-red-700"
+                          aria-label={`Delete ${item.name}`}
                         >
                           <Icon
                             icon="ion:remove-circle-outline"
@@ -263,41 +282,36 @@ export default function RecordSale() {
       <div className="mt-6 sm:mt-4 mb-8">
         <h3 className="h4 text-secondary mb-4">Payment Method</h3>
         <div className="flex items-center justify-between gap-3 sm:gap-4 px-4 py-6 border border-accent-g2 rounded-md bg-white">
-          {["Credit", "Cash", "Transfer"].map((method) => (
+          {paymentMethods.map((method) => (
             <label
               key={method}
-              className={`flex items-center justify-center gap-2 cursor-pointer transition ${
-                paymentMethod === method
-              }`}
+              className="flex items-center cursor-pointer gap-2"
             >
-              <label className="flex items-center cursor-pointer gap-2">
-                <input
-                  type="radio"
-                  name="paymentMethod"
-                  value={method}
-                  checked={paymentMethod === method}
-                  onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="hidden"
-                />
+              <input
+                type="radio"
+                name="paymentMethod"
+                value={method}
+                checked={paymentMethod === method}
+                onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
+                className="hidden"
+              />
 
-                <div
-                  className={`
-      w-5 h-5
-      flex items-center justify-center
-      rounded-sm
-      border border-accent-g3 hover:bg-accent-g4
-      ${paymentMethod === method ? "bg-success" : "bg-transparent"}
-    `}
-                >
-                  {paymentMethod === method && (
-                    <span className="text-white">
-                      <Icon icon="stash:check-solid" width="24" height="24" />
-                    </span>
-                  )}
-                </div>
-
-                <span>{method}</span>
-              </label>
+              <div
+                className={`
+                  w-5 h-5
+                  flex items-center justify-center
+                  rounded-sm
+                  border border-accent-g3 hover:bg-accent-g4
+                  transition
+                  ${paymentMethod === method ? "bg-success" : "bg-transparent"}
+                `}
+              >
+                {paymentMethod === method && (
+                  <span className="text-white">
+                    <Icon icon="stash:check-solid" width="24" height="24" aria-hidden="true" />
+                  </span>
+                )}
+              </div>
 
               <span className="body text-black">{method}</span>
             </label>
