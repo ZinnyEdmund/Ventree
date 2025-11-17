@@ -19,7 +19,7 @@ export default function Settings() {
       items: [
         {
           to: "/editprofile",
-          icon:"octicon:person-16",
+          icon: "octicon:person-16",
           label: "Lota Provisions",
         },
       ],
@@ -75,7 +75,11 @@ export default function Settings() {
             className="absolute left-0 text-black hover:text-gray-800 transition"
             aria-label="Back to home"
           >
-            <img src="/images/leftarrow.svg" alt="Leftarrow" />
+            <Icon
+              icon="iconamoon:arrow-left-6-circle-light"
+              width="24"
+              height="24"
+            />
           </Link>
           <h1 className="h3 text-black">Settings</h1>
         </header>
