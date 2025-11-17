@@ -4,8 +4,12 @@ import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 import TextInput from "../../components/ui/textInput";
 import PasswordInput from "../../components/ui/passwordInput";
-import { validateBusinessNumber, validatePassword } from "../../components/common/validation";
+import {
+  validateBusinessNumber,
+  validatePassword,
+} from "../../components/common/validation";
 import { useFormSubmit } from "../../components/common/formHooks";
+import { Icon } from "@iconify/react";
 
 export default function Login() {
   const [businessNumber, setBusinessNumber] = useState("");
@@ -45,11 +49,22 @@ export default function Login() {
 
   return (
     <section className="w-full flex flex-col md:space-y-16 space-y-16 justify-between md:p-6">
+      <span className="absolute left-6 top-6 hidden md:inline">
+        <Icon
+          icon="iconamoon:arrow-left-6-circle-light"
+          width="24"
+          height="24"
+        />
+      </span>
+
       <div className="text-center text-black">
         <h2 className="h3 pb-2">Welcome Back!</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm mx-auto space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm mx-auto space-y-6"
+      >
         <TextInput
           label="Business Name"
           placeholder="Put your business number"

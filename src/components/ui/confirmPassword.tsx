@@ -42,7 +42,7 @@ const ConfirmPassword: React.FC<ConfirmPasswordProps> = ({
         {/* Toggle password visibility */}
         <button
           type="button"
-          className="absolute right-3 top-4 text-gray-500"
+          className="absolute right-3 top-4 text-black"
           onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

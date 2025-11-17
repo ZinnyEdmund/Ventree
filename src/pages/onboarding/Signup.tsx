@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 import { validatePhoneNumber, validatePassword } from "../../components/common/validation";
 import { useFormSubmit } from "../../components/common/formHooks";
+import { Icon } from "@iconify/react";
 
 export default function Signup() {
   const [businessName, setBusinessName] = useState("");
@@ -45,6 +46,13 @@ export default function Signup() {
 
   return (
     <section className="w-full flex flex-col md:space-y-6 space-y-16 justify-between md:p-6">
+            <span className="absolute left-6 top-6 hidden md:inline">
+              <Icon
+                icon="iconamoon:arrow-left-6-circle-light"
+                width="24"
+                height="24"
+              />
+            </span>
       <div className="text-center text-black md:pb-7">
         <h2 className="h3 pb-2">Less Stress</h2>
         <p className="h3">More Business</p>

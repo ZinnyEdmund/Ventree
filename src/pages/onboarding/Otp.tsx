@@ -1,10 +1,11 @@
 import { useState, useRef, useCallback } from "react";
 import type { FormEvent } from "react";
-import type { ClipboardEvent  } from "react";
+import type { ClipboardEvent } from "react";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 import { handleApiError } from "../../components/common/validation";
 import { useFormSubmit } from "../../components/common/formHooks";
+import { Icon } from "@iconify/react";
 
 export default function OtpPage() {
   const [otp, setOtp] = useState<string[]>(Array(5).fill(""));
@@ -26,11 +27,14 @@ export default function OtpPage() {
     }
   }, []);
 
-  const handleKeyDown = useCallback((index: number, e: React.KeyboardEvent) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  }, [otp]);
+  const handleKeyDown = useCallback(
+    (index: number, e: React.KeyboardEvent) => {
+      if (e.key === "Backspace" && !otp[index] && index > 0) {
+        inputRefs.current[index - 1]?.focus();
+      }
+    },
+    [otp]
+  );
 
   const handlePaste = useCallback((e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -48,19 +52,16 @@ export default function OtpPage() {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    
+
     if (otp.some((digit) => !digit)) {
       toast.error("Please enter all 5 digits");
       return;
     }
 
-    await submit(
-      async () => {
-        // YOUR API CALL HERE
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-      },
-      "Phone number verified successfully!"
-    );
+    await submit(async () => {
+      // YOUR API CALL HERE
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+    }, "Phone number verified successfully!");
   };
 
   const handleResendCode = async () => {
@@ -80,14 +81,25 @@ export default function OtpPage() {
 
   return (
     <section className="w-full flex flex-col md:space-y-6 space-y-16 justify-between md:p-6">
+      <span className="absolute left-6 top-6 hidden md:inline">
+        <Icon
+          icon="iconamoon:arrow-left-6-circle-light"
+          width="24"
+          height="24"
+        />
+      </span>
       <div className="text-center">
         <h2 className="h3 text-black mb-2">Confirm Your Phone Number</h2>
         <p className="body-small text-subtle mb-8">
-          An SMS with an OTP code has been sent to your phone number. Kindly input the OTP in the boxes below.
+          An SMS with an OTP code has been sent to your phone number. Kindly
+          input the OTP in the boxes below.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-12">
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col items-center space-y-12"
+      >
         <div className="flex justify-center gap-3">
           {otp.map((digit, index) => (
             <input

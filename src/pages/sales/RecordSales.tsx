@@ -91,8 +91,18 @@ export default function RecordSale() {
   return (
     <section className="flex flex-col w-full max-w-5xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8">
       {/* Header */}
-      <div className="text-center mb-8 sm:mb-6">
-        <h2 className="h4 font-semibold text-secondary">Sale 000001</h2>
+      <div className="relative mb-8 sm:mb-6">
+        <span className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
+          <Icon
+            icon="iconamoon:arrow-left-6-circle-light"
+            width="24"
+            height="24"
+          />
+        </span>
+
+        <h2 className="h4 font-semibold text-secondary text-center">
+          Sale 000001
+        </h2>
       </div>
 
       {/* Input for adding goods */}
