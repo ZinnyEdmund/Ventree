@@ -70,8 +70,8 @@ function AppRoutes() {
 
           <Route path="/change-password" element={<ChangePassword />} />
           <Route path="/editprofile" element={<EditProfile />} />
-          <Route path="/feedback" element={<Feedback />} />
-          <Route path="/aboutapp" element={<AboutApp />} />
+          <Route path="/help-center" element={<Feedback />} />
+          <Route path="/about-us" element={<AboutApp />} />
           
         </Routes>
       </BrowserRouter>
