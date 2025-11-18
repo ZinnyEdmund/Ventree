@@ -36,9 +36,7 @@ export default function EditProfile() {
     { value: "Mini Mart", label: "Mini Mart" },
   ];
 
-  // ==========================================
   // API CALL FUNCTION
-  // ==========================================
   const updateProfile = async (_data: FormState) => {
     // TODO: Replace with your actual API endpoint
     /*
@@ -62,9 +60,7 @@ export default function EditProfile() {
     await new Promise((resolve) => setTimeout(resolve, 1500));
   };
 
-  // ==========================================
   // HANDLERS
-  // ==========================================
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
@@ -161,7 +157,7 @@ export default function EditProfile() {
               type="button"
               onClick={handleCancel}
               disabled={isLoading}
-              className="w-full md:w-80 px-6 btn btn-tertiary rounded-md  border active:border-tertiary"
+              className="w-full md:w-80 btn btn-tertiary rounded-md  border active:border-tertiary"
             >
               Cancel
             </button>
@@ -170,7 +166,7 @@ export default function EditProfile() {
               type="button"
               onClick={handleSubmit}
               disabled={isLoading}
-              className="w-full md:w-80 px-6 btn btn-primary rounded-md flex items-center justify-center gap-2  border active:border-tertiary"
+              className="w-full md:w-80 btn btn-primary rounded-md flex items-center justify-center gap-2  border active:border-tertiary"
             >
               {isLoading ? "Saving" : "Save"}
               {isLoading && <LoaderCircle className="w-5 h-5 animate-spin" />}
@@ -192,9 +188,6 @@ export default function EditProfile() {
               {/* Text Content */}
               <div className="mb-10">
                 <h2 className="h4 text-secondary mb-3">Success!</h2>
-                <p className="body text-secondary">
-                  Sales Recorded Successfully
-                </p>
               </div>
 
               {/* Button */}
