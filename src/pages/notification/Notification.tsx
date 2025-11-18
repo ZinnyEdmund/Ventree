@@ -88,7 +88,7 @@ export default function Notifications() {
   );
 
   return (
-    <div className="flex justify-center py-6 px-4">
+    <div className="flex justify-center py-6 px-4 bg-bg">
       <div className="w-full max-w-5xl">
         <header className="mb-5">
           <h1 className="h3 text-secondary mb-1">Notifications</h1>
