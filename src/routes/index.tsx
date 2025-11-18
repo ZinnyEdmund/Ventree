@@ -17,6 +17,7 @@ import Settings from "../pages/settings/Settings"
 import { BusinessInsightsPage } from "../pages/insights";
 import { ExpensesPage } from "../pages/expenses";
 import ChangePassword from "../pages/changePassword/ChangePassword";
+import ProfilePage from "../pages/profile/ProfilePage"
 import EditProfile from "../pages/profile/EditProfile";
 import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
@@ -69,6 +70,7 @@ function AppRoutes() {
           </Route>
 
           <Route path="/change-password" element={<ChangePassword />} />
+          <Route path="/myprofile" element={<ProfilePage />} />
           <Route path="/editprofile" element={<EditProfile />} />
           <Route path="/help-center" element={<Feedback />} />
           <Route path="/about-us" element={<AboutApp />} />
