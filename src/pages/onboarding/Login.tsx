@@ -1,24 +1,34 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
+import { useDispatch } from "react-redux";
 import TextInput from "../../components/ui/textInput";
 import PasswordInput from "../../components/ui/passwordInput";
 import {
-  validateBusinessNumber,
   validatePassword,
+  validatePhoneNumber,
+  formatNigerianPhoneNumber,
 } from "../../components/common/validation";
-import { useFormSubmit } from "../../components/common/formHooks";
 import { Icon } from "@iconify/react";
+import { useLoginMutation } from "../../services/auth.service";
+import { login } from "../../state/Store/authSlice";
+import type { AppDispatch } from "../../state/store";
+import { handleApiError } from "../../lib/errorHandler";
 
 export default function Login() {
-  const [businessNumber, setBusinessNumber] = useState("");
+  const [shopName, setShopName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const { isLoading, submit } = useFormSubmit();
+  const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const [loginMutation, { isLoading }] = useLoginMutation();
 
   const validateForm = (): boolean => {
     const errors = [
-      validateBusinessNumber(businessNumber),
+      !shopName.trim() ? "Shop name is required" : null,
+      validatePhoneNumber(phoneNumber),
       validatePassword(password),
     ].filter(Boolean);
 
@@ -33,18 +43,48 @@ export default function Login() {
     e?.preventDefault();
     if (!validateForm()) return;
 
-    await submit(
-      async () => {
-        // YOUR API CALL HERE
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-      },
-      "Login successful!",
-      () => {
-        setBusinessNumber("");
-        setPassword("");
-        // window.location.href = '/dashboard';
+    // Format phone number to Nigerian international format
+    const formattedPhoneNumber = formatNigerianPhoneNumber(phoneNumber);
+
+    try {
+      const result = await loginMutation({
+        shopName: shopName.trim(),
+        phoneNumber: formattedPhoneNumber,
+        password,
+      }).unwrap();
+
+      if (result.success && result.data) {
+        const { accessToken, refreshToken, role, owner, shop } = result.data;
+        
+        // Construct user object from API response
+        const user = {
+          id: shop?.id || '',
+          shopName: shop?.shopName || '',
+          phoneNumber: owner?.phoneNumber || shop?.phoneNumber || '',
+          ownerName: owner?.name || '',
+          role: role as 'owner' | 'staff',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+        
+        // Dispatch login action to store tokens and user
+        dispatch(login({ user, accessToken, refreshToken }));
+        
+        toast.success(result.data.message || "Login successful!");
+        
+        // Use requestAnimationFrame to ensure state is updated and persisted before navigation
+        requestAnimationFrame(() => {
+          // Redirect based on user role
+          if (user.role === 'staff') {
+            navigate('/record-sales', { replace: true });
+          } else {
+            navigate('/home', { replace: true });
+          }
+        });
       }
-    );
+    } catch (error: any) {
+      handleApiError(error);
+    }
   };
 
   return (
@@ -66,10 +106,18 @@ export default function Login() {
         className="w-full max-w-sm mx-auto space-y-6"
       >
         <TextInput
-          label="Business Name"
-          placeholder="Put your business number"
-          value={businessNumber}
-          onChange={(e) => setBusinessNumber(e.target.value)}
+          label="Shop Name"
+          placeholder="Enter your shop name"
+          value={shopName}
+          onChange={(e) => setShopName(e.target.value)}
+          disabled={isLoading}
+        />
+
+        <TextInput
+          label="Phone Number"
+          placeholder="Enter your phone number"
+          value={phoneNumber}
+          onChange={(e) => setPhoneNumber(e.target.value)}
           disabled={isLoading}
         />
 

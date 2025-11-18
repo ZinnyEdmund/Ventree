@@ -1,32 +1,79 @@
-// services/baseQueryWithLogout.ts
+/**
+ * Base query with automatic token refresh and logout on 401 errors
+ * 
+ * This base query:
+ * - Automatically adds the access token to request headers
+ * - Handles 401 errors by attempting to refresh the token
+ * - Logs out the user if token refresh fails
+ * - Retries the original request after successful token refresh
+ */
 import { fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import type { BaseQueryFn } from '@reduxjs/toolkit/query';
-import { logout } from '../state/Store/authSlice';
+import type { BaseQueryFn, FetchArgs, FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { logout, setAccessToken, getRefreshToken } from '../state/Store/authSlice';
 import type { RootState } from '../state/store';
+import type { RefreshTokenResponse } from '../types/general';
+import { STORAGE_KEYS } from '../constants/storage';
 
-const baseUrl = import.meta.env.VITE_APP_BASE_URL
+const baseUrl = import.meta.env.VITE_APP_BASE_URL;
+
+const baseQuery = fetchBaseQuery({
+  baseUrl: `${baseUrl}`,
+  prepareHeaders: (headers, { getState }) => {
+    const accessToken = (getState() as RootState).auth?.accessToken;
+    if (accessToken) {
+      headers.set('Authorization', `Bearer ${accessToken}`);
+    }
+    return headers;
+  },
+});
+
 export const baseQueryWithLogout: BaseQueryFn<
-  any,
+  string | FetchArgs,
   unknown,
-  unknown
+  FetchBaseQueryError
 > = async (args, api, extraOptions) => {
-  const baseQuery = fetchBaseQuery({
-    baseUrl: `${baseUrl}/auth`,
-    prepareHeaders: (headers, { getState }) => {
-      const token = (getState() as RootState).auth?.token || localStorage.getItem('token');
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  });
+  let result = await baseQuery(args, api, extraOptions);
 
-  const result = await baseQuery(args, api, extraOptions);
-  console.log('Base query result:', result);
-
+  // If we get a 401, try to refresh the token
   if (result.error && result.error.status === 401) {
-    api.dispatch(logout());
-    localStorage.removeItem('token');
+    const refreshToken = getRefreshToken();
+    
+    if (refreshToken) {
+      // Try to refresh the token
+      const refreshResult = await baseQuery(
+        {
+          url: '/auth/refresh',
+          method: 'POST',
+          body: { refreshToken },
+        },
+        api,
+        extraOptions
+      );
+
+      if (refreshResult.data) {
+        const data = refreshResult.data as RefreshTokenResponse;
+        
+        // Update the access token in Redux
+        if (data.responseObject?.accessToken) {
+          api.dispatch(setAccessToken(data.responseObject.accessToken));
+        }
+        
+        // Update refresh token in localStorage if a new one is provided
+        if (data.responseObject?.refreshToken) {
+          localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, data.responseObject.refreshToken);
+        }
+
+        // Retry the original request with the new token
+        result = await baseQuery(args, api, extraOptions);
+      } else {
+        // Refresh failed, logout the user
+        api.dispatch(logout());
+        return result;
+      }
+    } else {
+      // No refresh token, logout the user
+      api.dispatch(logout());
+    }
   }
 
   return result;
