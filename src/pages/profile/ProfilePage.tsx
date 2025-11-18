@@ -1,5 +1,5 @@
-import { useCallback } from "react";
 import { Icon } from "@iconify/react";
+import { useNavigate } from "react-router-dom";
 
 interface ProfileData {
   shopName: string;
@@ -10,6 +10,7 @@ interface ProfileData {
 }
 
 export default function OwnerProfile() {
+  const navigate = useNavigate();
   const profileData: ProfileData = {
     shopName: "Lota Provisions",
     shopType: "Retailer",
@@ -18,15 +19,14 @@ export default function OwnerProfile() {
     address: "Gariki Market",
   };
 
-  const handleEditProfile = useCallback(() => {
-    // TODO: Implement edit profile functionality
-    console.log("Edit profile clicked");
-  }, []);
+    const handleEditProfile = () => {
+    navigate("/edit-profile"); // Adjust the path to match your route
+  };
 
-  const handleBack = useCallback(() => {
-    // TODO: Implement back navigation
-    console.log("Back clicked");
-  }, []);
+  const handleBack = () => {
+    navigate(-1); // Go back to previous page
+  };
+
 
   return (
     <div className="min-h-screen bg-white py-4 sm:py-6 px-4">
@@ -67,7 +67,6 @@ export default function OwnerProfile() {
               <dd className="body text-black text-right min-w-0 text-sm sm:text-base">
                 <a 
                   href={`tel:${profileData.phoneNumber}`}
-                  className="hover:text-blue-600 transition-colors"
                 >
                   {profileData.phoneNumber}
                 </a>
