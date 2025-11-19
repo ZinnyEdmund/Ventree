@@ -14,6 +14,7 @@ import Settings from "../pages/settings/Settings"
 import { BusinessInsightsPage } from "../pages/insights";
 import { ExpensesPage } from "../pages/expenses";
 import ChangePassword from "../pages/changePassword/ChangePassword";
+import ProfilePage from "../pages/profile/ProfilePage"
 import EditProfile from "../pages/profile/EditProfile";
 import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
