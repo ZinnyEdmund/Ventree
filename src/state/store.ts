@@ -10,6 +10,7 @@ import skipReducer from "./Store/skipSlice";
 import authReducer from "./Store/authSlice";
 import { authApi } from "../services/auth.service";
 import { userApi } from "../services/user.service";
+import { staffApi } from "../services/staff.service";
 
 // Transform to exclude _initialized from persistence
 // _initialized is a runtime flag and shouldn't be persisted
@@ -43,6 +44,7 @@ export const reducers = combineReducers({
   auth: persistReducer(persistConfig, authReducer),
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
+  [staffApi.reducerPath]: staffApi.reducer,
 });
 
 export const store = configureStore({
@@ -56,6 +58,7 @@ export const store = configureStore({
     })
       .concat(authApi.middleware)
       .concat(userApi.middleware)
+      .concat(staffApi.middleware)
 });
 
 export const persistor = persistStore(store);

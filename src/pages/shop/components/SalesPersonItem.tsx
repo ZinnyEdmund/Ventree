@@ -19,7 +19,8 @@ export const SalesPersonItem: React.FC<SalesPersonItemProps> = ({
   return (
     <div className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
       <div className="flex-1">
-        <h3 className="font-medium text-gray-900 mb-2">{person.name}</h3>
+        <h3 className="font-medium text-gray-900 mb-1">{person.name}</h3>
+        <p className="text-sm text-gray-600 mb-2">{person.phoneNumber}</p>
         <div className="flex flex-wrap gap-2">
           {person.canAddSales && (
             <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 text-green-700 text-xs rounded">

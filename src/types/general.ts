@@ -2,6 +2,40 @@
 export type Role = "owner" | "staff";
 export type ServiceProviderRole = "INDIVIDUAL" | "COMPANY";
 
+// --- Staff Types
+export interface Staff {
+  _id: string;
+  staffName: string;
+  phoneNumber: string;
+  role: string;
+  isActive: boolean;
+  shopId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateStaffInput {
+  shopId: string;
+  staffName: string;
+  phoneNumber: string;
+  password: string;
+  role?: string;
+}
+
+export interface UpdateStaffInput {
+  staffName?: string;
+  phoneNumber?: string;
+  password?: string;
+  role?: string;
+  isActive?: boolean;
+}
+
+export interface StaffResponse {
+  success: boolean;
+  message: string;
+  data: Staff;
+}
+
 // --- User Types
 export interface User {
   id: string; 

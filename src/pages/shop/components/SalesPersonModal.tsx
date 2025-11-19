@@ -3,27 +3,32 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
-import type { SalesPerson } from "./SalesTeamCard";
+import type { SalesPerson, SalesPersonFormValues } from "./SalesTeamCard";
 import TextInput from "../../../components/ui/textInput";
 import { X } from "lucide-react";
 import PasswordInput from "../../../components/ui/passwordInput";
+import { validatePhoneNumber } from "../../../components/common/validation";
 
 // ============================================
 
 interface SalesPersonModalProps {
   person: SalesPerson | null;
   onClose: () => void;
-  onSave: (person: Omit<SalesPerson, "id">) => Promise<void>;
+  onSave: (person: SalesPersonFormValues) => Promise<void>;
+  isSaving?: boolean;
 }
 
 export const SalesPersonModal: React.FC<SalesPersonModalProps> = ({
   person,
   onClose,
   onSave,
+  isSaving = false,
 }) => {
   const [formData, setFormData] = useState({
     name: person?.name || "",
+    phoneNumber: person?.phoneNumber || "",
     password: "",
+    confirmPassword: "",
     canAddSales: person?.canAddSales ?? true,
     canAddExpense: person?.canAddExpense ?? false,
   });
@@ -37,21 +42,51 @@ export const SalesPersonModal: React.FC<SalesPersonModalProps> = ({
       return;
     }
 
+    if (!formData.phoneNumber.trim()) {
+      toast.error("Phone number is required");
+      return;
+    }
+
+    const phoneError = validatePhoneNumber(formData.phoneNumber);
+    if (phoneError) {
+      toast.error(phoneError);
+      return;
+    }
+
     if (!person && !formData.password) {
       toast.error("Password is required");
       return;
     }
 
+    if (formData.password && formData.password.length < 6) {
+      toast.error("Password must be at least 6 characters");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
     setLoading(true);
     try {
-      await onSave(formData);
+      const payload: SalesPersonFormValues = {
+        name: formData.name.trim(),
+        phoneNumber: formData.phoneNumber.trim(),
+        password: formData.password,
+        canAddSales: formData.canAddSales,
+        canAddExpense: formData.canAddExpense,
+      };
+      await onSave(payload);
       toast.success(
         person
           ? "Sales person updated successfully!"
           : "Sales person added successfully!"
       );
     } catch (error) {
-      toast.error("Failed to save sales person");
+      if (!(error as { __handled?: boolean })?.__handled) {
+        toast.error("Failed to save sales person");
+      }
     } finally {
       setLoading(false);
     }
@@ -88,6 +123,16 @@ export const SalesPersonModal: React.FC<SalesPersonModalProps> = ({
               required
             />
 
+            <TextInput
+              label="Phone Number"
+              value={formData.phoneNumber}
+              onChange={(e) =>
+                setFormData({ ...formData, phoneNumber: e.target.value })
+              }
+              placeholder="08012345678"
+              required
+            />
+
             <PasswordInput
               label="Password"
               value={formData.password}
@@ -99,9 +144,9 @@ export const SalesPersonModal: React.FC<SalesPersonModalProps> = ({
 
             <PasswordInput
               label="Confirm Password"
-              value={formData.password}
+              value={formData.confirmPassword}
               onChange={(e) =>
-                setFormData({ ...formData, password: e.target.value })
+                setFormData({ ...formData, confirmPassword: e.target.value })
               }
               noFP={false}
             />
@@ -150,16 +195,16 @@ export const SalesPersonModal: React.FC<SalesPersonModalProps> = ({
                 type="button"
                 onClick={onClose}
                 className="flex-1 btn btn-tertiary"
-                disabled={loading}
+                disabled={loading || isSaving}
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 className="flex-1 btn btn-primary"
-                disabled={loading}
+                disabled={loading || isSaving}
               >
-                {loading ? "Saving..." : "Save"}
+                {loading || isSaving ? "Saving..." : "Save"}
               </button>
             </div>
             </article>
