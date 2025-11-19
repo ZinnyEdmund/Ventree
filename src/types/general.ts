@@ -138,10 +138,21 @@ export interface LoginResponse {
   };
 }
 
+// Refresh token response - may use either BaseResponse format or direct data format
 export interface RefreshTokenResponse extends BaseResponse<{
   accessToken: string;
   refreshToken: string;
 }> {}
+
+// Alternative format (if API returns data directly like LoginResponse)
+export interface RefreshTokenDataResponse {
+  success: boolean;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    message?: string;
+  };
+}
 
 // --- Cloudinary
 export interface CloudinaryUploadResponse {

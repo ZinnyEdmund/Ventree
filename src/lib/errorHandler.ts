@@ -10,7 +10,7 @@
  * @param error - The error object from RTK Query or API call
  */
 import { toast } from "sonner";
-import { STORAGE_KEYS } from "../constants/storage";
+import { clearAuthTokens } from "./cookies";
 
 export function handleApiError(error: unknown): void {
   console.error("API Error:", error);
@@ -32,8 +32,8 @@ export function handleApiError(error: unknown): void {
     errorStatus === 401
   ) {
     toast.error("Session expired. Please log in again.");
-    // Clear refreshToken from localStorage
-    localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
+    // Clear all tokens from cookies
+    clearAuthTokens();
     // Redux Persist will handle clearing the persisted auth state
     window.location.href = "/login";
     return;

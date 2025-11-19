@@ -14,7 +14,6 @@ import Settings from "../pages/settings/Settings"
 import { BusinessInsightsPage } from "../pages/insights";
 import { ExpensesPage } from "../pages/expenses";
 import ChangePassword from "../pages/changePassword/ChangePassword";
-import ProfilePage from "../pages/profile/ProfilePage"
 import EditProfile from "../pages/profile/EditProfile";
 import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
@@ -30,8 +29,6 @@ const LogoutPage = lazy(() => import("../pages/onboarding/Logout"));
 
 
 function AppRoutes() {
-  // Redux Persist handles rehydration automatically via PersistGate
-  // No need to manually load from localStorage
 
   return (
     <Suspense fallback={<LoadingSpinner />}>

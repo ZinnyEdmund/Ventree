@@ -4,17 +4,38 @@ import {
   type Action,
   type ThunkAction,
 } from "@reduxjs/toolkit";
-import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, persistReducer, persistStore } from "redux-persist";
+import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, persistReducer, persistStore, createTransform } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import skipReducer from "./Store/skipSlice";
 import authReducer from "./Store/authSlice";
 import { authApi } from "../services/auth.service";
 import { userApi } from "../services/user.service";
 
+// Transform to exclude _initialized from persistence
+// _initialized is a runtime flag and shouldn't be persisted
+const authTransform = createTransform(
+  // transform state on its way to being serialized and persisted
+  (inboundState: any) => {
+    const { _initialized, ...stateToPersist } = inboundState;
+    return stateToPersist;
+  },
+  // transform state being rehydrated
+  (outboundState: any) => {
+    return { ...outboundState, _initialized: false };
+  },
+  // define which reducers this transform gets called for
+  { whitelist: ['auth'] }
+);
+
 const persistConfig = {
   key: "auth",
   storage,
-  whitelist: ["auth"], // Only persist auth state
+  // When using persistReducer on a specific reducer, whitelist refers to state properties
+  // We want to persist user and isLoggedIn, but not _initialized
+  // The transform will handle excluding _initialized, so we don't need an explicit whitelist
+  transforms: [authTransform],
+  // Note: accessToken is not in auth state (stored in cookies)
+  // Only user and isLoggedIn will be persisted (not _initialized, which is excluded by transform)
 };
 
 export const reducers = combineReducers({
