@@ -4,13 +4,24 @@ import {
   type Action,
   type ThunkAction,
 } from "@reduxjs/toolkit";
-import { FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER, persistReducer, persistStore, createTransform } from "redux-persist";
+import {
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+  persistReducer,
+  persistStore,
+  createTransform,
+} from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import skipReducer from "./Store/skipSlice";
 import authReducer from "./Store/authSlice";
 import { authApi } from "../services/auth.service";
 import { userApi } from "../services/user.service";
 import { staffApi } from "../services/staff.service";
+import { stocksApi } from "../services/stocks.service";
 
 // Transform to exclude _initialized from persistence
 // _initialized is a runtime flag and shouldn't be persisted
@@ -25,7 +36,7 @@ const authTransform = createTransform(
     return { ...outboundState, _initialized: false };
   },
   // define which reducers this transform gets called for
-  { whitelist: ['auth'] }
+  { whitelist: ["auth"] }
 );
 
 const persistConfig = {
@@ -45,6 +56,7 @@ export const reducers = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [staffApi.reducerPath]: staffApi.reducer,
+  [stocksApi.reducerPath]: stocksApi.reducer
 });
 
 export const store = configureStore({
@@ -59,6 +71,7 @@ export const store = configureStore({
       .concat(authApi.middleware)
       .concat(userApi.middleware)
       .concat(staffApi.middleware)
+      .concat(stocksApi.middleware)
 });
 
 export const persistor = persistStore(store);

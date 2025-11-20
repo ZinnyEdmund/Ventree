@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithLogout } from './baseQueryLogout';
-import type { CreateStaffInput, Staff, StaffResponse, UpdateStaffInput } from '../types/general';
+import type { CreateStaffInput, StaffResponse, UpdateStaffInput } from '../types/general';
 
 export const staffApi = createApi({
   reducerPath: 'staffApi',

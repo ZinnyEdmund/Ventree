@@ -1,5 +1,4 @@
 import { useState } from "react";
-import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
@@ -39,20 +38,26 @@ export default function Login() {
     return true;
   };
 
-  const handleSubmit = async (e?: FormEvent) => {
-    e?.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!validateForm()) return;
 
-    // Format phone number to Nigerian international format
-    const formattedPhoneNumber = formatNigerianPhoneNumber(phoneNumber);
-
     try {
+      // Format phone number to Nigerian international format
+      const formattedPhoneNumber = formatNigerianPhoneNumber(phoneNumber);
+
+      console.log({
+        shopName: shopName.trim(),
+        phoneNumber: formattedPhoneNumber,
+        password})
+
       const result = await loginMutation({
         shopName: shopName.trim(),
         phoneNumber: formattedPhoneNumber,
         password,
       }).unwrap();
-
+      console.log(result)
+      // console.log('Login result:', result);
       if (result.success && result.data) {
         const { accessToken, refreshToken, role, owner, shop } = result.data;
         
@@ -82,7 +87,8 @@ export default function Login() {
           }
         });
       }
-    } catch (error: any) {
+    } catch (error) {
+      console.log(error)
       handleApiError(error);
     }
   };

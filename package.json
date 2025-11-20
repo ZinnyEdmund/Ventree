@@ -13,6 +13,7 @@
     "@iconify/react": "^6.0.2",
     "@reduxjs/toolkit": "^2.10.1",
     "@tailwindcss/vite": "^4.1.16",
+    "@tanstack/react-table": "^8.21.3",
     "autoprefixer": "^10.4.21",
     "axios": "^1.13.2",
     "clsx": "^2.1.1",

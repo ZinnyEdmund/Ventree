@@ -112,7 +112,7 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </div>
             <div>
               <h2 className="text-white text-sm font-medium">
-                {user ? truncateTextWithStringMethod(user.ownerName || user.shopName, 15) : "User"}
+                {user ? truncateTextWithStringMethod(user.shopName || user.shopName, 15) : "User"}
               </h2>
               <p className="text-accent text-xs capitalize">{user?.role || "User"}</p>
             </div>
@@ -120,12 +120,21 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
           {/* Navigation */}
           <nav className="space-y-2 mb-6">
-            {isOwner && (
+            {/* {isOwner && ( */}
               <MobileNavLink
                 to="/home"
                 icon="ic:outline-house"
                 label="Home"
                 isActive={isActive("/home")}
+                onClick={onClose}
+              />
+            {/* )} */}
+            {isOwner && (
+              <MobileNavLink
+                to="/setup-shop"
+                icon="ic:outline-store"
+                label="Set Up Shop"
+                isActive={isActive("/setup-shop")}
                 onClick={onClose}
               />
             )}
@@ -151,15 +160,6 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 icon="ic:outline-assessment"
                 label="Business Insights"
                 isActive={isActive("/insights")}
-                onClick={onClose}
-              />
-            )}
-            {isOwner && (
-              <MobileNavLink
-                to="/setup-shop"
-                icon="ic:outline-store"
-                label="Set Up Shop"
-                isActive={isActive("/setup-shop")}
                 onClick={onClose}
               />
             )}
@@ -287,7 +287,7 @@ function DesktopHeader({
 
             <div>
               <h2 className="text-xs">
-                {user ? truncateTextWithStringMethod(user.ownerName || user.shopName, 15) : "User"}
+                {user ? truncateTextWithStringMethod(user.shopName, 15) : "User"}
               </h2>
               <p className="text-accent text-xs capitalize">{user?.role || "User"}</p>
             </div>
@@ -332,7 +332,7 @@ function DesktopSidebar() {
       </div>
 
       <nav className="flex-1 space-y-3 w-full">
-        {isOwner && (
+        {/* {isOwner && ( */}
           <SidebarItem
             to="/home"
             icon={
@@ -343,6 +343,19 @@ function DesktopSidebar() {
               />
             }
             label="Home"
+          />
+        {/* )} */}
+        {isOwner && (
+          <SidebarItem
+            to="/setup-shop"
+            icon={
+              <Icon
+                icon="ic:outline-store"
+                width="24"
+                height="24"
+              />
+            }
+            label="Set Up Shop"
           />
         )}
         {isOwner && (
@@ -382,19 +395,7 @@ function DesktopSidebar() {
             label="Business Insights"
           />
         )}
-        {isOwner && (
-          <SidebarItem
-            to="/setup-shop"
-            icon={
-              <Icon
-                icon="ic:outline-store"
-                width="24"
-                height="24"
-              />
-            }
-            label="Set Up Shop"
-          />
-        )}
+        
         {isOwner && (
           <SidebarItem
             to="/notification"

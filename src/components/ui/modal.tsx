@@ -31,7 +31,7 @@ const Modal: React.FC<ModalProps> = ({
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
       <div
         className={clsx(
-          "relative bg-white rounded-xl shadow-lg p-6 transition-all w-2/3 md:w-1/3",
+          " relative bg-white rounded-xl shadow-lg p-6 transition-all w-4/5 md:w-1/3",
         )}
       >
         {/* Close button */}
@@ -71,12 +71,15 @@ const Modal: React.FC<ModalProps> = ({
               />
             </div>
           </div>
-        ) : status === "smiley" ? (
-          <div className="flex justify-center items-center h-20 mb-4">
+        ) : status === "error" ? (
+          <div className="flex justify-center items-center h-20 ">
             {/* Outer Octagon */}
-            <div className="relative w-20 h-20 bg-[#FFB7031A] rotate-25 [clip-path:polygon(30%_0%,70%_0%,100%_30%,100%_70%,70%_100%,30%_100%,0%_70%,0%_30%)] flex items-center justify-center">
-              {/* Icon */}
-                <Icon icon="fa6-solid:face-smile" width="48" className="text-supporting -rotate-25" />
+            <div className="relative w-20 h-20 bg-error-bg rounded-full flex items-center justify-center">
+              {/* Inner Octagon */}
+              <div className="w-14 h-14 bg-error rounded-full  flex items-center justify-center">
+                {/* Icon */}
+                <X className="text-white" size={28} />
+              </div>
             </div>
           </div>
         ) : status === "emoji" ? (

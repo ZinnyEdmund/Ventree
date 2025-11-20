@@ -86,13 +86,8 @@ export const baseQueryWithLogout: BaseQueryFn<
         let newAccessToken: string | undefined;
         let newRefreshToken: string | undefined;
 
-        // Check if it's BaseResponse format (responseObject)
-        if ('responseObject' in data && data.responseObject) {
-          newAccessToken = data.responseObject.accessToken;
-          newRefreshToken = data.responseObject.refreshToken;
-        }
         // Check if it's data format (like LoginResponse)
-        else if ('data' in data && data.data) {
+         if ('data' in data && data.data) {
           newAccessToken = data.data.accessToken;
           newRefreshToken = data.data.refreshToken;
         }

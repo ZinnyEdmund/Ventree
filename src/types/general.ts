@@ -133,8 +133,7 @@ export interface ResetPasswordRequest {
 export interface BaseResponse<T = unknown> {
   success: boolean;
   message: string;
-  responseObject: T;
-  statusCode: number;
+  data: T;
 }
 
 // --- Auth Responses
@@ -208,4 +207,49 @@ export interface CloudinaryUploadResponse {
   url: string;
   secure_url: string;
   original_filename: string;
+}
+
+// --- Stocks
+export interface Stocks {
+  _id: string;
+  shopId: string;
+  name: string;
+  category: string;
+  sku: string;
+  costPrice: number;
+  sellingPrice: number;
+  initialQuantity: number;
+  availableQuantity: number;
+  soldQuantity: number;
+  damagedQuantity: number;
+  returnedQuantity: number;
+  reorderLevel: number;
+  reorderQuantity: number;
+  unit: string;
+  images: string[];
+  tags: string[];
+  isActive: boolean;
+  isLowStock: boolean;
+  isOutOfStock: boolean;
+  createdBy: string;
+  createdAt: string;  // or Date
+  updatedAt: string;  // or Date
+  __v: number;
+}
+
+export interface CreateProductDto {
+  name: string;
+  category: string;
+  costPrice: number;
+  sellingPrice: number;
+  initialQuantity: number;
+  unit: string;            // e.g., "kg", "liters", "pieces"
+  reorderLevel: number;    // threshold for stock alerts
+}
+
+export interface InventoryData {
+  items: Stocks[];
+  total: number;
+  page: number;
+  pages: number;
 }
