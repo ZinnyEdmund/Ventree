@@ -10,8 +10,8 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="px-15">
-      <div className="bg-white rounded-lg max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="md:px-15">
+      <div className="md:bg-white rounded-lg max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-18">
           {/* Logo - Left */}
           <div className="flex items-center shrink-0">
