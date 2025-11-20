@@ -12,13 +12,13 @@ import { useFormSubmit } from "../../components/common/formHooks";
 import { Icon } from "@iconify/react";
 
 export default function Login() {
-  const [businessNumber, setBusinessNumber] = useState("");
+  const [businessName, setBusinessName] = useState("");
   const [password, setPassword] = useState("");
   const { isLoading, submit } = useFormSubmit();
 
   const validateForm = (): boolean => {
     const errors = [
-      validateBusinessNumber(businessNumber),
+      validateBusinessNumber(businessName),
       validatePassword(password),
     ].filter(Boolean);
 
@@ -40,7 +40,7 @@ export default function Login() {
       },
       "Login successful!",
       () => {
-        setBusinessNumber("");
+        setBusinessName("");
         setPassword("");
         // window.location.href = '/dashboard';
       }
@@ -68,8 +68,8 @@ export default function Login() {
         <TextInput
           label="Business Name"
           placeholder="Put your business number"
-          value={businessNumber}
-          onChange={(e) => setBusinessNumber(e.target.value)}
+          value={businessName}
+          onChange={(e) => setBusinessName(e.target.value)}
           disabled={isLoading}
         />
 

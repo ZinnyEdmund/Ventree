@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 
-// ==========================================
 // FORM SUBMIT HOOK
-// ==========================================
 export const useProfileFormSubmit = () => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,9 +25,7 @@ export const useProfileFormSubmit = () => {
   return { isLoading, submit };
 };
 
-// ==========================================
 // VALIDATION FUNCTIONS
-// ==========================================
 export const validateOwnerName = (value: string): string | null => {
   if (!value.trim()) return "Owner's name is required";
   if (value.trim().length < 2) return "Owner's name must be at least 2 characters";
@@ -61,18 +57,14 @@ export const validateBusinessType = (value: string): string | null => {
   return null;
 };
 
-// ==========================================
 // ERROR HANDLING
-// ==========================================
 export const handleApiError = (error: unknown): string => {
   if (error instanceof Error) return error.message;
   if (typeof error === "string") return error;
   return "Something went wrong. Please try again.";
 };
 
-// ==========================================
 // FORM VALIDATION HOOK
-// ==========================================
 export const useProfileFormValidation = () => {
   const [errors, setErrors] = useState<{
     ownerName: string | null;

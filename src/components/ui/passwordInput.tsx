@@ -20,7 +20,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   return (
     <div className="mb-4 relative">
       {label && (
-        <label className="block mb-2 text-sm font-medium text-gray-700">
+        <label className="block mb-2 text-sm font-medium text-black">
           {label}
         </label> // 👈 only render if passed}
       )}
@@ -30,7 +30,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           type={showPassword ? "text" : "password"}
           value={value}
           onChange={onChange}
-          placeholder="Password"
+          placeholder="Put your password"
           className="w-full px-4 py-3 pr-12 border border-secondary-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-glow"
         />
 
