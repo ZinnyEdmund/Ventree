@@ -1,49 +1,49 @@
 // frontend/services/userApi.ts
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { createApi } from '@reduxjs/toolkit/query/react';
 import type { ClientProfile, ServiceProviderProfile, User } from '../types/general';
+import { baseQueryWithLogout } from './baseQueryLogout';
 
-const baseUrl = import.meta.env.VITE_APP_BASE_URL
 export const userApi = createApi({
   reducerPath: 'userApi',
-  baseQuery: fetchBaseQuery({
-    baseUrl: `${baseUrl}/users`,
-    prepareHeaders: (headers) => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        headers.set('Authorization', `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+  baseQuery: baseQueryWithLogout,
   tagTypes: ['User'],
   endpoints: (builder) => ({
     getAllUsers: builder.query<User[], void>({
-      query: () => `/`,
+      query: () => ({
+        url: '/users',
+        method: 'GET',
+      }),
       providesTags: ['User'],
     }),
 
-    getUserById: builder.query<User, number>({
-      query: (id) => `/${id}`,
+    getUserById: builder.query<User, string>({
+      query: (id) => ({
+        url: `/users/${id}`,
+        method: 'GET',
+      }),
       providesTags: ['User'],
     }),
 
     getMyProfile: builder.query<ClientProfile | ServiceProviderProfile, void>({
-      query: () => `/profile`,
+      query: () => ({
+        url: '/users/profile',
+        method: 'GET',
+      }),
       providesTags: ['User'],
     }),
 
     updateUser: builder.mutation<ClientProfile | ServiceProviderProfile, { data: Partial<ClientProfile> | Partial<ServiceProviderProfile> }>({
       query: ({ data }) => ({
-        url: `/update`,
+        url: '/users/update',
         method: 'PATCH',
         body: data,
       }),
       invalidatesTags: ['User'],
     }),
 
-    deleteUser: builder.mutation<{ success: boolean; message: string }, number>({
+    deleteUser: builder.mutation<{ success: boolean; message: string }, string>({
       query: (id) => ({
-        url: `/${id}`,
+        url: `/users/${id}`,
         method: 'DELETE',
       }),
       invalidatesTags: ['User'],

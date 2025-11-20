@@ -1,13 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Suspense, lazy, useEffect } from "react"; // Added space after import
+import { Suspense, lazy } from "react";
 import LoadingSpinner from "../components/shared/LoadingSpinner";
-import { useDispatch } from "react-redux";
-import { loadAuthFromLocalStorage } from "../state/Store/authSlice";
-import type { AppDispatch } from "../state/store";
 import OnboardWrapper from "../layouts/onboardWrapper";
 import OnboardLayout from "../layouts/onboardLayout";
-import MainWrapper from "../layouts/mainWrapper";
 import MainLayout from "../layouts/mainLayout";
+import ProtectedRoute from "../components/common/ProtectedRoute";
 import { Home } from "../pages/home";
 import { ManageStocks } from "../pages/stocks";
 import RecordSale from "../pages/sales/RecordSales";
@@ -17,7 +14,6 @@ import Settings from "../pages/settings/Settings"
 import { BusinessInsightsPage } from "../pages/insights";
 import { ExpensesPage } from "../pages/expenses";
 import ChangePassword from "../pages/changePassword/ChangePassword";
-import ProfilePage from "../pages/profile/ProfilePage"
 import EditProfile from "../pages/profile/EditProfile";
 import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
@@ -34,11 +30,6 @@ const LogoutPage = lazy(() => import("../pages/onboarding/Logout"));
 
 
 function AppRoutes() {
-  const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(() => {
-    dispatch(loadAuthFromLocalStorage());
-  }, [dispatch]);
 
   return (
     <Suspense fallback={<LoadingSpinner />}>
@@ -60,22 +51,24 @@ function AppRoutes() {
           <Route path="/logout" element={<LogoutPage />} />
 
           {/* Main Application */}
-          <Route path="/" element={<MainWrapper component={<MainLayout />} />}>
-            <Route path="/home" element={<Home />} />
-            <Route path="/stocks" element={<ManageStocks />} />
-            <Route path="/record-sales" element={<RecordSale />} />
-            <Route path="/notification" element={<Notification />} />
-            <Route path="/setup-shop" element={<SetupShopPage />} />
-            <Route path="/settings" element={<Settings />} />
-            <Route path="/insights" element={<BusinessInsightsPage />} />
-            <Route path="/home/expenses" element={<ExpensesPage />} />
+          <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+            {/* Owner-only routes */}
+            <Route path="/home" element={<ProtectedRoute requiredRole="owner"><Home /></ProtectedRoute>} />
+            <Route path="/stocks" element={<ProtectedRoute requiredRole="owner"><ManageStocks /></ProtectedRoute>} />
+            <Route path="/setup-shop" element={<ProtectedRoute requiredRole="owner"><SetupShopPage /></ProtectedRoute>} />
+            <Route path="/settings" element={<ProtectedRoute requiredRole="owner"><Settings /></ProtectedRoute>} />
+            <Route path="/insights" element={<ProtectedRoute requiredRole="owner"><BusinessInsightsPage /></ProtectedRoute>} />
+            <Route path="/home/expenses" element={<ProtectedRoute requiredRole="owner"><ExpensesPage /></ProtectedRoute>} />
+            <Route path="/notification" element={<ProtectedRoute requiredRole="owner"><Notification /></ProtectedRoute>} />
+            
+            {/* Available to both owner and staff */}
+            <Route path="/record-sales" element={<ProtectedRoute><RecordSale /></ProtectedRoute>} />
           </Route>
 
-          <Route path="/change-password" element={<ChangePassword />} />
-          <Route path="/my-profile" element={<ProfilePage />} />
-          <Route path="/edit-profile" element={<EditProfile />} />
-          <Route path="/help-center" element={<Feedback />} />
-          <Route path="/about-us" element={<AboutApp />} />
+          <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
+          <Route path="/editprofile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+          <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
+          <Route path="/aboutapp" element={<ProtectedRoute><AboutApp /></ProtectedRoute>} />
           
         </Routes>
       </BrowserRouter>

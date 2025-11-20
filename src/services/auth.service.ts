@@ -1,10 +1,24 @@
-import { createApi } from '@reduxjs/toolkit/query/react';
-import type { AuthRequest, AuthResponse, LoginResponse, RegisterRequest, ResetPasswordRequest, VerifyRequest } from '../types/general';
-import { baseQueryWithLogout } from './baseQueryLogout';
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import type { 
+  AuthResponse, 
+  LoginResponse, 
+  RegisterRequest, 
+  LoginRequest,
+  VerifyOtpRequest,
+  RefreshTokenRequest,
+  RefreshTokenResponse,
+} from '../types/general';
+
+const baseUrl = import.meta.env.VITE_APP_BASE_URL;
+
+// Base query for auth endpoints (no auth required)
+const baseQuery = fetchBaseQuery({
+  baseUrl: `${baseUrl}/auth`,
+});
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: baseQueryWithLogout,
+  baseQuery,
   endpoints: (builder) => ({
     register: builder.mutation<AuthResponse, RegisterRequest>({
       query: (userData) => ({
@@ -14,7 +28,15 @@ export const authApi = createApi({
       }),
     }),
 
-    login: builder.mutation<LoginResponse, AuthRequest>({
+    verifyOtp: builder.mutation<AuthResponse, VerifyOtpRequest>({
+      query: (data) => ({
+        url: '/verify-otp',
+        method: 'POST',
+        body: data,
+      }),
+    }),
+
+    login: builder.mutation<LoginResponse, LoginRequest>({
       query: (credentials) => ({
         url: '/login',
         method: 'POST',
@@ -22,27 +44,11 @@ export const authApi = createApi({
       }),
     }),
 
-    verifyEmail: builder.mutation<LoginResponse, VerifyRequest>({
-      query: (credentials) => ({
-        url: '/verify-email',
+    refreshToken: builder.mutation<RefreshTokenResponse, RefreshTokenRequest>({
+      query: (data) => ({
+        url: '/refresh',
         method: 'POST',
-        body: credentials,
-      }),
-    }),
-
-    forgotPassword: builder.mutation<LoginResponse, { email: string } >({
-      query: (credentials) => ({
-        url: '/forgot-password',
-        method: 'POST',
-        body: credentials,
-      }),
-    }),
-
-    resetPassword: builder.mutation<LoginResponse, ResetPasswordRequest >({
-      query: (credentials) => ({
-        url: '/reset-password',
-        method: 'POST',
-        body: credentials,
+        body: data,
       }),
     }),
   }),
@@ -51,7 +57,6 @@ export const authApi = createApi({
 export const { 
   useRegisterMutation, 
   useLoginMutation,
-  useVerifyEmailMutation,
-  useForgotPasswordMutation,
-  useResetPasswordMutation
- } = authApi;
+  useVerifyOtpMutation,
+  useRefreshTokenMutation,
+} = authApi;

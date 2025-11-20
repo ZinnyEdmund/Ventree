@@ -1,12 +1,17 @@
 // MainLayout.tsx
 import React, { useState } from "react";
-import { Outlet, NavLink, useLocation } from "react-router-dom";
+import { Outlet, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { NotificationModal } from "./components/NotificationModal";
 import { ProfileModal } from "./components/ProfileModal";
 import { Icon } from "@iconify/react";
 import { SupportModal } from "./components/SupportModal";
 import { useEffect } from "react";
 import { truncateTextWithStringMethod } from "../lib/helper";
+import type { RootState } from "../state/store";
+import { logout } from "../state/Store/authSlice";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../state/store";
 
 // Mobile Header Component
 function MobileHeader({
@@ -60,12 +65,21 @@ interface MobileMenuProps {
 
 function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const location = useLocation();
+  const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const isOwner = user?.role === 'owner';
 
   if (!isOpen) return null;
 
   const currentPathSegment = "/" + location.pathname.split("/")[1];
 
   const isActive = (path: string) => currentPathSegment === path;
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
 
   return (
     <>
@@ -98,28 +112,41 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </div>
             <div>
               <h2 className="text-white text-sm font-medium">
-                {truncateTextWithStringMethod("Okafor Ifeanyi", 15)}
+                {user ? truncateTextWithStringMethod(user.shopName || user.shopName, 15) : "User"}
               </h2>
-              <p className="text-accent text-xs">Client</p>
+              <p className="text-accent text-xs capitalize">{user?.role || "User"}</p>
             </div>
           </div>
 
           {/* Navigation */}
           <nav className="space-y-2 mb-6">
-            <MobileNavLink
-              to="/home"
-              icon="ic:outline-house"
-              label="Home"
-              isActive={isActive("/home")}
-              onClick={onClose}
-            />
-            <MobileNavLink
-              to="/stocks"
-              icon="ic:outline-shopping-bag"
-              label="Manage Stocks"
-              isActive={isActive("/stocks")}
-              onClick={onClose}
-            />
+            {/* {isOwner && ( */}
+              <MobileNavLink
+                to="/home"
+                icon="ic:outline-house"
+                label="Home"
+                isActive={isActive("/home")}
+                onClick={onClose}
+              />
+            {/* )} */}
+            {isOwner && (
+              <MobileNavLink
+                to="/setup-shop"
+                icon="ic:outline-store"
+                label="Set Up Shop"
+                isActive={isActive("/setup-shop")}
+                onClick={onClose}
+              />
+            )}
+            {isOwner && (
+              <MobileNavLink
+                to="/stocks"
+                icon="ic:outline-shopping-bag"
+                label="Manage Stocks"
+                isActive={isActive("/stocks")}
+                onClick={onClose}
+              />
+            )}
             <MobileNavLink
               to="/record-sales"
               icon="ic:outline-add"
@@ -127,44 +154,39 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               isActive={isActive("/record-sales")}
               onClick={onClose}
             />
-            <MobileNavLink
-              to="/insights"
-              icon="ic:outline-assessment"
-              label="Business Insights"
-              isActive={isActive("/insights")}
-              onClick={onClose}
-            />
-            <MobileNavLink
-              to="/setup-shop"
-              icon="ic:outline-store"
-              label="Set Up Shop"
-              isActive={isActive("/setup-shop")}
-              onClick={onClose}
-            />
-            <MobileNavLink
-              to="/notification"
-              icon="ic:outline-notifications"
-              label="Notification"
-              isActive={isActive("/notification")}
-              onClick={onClose}
-            />
+            {isOwner && (
+              <MobileNavLink
+                to="/insights"
+                icon="ic:outline-assessment"
+                label="Business Insights"
+                isActive={isActive("/insights")}
+                onClick={onClose}
+              />
+            )}
+            {isOwner && (
+              <MobileNavLink
+                to="/notification"
+                icon="ic:outline-notifications"
+                label="Notification"
+                isActive={isActive("/notification")}
+                onClick={onClose}
+              />
+            )}
           </nav>
 
           {/* Bottom Actions */}
           <div className="border-t border-subtle pt-4 space-y-2">
-            <MobileNavLink
-              to="/settings"
-              icon="material-symbols-light:settings-rounded"
-              label="Settings"
-              isActive={isActive("/settings")}
-              onClick={onClose}
-            />
+            {isOwner && (
+              <MobileNavLink
+                to="/settings"
+                icon="material-symbols-light:settings-rounded"
+                label="Settings"
+                isActive={isActive("/settings")}
+                onClick={onClose}
+              />
+            )}
             <button
-              onClick={() => {
-                localStorage.removeItem("authToken");
-                sessionStorage.clear();
-                window.location.href = "/login";
-              }}
+              onClick={handleLogout}
               className="flex items-center gap-3 py-3 px-4 rounded-lg transition-colors w-full text-white hover:bg-secondary-4"
             >
               <Icon
@@ -229,6 +251,8 @@ function DesktopHeader({
   setShowProfile: (show: boolean) => void;
   setShowSupport: (show: boolean) => void;
 }) {
+  const { user } = useSelector((state: RootState) => state.auth);
+  
   return (
     <header className="hidden bg-white w-full lg:block border border-secondary-5 rounded-lg">
       <div className="flex items-center bg-transparent justify-between  py-3 px-5 rounded-lg">
@@ -263,9 +287,9 @@ function DesktopHeader({
 
             <div>
               <h2 className="text-xs">
-                {truncateTextWithStringMethod("Okafor Ifeanyi", 15)}
+                {user ? truncateTextWithStringMethod(user.shopName, 15) : "User"}
               </h2>
-              <p className="text-accent text-xs">Client</p>
+              <p className="text-accent text-xs capitalize">{user?.role || "User"}</p>
             </div>
           </div>
           <div>
@@ -291,6 +315,16 @@ function DesktopHeader({
 
 // Desktop Sidebar Component
 function DesktopSidebar() {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const isOwner = user?.role === 'owner';
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigate('/login');
+  };
+
   return (
     <aside className="hidden lg:flex w-[280px] bg-black py-6 px-3 flex-col">
       <div className="text-2xl font-bold mb-8 px-6">
@@ -298,28 +332,45 @@ function DesktopSidebar() {
       </div>
 
       <nav className="flex-1 space-y-3 w-full">
-        <SidebarItem
-          to="/home"
-          icon={
-            <Icon
-              icon="ic:outline-house"
-              width="24"
-              height="24"
-            />
-          }
-          label="Home"
-        />
-        <SidebarItem
-          to="/stocks"
-          icon={
-            <Icon
-              icon="ic:outline-shopping-bag"
-              width="24"
-              height="24"
-            />
-          }
-          label="Manage Stocks"
-        />
+        {/* {isOwner && ( */}
+          <SidebarItem
+            to="/home"
+            icon={
+              <Icon
+                icon="ic:outline-house"
+                width="24"
+                height="24"
+              />
+            }
+            label="Home"
+          />
+        {/* )} */}
+        {isOwner && (
+          <SidebarItem
+            to="/setup-shop"
+            icon={
+              <Icon
+                icon="ic:outline-store"
+                width="24"
+                height="24"
+              />
+            }
+            label="Set Up Shop"
+          />
+        )}
+        {isOwner && (
+          <SidebarItem
+            to="/stocks"
+            icon={
+              <Icon
+                icon="ic:outline-shopping-bag"
+                width="24"
+                height="24"
+              />
+            }
+            label="Manage Stocks"
+          />
+        )}
         <SidebarItem
           to="/record-sales"
           icon={
@@ -331,61 +382,53 @@ function DesktopSidebar() {
           }
           label="Record Sales"
         />
-        <SidebarItem
-          to="/insights"
-          icon={
-            <Icon
-              icon="ic:outline-assessment"
-              width="24"
-              height="24"
-            />
-          }
-          label="Business Insights"
-        />
-        <SidebarItem
-          to="/setup-shop"
-          icon={
-            <Icon
-              icon="ic:outline-store"
-              width="24"
-              height="24"
-            />
-          }
-          label="Set Up Shop"
-        />
-        <SidebarItem
-          to="/notification"
-          icon={
-            <Icon
-              icon="ic:outline-notifications"
-              width="24"
-              height="24"
-            />
-          }
-          label="Notification"
-        />
-      </nav>
-
-      <div className="pt-4 space-y-4 w-full">
-        <div className="border-t border-subtle pt-4 space-y-2">
+        {isOwner && (
           <SidebarItem
-            to="/settings"
+            to="/insights"
             icon={
               <Icon
-                icon="ic:outline-settings"
+                icon="ic:outline-assessment"
                 width="24"
                 height="24"
               />
             }
-            label="Settings"
+            label="Business Insights"
           />
+        )}
+        
+        {isOwner && (
+          <SidebarItem
+            to="/notification"
+            icon={
+              <Icon
+                icon="ic:outline-notifications"
+                width="24"
+                height="24"
+              />
+            }
+            label="Notification"
+          />
+        )}
+      </nav>
+
+      <div className="pt-4 space-y-4 w-full">
+        <div className="border-t border-subtle pt-4 space-y-2">
+          {isOwner && (
+            <SidebarItem
+              to="/settings"
+              icon={
+                <Icon
+                  icon="ic:outline-settings"
+                  width="24"
+                  height="24"
+                />
+              }
+              label="Settings"
+            />
+          )}
           <SidebarItem
             to="/logout"
-            onClick={() => {
-              localStorage.removeItem("authToken");
-              sessionStorage.clear();
-              window.location.href = "/login";
-            }}
+            onClick={handleLogout}
             icon={
               <Icon
                 icon="material-symbols-light:logout-rounded"

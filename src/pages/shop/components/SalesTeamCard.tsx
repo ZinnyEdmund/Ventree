@@ -9,27 +9,39 @@ import { DeleteConfirmModal } from "./DeleteConfirmModal";
 
 // ============================================
 export interface SalesPerson {
-    id: string;
-    name: string;
-    canAddSales: boolean;
-    canAddExpense: boolean;
-  }
-  
-  interface SalesTeamCardProps {
-    salesPersons: SalesPerson[];
-    maxPersons?: number;
-    onAddPerson: (person: Omit<SalesPerson, "id">) => Promise<void>;
-    onUpdatePerson: (id: string, person: Partial<SalesPerson>) => Promise<void>;
-    onDeletePerson: (id: string) => Promise<void>;
-  }
-  
-  export const SalesTeamCard: React.FC<SalesTeamCardProps> = ({
-    salesPersons,
-    maxPersons = 5,
-    onAddPerson,
-    onUpdatePerson,
-    onDeletePerson,
-  }) => {
+  id: string;
+  name: string;
+  phoneNumber: string;
+  canAddSales: boolean;
+  canAddExpense: boolean;
+  role?: string;
+}
+
+export interface SalesPersonFormValues {
+  name: string;
+  phoneNumber: string;
+  password: string;
+  canAddSales: boolean;
+  canAddExpense: boolean;
+}
+
+interface SalesTeamCardProps {
+  salesPersons: SalesPerson[];
+  maxPersons?: number;
+  onAddPerson: (person: SalesPersonFormValues) => Promise<void>;
+  onUpdatePerson: (id: string, person: Partial<SalesPerson>) => Promise<void>;
+  onDeletePerson: (id: string) => Promise<void>;
+  isSubmitting?: boolean;
+}
+
+export const SalesTeamCard: React.FC<SalesTeamCardProps> = ({
+  salesPersons,
+  maxPersons = 5,
+  onAddPerson,
+  onUpdatePerson,
+  onDeletePerson,
+  isSubmitting = false,
+}) => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [editingPerson, setEditingPerson] = useState<SalesPerson | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -57,7 +69,7 @@ export interface SalesPerson {
           <button
             onClick={() => setShowAddModal(true)}
             className="hidden md:block btn btn-primary"
-            disabled={salesPersons.length >= maxPersons}
+            disabled={salesPersons.length >= maxPersons || isSubmitting}
           >
             Add Sales Person
           </button>
@@ -81,6 +93,7 @@ export interface SalesPerson {
             <button
               onClick={() => setShowAddModal(true)}
               className="px-6 btn btn-primary"
+              disabled={isSubmitting}
             >
               Add First Sales Person
             </button>
@@ -102,6 +115,7 @@ export interface SalesPerson {
         {(showAddModal || editingPerson) && (
           <SalesPersonModal
             person={editingPerson}
+            isSaving={isSubmitting}
             onClose={() => {
               setShowAddModal(false);
               setEditingPerson(null);

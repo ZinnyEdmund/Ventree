@@ -1,17 +1,49 @@
 // --- Shared Enums (should ideally be imported from your backend-generated types)
-export type Role = "CLIENT" | "PROVIDER" | "ADMIN";
+export type Role = "owner" | "staff";
 export type ServiceProviderRole = "INDIVIDUAL" | "COMPANY";
+
+// --- Staff Types
+export interface Staff {
+  _id: string;
+  staffName: string;
+  phoneNumber: string;
+  role: string;
+  isActive: boolean;
+  shopId?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateStaffInput {
+  shopId: string;
+  staffName: string;
+  phoneNumber: string;
+  password: string;
+  role?: string;
+}
+
+export interface UpdateStaffInput {
+  staffName?: string;
+  phoneNumber?: string;
+  password?: string;
+  role?: string;
+  isActive?: boolean;
+}
+
+export interface StaffResponse {
+  success: boolean;
+  message: string;
+  data: Staff;
+}
 
 // --- User Types
 export interface User {
-  id: number;
-  fullName: string;
-  email: string;
-  avatar?: string | null;
+  id: string; 
+  shopName: string;
+  phoneNumber: string;
+  ownerName: string;
   role: Role;
-  providerType?: ServiceProviderRole | null; // only if role = PROVIDER
-  isEmailVerified: boolean;
-  isVerified: boolean;
+  avatar?: string | null;
   createdAt: string; // ISO date
   updatedAt: string;
 }
@@ -22,26 +54,6 @@ export enum AvailabilityStatus {
   OFFLINE = "OFFLINE",
 }
 
-export interface CloudinaryUploadResponse {
-  asset_id: string
-  public_id: string
-  version: number
-  version_id: string
-  signature: string
-  width: number
-  height: number
-  format: string
-  resource_type: string
-  created_at: string
-  tags: string[]
-  bytes: number
-  type: string
-  etag: string
-  placeholder: boolean
-  url: string
-  secure_url: string
-  original_filename: string
-}
 
 export interface ClientType {
   id: number;
@@ -87,20 +99,27 @@ export interface ServiceProviderProfile extends BaseResponse<{
 
 
 // --- Auth Requests
-export interface AuthRequest {
-  email: string;
+export interface RegisterRequest {
+  shopName: string;
+  phoneNumber: string;
+  ownerName: string;
   password: string;
 }
 
-export interface RegisterRequest extends AuthRequest {
-  fullName: string;
-  role: Role;
-  providerType?: ServiceProviderRole; // required if role = PROVIDER
+export interface LoginRequest {
+  shopName: string;
+  phoneNumber: string;
+  password: string;
 }
 
-export interface VerifyRequest {
-  email: string;
-  code: string;
+export interface VerifyOtpRequest {
+  shopName: string;
+  phoneNumber: string;
+  otp: string;
+}
+
+export interface RefreshTokenRequest {
+  refreshToken: string;
 }
 
 export interface ResetPasswordRequest {
@@ -114,20 +133,59 @@ export interface ResetPasswordRequest {
 export interface BaseResponse<T = unknown> {
   success: boolean;
   message: string;
-  responseObject: T;
-  statusCode: number;
+  data: T;
 }
 
 // --- Auth Responses
 export interface AuthResponse extends BaseResponse<{
-  token: string;
+  accessToken: string;
+  refreshToken: string;
   user: User;
 }> {}
 
-export interface LoginResponse extends BaseResponse<{
-  token: string;
-  user: User;
+// Actual API response structure for login
+export interface LoginResponse {
+  success: boolean;
+  data: {
+    message: string;
+    accessToken: string;
+    refreshToken: string;
+    role: Role;
+    owner: {
+      name: string;
+      phoneNumber: string;
+    };
+    shop: {
+      id: string;
+      shopName: string;
+      phoneNumber: string;
+      businessType: string;
+      isVerified: boolean;
+      kycStatus: string;
+      owner: {
+        name: string;
+        phoneNumber: string;
+      };
+    };
+    staff: any | null;
+  };
+}
+
+// Refresh token response - may use either BaseResponse format or direct data format
+export interface RefreshTokenResponse extends BaseResponse<{
+  accessToken: string;
+  refreshToken: string;
 }> {}
+
+// Alternative format (if API returns data directly like LoginResponse)
+export interface RefreshTokenDataResponse {
+  success: boolean;
+  data: {
+    accessToken: string;
+    refreshToken: string;
+    message?: string;
+  };
+}
 
 // --- Cloudinary
 export interface CloudinaryUploadResponse {
@@ -149,4 +207,49 @@ export interface CloudinaryUploadResponse {
   url: string;
   secure_url: string;
   original_filename: string;
+}
+
+// --- Stocks
+export interface Stocks {
+  _id: string;
+  shopId: string;
+  name: string;
+  category: string;
+  sku: string;
+  costPrice: number;
+  sellingPrice: number;
+  initialQuantity: number;
+  availableQuantity: number;
+  soldQuantity: number;
+  damagedQuantity: number;
+  returnedQuantity: number;
+  reorderLevel: number;
+  reorderQuantity: number;
+  unit: string;
+  images: string[];
+  tags: string[];
+  isActive: boolean;
+  isLowStock: boolean;
+  isOutOfStock: boolean;
+  createdBy: string;
+  createdAt: string;  // or Date
+  updatedAt: string;  // or Date
+  __v: number;
+}
+
+export interface CreateProductDto {
+  name: string;
+  category: string;
+  costPrice: number;
+  sellingPrice: number;
+  initialQuantity: number;
+  unit: string;            // e.g., "kg", "liters", "pieces"
+  reorderLevel: number;    // threshold for stock alerts
+}
+
+export interface InventoryData {
+  items: Stocks[];
+  total: number;
+  page: number;
+  pages: number;
 }

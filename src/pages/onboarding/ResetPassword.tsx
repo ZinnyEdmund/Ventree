@@ -1,8 +1,11 @@
 import { useState } from "react";
-import type { FormEvent } from "react"
+import type { FormEvent } from "react";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
-import { validateBusinessNumber, validatePassword } from "../../components/common/validation";
+import {
+  validateBusinessNumber,
+  validatePassword,
+} from "../../components/common/validation";
 import { useFormSubmit } from "../../components/common/formHooks";
 import { Icon } from "@iconify/react";
 
@@ -44,20 +47,25 @@ export default function ResetPassword() {
 
   return (
     <section className="w-full flex flex-col md:space-y-16 space-y-16 justify-between md:p-6">
-            <span className="absolute left-6 top-6 hidden md:inline">
-              <Icon
-                icon="iconamoon:arrow-left-6-circle-light"
-                width="24"
-                height="24"
-              />
-            </span>
+      <span className="absolute left-6 top-6 hidden md:inline">
+        <Icon
+          icon="iconamoon:arrow-left-6-circle-light"
+          width="24"
+          height="24"
+        />
+      </span>
       <div className="text-center text-black">
         <h2 className="h3 pb-2">Reset Password</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm mx-auto space-y-6">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm mx-auto space-y-6"
+      >
         <div>
-          <label className="block text-black label md:mb-1 mb-2">Business Name</label>
+          <label className="block text-black label md:mb-1 mb-2">
+            Business Name
+          </label>
           <input
             type="text"
             value={businessNumber}
@@ -69,7 +77,9 @@ export default function ResetPassword() {
         </div>
 
         <div>
-          <label className="block text-black label md:mb-1 mb-2">New Password</label>
+          <label className="block text-black label md:mb-1 mb-2">
+            New Password
+          </label>
           <input
             type="password"
             value={password}
@@ -99,4 +109,3 @@ export default function ResetPassword() {
     </section>
   );
 }
-

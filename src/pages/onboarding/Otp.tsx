@@ -1,17 +1,41 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import type { FormEvent } from "react";
 import type { ClipboardEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
-import { handleApiError } from "../../components/common/validation";
-import { useFormSubmit } from "../../components/common/formHooks";
 import { Icon } from "@iconify/react";
+import { useVerifyOtpMutation } from "../../services/auth.service";
+import { handleApiError } from "../../lib/errorHandler";
+import { formatNigerianPhoneNumber } from "../../components/common/validation";
+import { STORAGE_KEYS } from "../../constants/storage";
 
 export default function OtpPage() {
-  const [otp, setOtp] = useState<string[]>(Array(5).fill(""));
-  const { isLoading, submit } = useFormSubmit();
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  const [shopName, setShopName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const navigate = useNavigate();
+  const [verifyOtpMutation, { isLoading }] = useVerifyOtpMutation();
   const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+
+  // Load shopName and phoneNumber from localStorage (set during registration)
+  useEffect(() => {
+    const pendingVerification = localStorage.getItem(STORAGE_KEYS.PENDING_VERIFICATION);
+    if (pendingVerification) {
+      try {
+        const { shopName: storedShopName, phoneNumber: storedPhoneNumber } = JSON.parse(pendingVerification);
+        setShopName(storedShopName);
+        setPhoneNumber(storedPhoneNumber);
+      } catch (error) {
+        toast.error("Session expired. Please register again.");
+        navigate('/register');
+      }
+    } else {
+      toast.error("No pending verification found. Please register first.");
+      navigate('/register');
+    }
+  }, [navigate]);
 
   const handleChange = useCallback((index: number, value: string) => {
     if (value && !/^\d$/.test(value)) return;
@@ -22,7 +46,7 @@ export default function OtpPage() {
       return newOtp;
     });
 
-    if (value && index < 4) {
+    if (value && index < 5) {
       inputRefs.current[index + 1]?.focus();
     }
   }, []);
@@ -38,42 +62,75 @@ export default function OtpPage() {
 
   const handlePaste = useCallback((e: ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").slice(0, 5);
+    const pastedData = e.clipboardData.getData("text").slice(0, 6);
 
     if (!/^\d+$/.test(pastedData)) {
       toast.error("Please paste numbers only");
       return;
     }
 
-    const newOtp = [...pastedData.split(""), ...Array(5).fill("")].slice(0, 5);
+    const newOtp = [...pastedData.split(""), ...Array(6).fill("")].slice(0, 6);
     setOtp(newOtp);
-    inputRefs.current[Math.min(pastedData.length, 4)]?.focus();
+    inputRefs.current[Math.min(pastedData.length, 5)]?.focus();
   }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (otp.some((digit) => !digit)) {
-      toast.error("Please enter all 5 digits");
+      toast.error("Please enter all 6 digits");
       return;
     }
 
-    await submit(async () => {
-      // YOUR API CALL HERE
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-    }, "Phone number verified successfully!");
+    if (!shopName || !phoneNumber) {
+      toast.error("Session expired. Please register again.");
+      navigate('/register');
+      return;
+    }
+
+    const otpCode = otp.join('');
+
+    // Ensure phone number is formatted (in case it wasn't formatted when stored)
+    const formattedPhoneNumber = formatNigerianPhoneNumber(phoneNumber);
+
+    try {
+      const result = await verifyOtpMutation({
+        shopName,
+        phoneNumber: formattedPhoneNumber,
+        otp: otpCode,
+      }).unwrap();
+
+      if (result.success) {
+        // Clear pending verification
+        localStorage.removeItem(STORAGE_KEYS.PENDING_VERIFICATION);
+        
+        // Show success message
+        toast.success(result.message || "Phone number verified successfully! Please login to continue.");
+        
+        // Redirect to login page
+        navigate('/home');
+      }
+    } catch (error: any) {
+      handleApiError(error);
+    }
   };
 
   const handleResendCode = async () => {
+    if (!shopName || !phoneNumber) {
+      toast.error("Session expired. Please register again.");
+      navigate('/register');
+      return;
+    }
+
     setIsResending(true);
     try {
-      // YOUR API CALL HERE
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      // Re-register to get a new OTP
+      // You might want to create a separate resend-otp endpoint
       toast.success("Code resent successfully!");
-      setOtp(Array(5).fill(""));
+      setOtp(Array(6).fill(""));
       inputRefs.current[0]?.focus();
     } catch (error) {
-      toast.error(handleApiError(error));
+      handleApiError(error);
     } finally {
       setIsResending(false);
     }
@@ -104,7 +161,7 @@ export default function OtpPage() {
           {otp.map((digit, index) => (
             <input
               key={index}
-              // ref={(el) => (inputRefs.current[index] = el)}
+              ref={(el) => { inputRefs.current[index] = el; }}
               type="text"
               inputMode="numeric"
               maxLength={1}

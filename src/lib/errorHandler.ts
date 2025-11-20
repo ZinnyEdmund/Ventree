@@ -1,42 +1,59 @@
-// utils/errorHandler.ts
 import { toast } from "sonner";
+import { clearAuthTokens } from "./cookies";
 
-export function handleApiError(error: any) {
-  const message = error?.data?.message;
-  console.log("API Error:", message);
+export function handleApiError(error: unknown): void {
+  console.error("API Error:", error);
 
-  const fallbackMessage = error?.message;
+  const err = error as {
+    status?: number;
+    data?: {
+      success?: boolean;
+      message?: string | string[];
+      error?: {
+        message?: string;
+        code?: string;
+        details?: Array<{ msg?: string; path?: string }>;
+      };
+    };
+  };
 
-  // Handle unauthorized/network issues
-  if (
-    (typeof message === "string" && message.startsWith("Unauthorized")) ||
-    (typeof fallbackMessage === "string" && fallbackMessage.startsWith("Unauthorized")) ||
-    message === "Missing Authorization Header"
-  ) {
-    toast.error("Session expired. Please log in again.");
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    window.location.href = "/login";
-  
+  const status = err?.status;
+  const apiError = err?.data?.error;
+  const apiMessage = err?.data?.message;
+
+  // --- 1. Handle 401 Unauthorized ---
+  if (status === 401 || apiError?.code === "AUTHENTICATION_ERROR") {
+    toast.error(apiError?.message || "Session expired. Please log in again.");
+    clearAuthTokens();
     return;
   }
 
-  // Handle array of messages
-  if (Array.isArray(message)) {
-    message.forEach((msg) => toast.error(msg));
+  // --- 2. Handle Validation Errors (details) ---
+  if (apiError?.details?.length) {
+    apiError.details.forEach((d) => {
+      if (d.msg) toast.error(d.msg);
+    });
     return;
   }
 
-  // Handle single string message
-  if (typeof message === "string") {
-    toast.error(message);
+  // --- 3. Handle error.error.message (most common) ---
+  if (apiError?.message) {
+    toast.error(apiError.message);
     return;
   }
 
-  // Handle fallback error message
-  if (typeof fallbackMessage === "string") {
-    toast.error(fallbackMessage);
+  // --- 4. Handle array messages ---
+  if (Array.isArray(apiMessage)) {
+    apiMessage.forEach((msg) => toast.error(msg));
     return;
   }
 
+  // --- 5. Handle string message ---
+  if (typeof apiMessage === "string") {
+    toast.error(apiMessage);
+    return;
+  }
+
+  // --- 6. Fallback ---
+  toast.error("Something went wrong. Please try again.");
 }

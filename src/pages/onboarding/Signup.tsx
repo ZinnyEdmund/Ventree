@@ -1,26 +1,33 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 import {
   validatePhoneNumber,
   validatePassword,
+  formatNigerianPhoneNumber,
 } from "../../components/common/validation";
 import PasswordInput from "../../components/ui/passwordInput";
 import TextInput from "../../components/ui/textInput";
 import PhoneNumberInput from "../../components/ui/phoneNumber";
-import { useFormSubmit } from "../../components/common/formHooks";
 import { Icon } from "@iconify/react";
+import { useRegisterMutation } from "../../services/auth.service";
+import { handleApiError } from "../../lib/errorHandler";
+import { STORAGE_KEYS } from "../../constants/storage";
 
 export default function Signup() {
-  const [businessName, setBusinessName] = useState("");
+  const [shopName, setShopName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [ownerName, setOwnerName] = useState("");
   const [password, setPassword] = useState("");
-  const { isLoading, submit } = useFormSubmit();
+  const navigate = useNavigate();
+  const [registerMutation, { isLoading }] = useRegisterMutation();
 
   const validateForm = (): boolean => {
     const errors = [
-      !businessName.trim() ? "Business name is required" : null,
+      !shopName.trim() ? "Shop name is required" : null,
+      // !ownerName.trim() ? "Owner name is required" : null,
       validatePhoneNumber(phoneNumber),
       validatePassword(password),
     ].filter(Boolean);
@@ -36,18 +43,34 @@ export default function Signup() {
     e?.preventDefault();
     if (!validateForm()) return;
 
-    await submit(
-      async () => {
-        // YOUR API CALL HERE
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-      },
-      "Account created successfully!",
-      () => {
-        setBusinessName("");
-        setPhoneNumber("");
-        setPassword("");
+    // Format phone number to Nigerian international format
+    const formattedPhoneNumber = formatNigerianPhoneNumber(phoneNumber);
+
+    try {
+      const result = await registerMutation({
+        shopName: shopName.trim(),
+        phoneNumber: formattedPhoneNumber,
+        ownerName: shopName.trim(),
+        password,
+      }).unwrap();
+
+      if (result.success) {
+        toast.success(
+          result.message || "Registration successful! Please verify your OTP."
+        );
+        // Store shopName and formatted phoneNumber for OTP verification
+        localStorage.setItem(
+          STORAGE_KEYS.PENDING_VERIFICATION,
+          JSON.stringify({
+            shopName: shopName.trim(),
+            phoneNumber: formattedPhoneNumber,
+          })
+        );
+        navigate("/otp");
       }
-    );
+    } catch (error: any) {
+      handleApiError(error);
+    }
   };
 
   return (
@@ -59,8 +82,8 @@ export default function Signup() {
           height="24"
         />
       </span>
-      <div className="text-center text-black leading-snug">
-        <h2 className="h3">Less Stress</h2>
+      <div className="text-center text-black md:pb-7">
+        <h2 className="h3 pb-2">Less Stress</h2>
         <p className="h3">More Business</p>
       </div>
 
@@ -69,18 +92,18 @@ export default function Signup() {
         className="w-full max-w-sm mx-auto space-y-6"
       >
         <TextInput
-          label="Business Name"
-          placeholder="Put your business number"
-          value={businessName}
-          onChange={(e) => setBusinessName(e.target.value)}
+          label="Shop Name"
+          placeholder="Put your Shop Name"
+          value={shopName}
+          onChange={(e) => setShopName(e.target.value)}
           disabled={isLoading}
         />
 
         <PhoneNumberInput
           label="Phone Number"
-          value={password}
+          value={phoneNumber}
           type="tel"
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => setPhoneNumber(e.target.value)}
         />
 
         <PasswordInput

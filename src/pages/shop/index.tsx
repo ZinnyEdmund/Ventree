@@ -1,9 +1,16 @@
 import { useState } from "react";
 import { BusinessInfoCard, type BusinessInfo } from "./components/BusinessInfoCard";
-import { SalesTeamCard, type SalesPerson } from "./components/SalesTeamCard";
+import { SalesTeamCard, type SalesPerson, type SalesPersonFormValues } from "./components/SalesTeamCard";
 import { toast } from "sonner";
+import { useSelector } from "react-redux";
+import type { RootState } from "../../state/store";
+import { useCreateStaffMutation } from "../../services/staff.service";
+import { handleApiError } from "../../lib/errorHandler";
+import { formatNigerianPhoneNumber } from "../../components/common/validation";
 
 export const SetupShopPage = () => {
+  const { user } = useSelector((state: RootState) => state.auth);
+  const [createStaff, { isLoading: isCreatingStaff }] = useCreateStaffMutation();
   const [businessInfo, setBusinessInfo] = useState<BusinessInfo>({
     businessName: "Lota Provisions",
     businessType: "Add your business type",
@@ -22,11 +29,40 @@ export const SetupShopPage = () => {
   };
 
   // Handle add sales person
-  const handleAddPerson = async (person: Omit<SalesPerson, "id">) => {
-    // TODO: Replace with your API call
-    // const newPerson = await addSalesPerson(person).unwrap();
-    const newPerson = { ...person, id: Date.now().toString() };
-    setSalesPersons([...salesPersons, newPerson]);
+  const handleAddPerson = async (person: SalesPersonFormValues) => {
+    if (!user?.id) {
+      toast.error("Shop information is missing. Please relogin and try again.");
+      return;
+    }
+
+    const role = person.canAddSales && person.canAddExpense ? "manager" : undefined;
+
+    try {
+      const payload = {
+        shopId: user.id,
+        staffName: person.name.trim(),
+        phoneNumber: formatNigerianPhoneNumber(person.phoneNumber),
+        password: person.password,
+        ...(role ? { role } : {}),
+      };
+
+      const response = await createStaff(payload).unwrap();
+
+      const newPerson: SalesPerson = {
+        id: response.data._id,
+        name: response.data.staffName,
+        phoneNumber: response.data.phoneNumber,
+        role: response.data.role,
+        canAddSales: person.canAddSales,
+        canAddExpense: person.canAddExpense,
+      };
+
+      setSalesPersons((prev) => [...prev, newPerson]);
+    } catch (error) {
+      handleApiError(error);
+      (error as any).__handled = true;
+      throw error;
+    }
   };
 
   // Handle update sales person
@@ -74,6 +110,7 @@ export const SetupShopPage = () => {
         onAddPerson={handleAddPerson}
         onUpdatePerson={handleUpdatePerson}
         onDeletePerson={handleDeletePerson}
+        isSubmitting={isCreatingStaff}
       />
     </section>
   );
