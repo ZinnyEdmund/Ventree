@@ -21,6 +21,7 @@ import ProfilePage from "../pages/profile/ProfilePage"
 import EditProfile from "../pages/profile/EditProfile";
 import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
+import LandingPage from "../pages/landingpage/LandingPage";
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
 const LoginPage = lazy(() => import("../pages/onboarding/Login"));
@@ -45,6 +46,7 @@ function AppRoutes() {
         <Routes>
           {/* Onboarding */}
           <Route path="/" element={<WelcomePage />} />
+          <Route path="/landingpage" element={<LandingPage />} />
 
           {/* Authentication */}
           <Route path="/" element={<OnboardWrapper component={<OnboardLayout />} />}>
