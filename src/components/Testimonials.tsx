@@ -27,8 +27,9 @@ const TESTIMONIALS: readonly TestimonialProps[] = [
 function TestimonialCard({ quote, author, role }: TestimonialProps) {
   return (
     <div className="bg-white rounded-2xl p-8 hover:shadow-lg transition-shadow duration-300">
+      <p>“</p>
       <p className="text-black italic text-lg mb-6 leading-relaxed">
-        "{quote}"
+        “{quote}”
       </p>
       <div className="body">
         <p className="text-black italic">-{author}, {role}</p>

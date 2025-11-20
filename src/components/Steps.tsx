@@ -27,7 +27,7 @@ const STEPS: readonly StepCardProps[] = [
 function StepCard({ icon, title, description }: StepCardProps) {
   return (
     <div className="text-left bg-white rounded-2xl p-8 hover:shadow-lg transition-shadow duration-300">
-      <div className="w-14 h-14 bg-green-500 rounded-full flex items-center justify-center text-white mb-4">
+      <div className="w-14 h-14 bg-primary-7 rounded-full flex items-center justify-center text-white mb-4">
         <Icon icon={icon} width={28} height={28} />
       </div>
       <h3 className="h6 text-black mb-2">
