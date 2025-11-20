@@ -2,7 +2,13 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
-import { validatePhoneNumber, validatePassword } from "../../components/common/validation";
+import {
+  validatePhoneNumber,
+  validatePassword,
+} from "../../components/common/validation";
+import PasswordInput from "../../components/ui/passwordInput";
+import TextInput from "../../components/ui/textInput";
+import PhoneNumberInput from "../../components/ui/phoneNumber";
 import { useFormSubmit } from "../../components/common/formHooks";
 import { Icon } from "@iconify/react";
 
@@ -46,54 +52,42 @@ export default function Signup() {
 
   return (
     <section className="w-full flex flex-col md:space-y-6 space-y-16 justify-between md:p-6">
-            <span className="absolute left-6 top-6 hidden md:inline">
-              <Icon
-                icon="iconamoon:arrow-left-6-circle-light"
-                width="24"
-                height="24"
-              />
-            </span>
-      <div className="text-center text-black md:pb-7">
-        <h2 className="h3 pb-2">Less Stress</h2>
+      <span className="absolute left-6 top-6 hidden md:inline">
+        <Icon
+          icon="iconamoon:arrow-left-6-circle-light"
+          width="24"
+          height="24"
+        />
+      </span>
+      <div className="text-center text-black leading-snug">
+        <h2 className="h3">Less Stress</h2>
         <p className="h3">More Business</p>
       </div>
 
-      <form onSubmit={handleSubmit} className="w-full max-w-sm mx-auto space-y-6">
-        <div>
-          <label className="block text-black label md:mb-1 mb-2">Business Name</label>
-          <input
-            type="text"
-            value={businessName}
-            onChange={(e) => setBusinessName(e.target.value)}
-            placeholder="Put your business name"
-            className="w-full text-black border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body"
-            disabled={isLoading}
-          />
-        </div>
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-sm mx-auto space-y-6"
+      >
+        <TextInput
+          label="Business Name"
+          placeholder="Put your business number"
+          value={businessName}
+          onChange={(e) => setBusinessName(e.target.value)}
+          disabled={isLoading}
+        />
 
-        <div>
-          <label className="block text-black label md:mb-1 mb-2">Phone Number</label>
-          <input
-            type="tel"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="Put your phone number"
-            className="w-full text-black border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body"
-            disabled={isLoading}
-          />
-        </div>
+        <PhoneNumberInput
+          label="Phone Number"
+          value={password}
+          type="tel"
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        <div>
-          <label className="block text-black label md:mb-1 mb-2">Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Put your password"
-            className="w-full text-black border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body"
-            disabled={isLoading}
-          />
-        </div>
+        <PasswordInput
+          label="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
         <button
           type="submit"
