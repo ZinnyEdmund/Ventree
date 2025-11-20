@@ -1,27 +1,36 @@
 import { Icon } from '@iconify/react';
 import { Link } from 'react-router-dom';
 
+// These are anchor links to sections on the same page
 const quickLinks = [
-  { to: '/#', label: 'Home' },
-  { to: '#', label: 'About Ventree' },
-  { to: '#', label: 'How it works' },
-  { to: '#', label: 'Contact' }
+  { to: '#hero', label: 'Home' },
+  { to: '#about', label: 'About Ventree' },
+  { to: '#how-it-works', label: 'How it works' },
+  { to: '#contact', label: 'Contact' }
 ];
 
 const socialLinks = [
-  { icon: 'mage:facebook', label: 'Facebook' },
-  { icon: 'mdi:instagram', label: 'Instagram' },
-  { icon: 'mdi:twitter', label: 'Twitter' },
-  { icon: 'mdi:youtube', label: 'YouTube' }
+  { icon: 'mage:facebook', label: 'Facebook', url: 'https://facebook.com/ventree' },
+  { icon: 'mdi:instagram', label: 'Instagram', url: 'https://instagram.com/ventree' },
+  { icon: 'mdi:twitter', label: 'Twitter', url: 'https://twitter.com/ventree' },
+  { icon: 'mdi:youtube', label: 'YouTube', url: 'https://youtube.com/@ventree' }
 ];
 
 const legalLinks = [
-  { to: '#', label: 'Privacy Policy' },
-  { to: '#', label: 'Terms of Service' }
+  { to: '/privacy-policy', label: 'Privacy Policy' },
+  { to: '/terms-of-service', label: 'Terms of Service' }
 ];
 
 export default function FooterWithCTA() {
   const currentYear = new Date().getFullYear();
+
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const element = document.querySelector(targetId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   return (
     <footer className="border-t border-primary-1 py-12">
@@ -43,9 +52,13 @@ export default function FooterWithCTA() {
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.label}>
-                  <Link to={link.to} className="text-black hover:text-primary-7 transition-colors">
+                  <a
+                    href={link.to}
+                    onClick={(e) => handleSmoothScroll(e, link.to)}
+                    className="text-black hover:text-primary-7 transition-colors cursor-pointer"
+                  >
                     {link.label}
-                  </Link>
+                  </a>
                 </li>
               ))}
             </ul>
@@ -56,14 +69,16 @@ export default function FooterWithCTA() {
             <h3 className="text-black font-bold mb-4">Stay Connected</h3>
             <div className="flex gap-4 justify-center md:justify-start">
               {socialLinks.map((social) => (
-                <Link
+                <a
                   key={social.label}
-                  to="/"
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
                   aria-label={social.label}
                 >
                   <Icon icon={social.icon} width="20" height="20" />
-                </Link>
+                </a>
               ))}
             </div>
           </div>

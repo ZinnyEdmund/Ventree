@@ -13,9 +13,15 @@ export default function LandingPage() {
     <div className="bg-bg min-h-screen flex justify-center">
       <div className="w-full mx-auto py-4">
         <Navbar />
-        <Hero />
-        <About />
-        <Steps />
+        <section id="hero">
+          <Hero />
+        </section>
+        <section id="about">
+          <About />
+        </section>
+        <section id="how-it-works">
+          <Steps />
+        </section>
         <CTA />
         <Testimonials />
         <div className="w-full bg-primary-6 py-0">
@@ -23,7 +29,9 @@ export default function LandingPage() {
             <FAQ />
           </div>
         </div>
-        <BookKeeping />
+        <section id="contact">
+          <BookKeeping />
+        </section>
         <Footer />
       </div>
     </div>
