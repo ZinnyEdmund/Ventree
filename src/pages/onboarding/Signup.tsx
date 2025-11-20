@@ -8,6 +8,9 @@ import {
   validatePassword,
   formatNigerianPhoneNumber,
 } from "../../components/common/validation";
+import PasswordInput from "../../components/ui/passwordInput";
+import TextInput from "../../components/ui/textInput";
+import PhoneNumberInput from "../../components/ui/phoneNumber";
 import { Icon } from "@iconify/react";
 import { useRegisterMutation } from "../../services/auth.service";
 import { handleApiError } from "../../lib/errorHandler";
@@ -24,7 +27,7 @@ export default function Signup() {
   const validateForm = (): boolean => {
     const errors = [
       !shopName.trim() ? "Shop name is required" : null,
-      !ownerName.trim() ? "Owner name is required" : null,
+      // !ownerName.trim() ? "Owner name is required" : null,
       validatePhoneNumber(phoneNumber),
       validatePassword(password),
     ].filter(Boolean);
@@ -47,7 +50,7 @@ export default function Signup() {
       const result = await registerMutation({
         shopName: shopName.trim(),
         phoneNumber: formattedPhoneNumber,
-        ownerName: ownerName.trim(),
+        ownerName: shopName.trim(),
         password,
       }).unwrap();
 
@@ -88,61 +91,26 @@ export default function Signup() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm mx-auto space-y-6"
       >
-        <div>
-          <label className="block text-black label md:mb-1 mb-2">
-            Shop Name
-          </label>
-          <input
-            type="text"
-            value={shopName}
-            onChange={(e) => setShopName(e.target.value)}
-            placeholder="Enter your shop name"
-            className="w-full text-black border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body"
-            disabled={isLoading}
-          />
-        </div>
+        <TextInput
+          label="Shop Name"
+          placeholder="Put your Shop Name"
+          value={shopName}
+          onChange={(e) => setShopName(e.target.value)}
+          disabled={isLoading}
+        />
 
-        <div>
-          <label className="block text-black label md:mb-1 mb-2">
-            Owner Name
-          </label>
-          <input
-            type="text"
-            value={ownerName}
-            onChange={(e) => setOwnerName(e.target.value)}
-            placeholder="Enter owner name"
-            className="w-full text-black border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body"
-            disabled={isLoading}
-          />
-        </div>
+        <PhoneNumberInput
+          label="Phone Number"
+          value={phoneNumber}
+          type="tel"
+          onChange={(e) => setPhoneNumber(e.target.value)}
+        />
 
-        <div>
-          <label className="block text-black label md:mb-1 mb-2">
-            Phone Number
-          </label>
-          <input
-            type="tel"
-            value={phoneNumber}
-            onChange={(e) => setPhoneNumber(e.target.value)}
-            placeholder="Enter your phone number"
-            className="w-full text-black border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body"
-            disabled={isLoading}
-          />
-        </div>
-
-        <div>
-          <label className="block text-black label md:mb-1 mb-2">
-            Password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Put your password"
-            className="w-full text-black border border-secondary-4 focus:ring-2 focus:ring-tertiary rounded-lg p-3 outline-none body"
-            disabled={isLoading}
-          />
-        </div>
+        <PasswordInput
+          label="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
         <button
           type="submit"
