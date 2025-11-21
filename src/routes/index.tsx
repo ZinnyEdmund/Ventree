@@ -14,6 +14,7 @@ import Settings from "../pages/settings/Settings"
 import { BusinessInsightsPage } from "../pages/insights";
 import { ExpensesPage } from "../pages/expenses";
 import ChangePassword from "../pages/changePassword/ChangePassword";
+import ProfilePage from "../pages/profile/ProfilePage";
 import EditProfile from "../pages/profile/EditProfile";
 import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
@@ -67,10 +68,11 @@ function AppRoutes() {
             <Route path="/record-sales" element={<ProtectedRoute><RecordSale /></ProtectedRoute>} />
           </Route>
 
+          <Route path="/my-profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
-          <Route path="/editprofile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-          <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
-          <Route path="/aboutapp" element={<ProtectedRoute><AboutApp /></ProtectedRoute>} />
+          <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+          <Route path="/help-center" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
+          <Route path="/about-us" element={<ProtectedRoute><AboutApp /></ProtectedRoute>} />
           
         </Routes>
       </BrowserRouter>
