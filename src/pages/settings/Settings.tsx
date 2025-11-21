@@ -66,8 +66,8 @@ export default function Settings() {
   ];
 
   return (
-    <main className="flex justify-center min-h-screen py-6 px-1 md:px-1">
-      <article className="w-full bg-white rounded-xl shadow-sm p-6">
+    <main className="flex justify-center min-h-screen pb-6 md:px-1">
+      <article className="w-full md:w-5xl bg-white rounded-xl p-6">
         {/* Header */}
         <header className="flex items-center justify-center relative mb-15">
           <Link
@@ -87,27 +87,27 @@ export default function Settings() {
         {/* Settings Links */}
         {settingsLinks.map(({ section, items }) => (
           <section key={section} className="mb-6">
-            <h2 className="h4 text-black mb-2">{section}</h2>
+            <h2 className="h7 text-black mb-2">{section}</h2>
             <nav
               aria-label={`${section} Settings`}
-              className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-200"
+              className="bg-white rounded-lg shadow-sm"
             >
               {items.map(({ to, icon, label }) => (
                 <Link
                   key={to}
                   to={to}
-                  className="flex items-center justify-between p-4 hover:bg-gray-50 transition"
+                  className="flex items-center justify-between p-2 hover:bg-gray-50 transition"
                 >
                   <div className="flex items-center gap-3">
                     <span className="text-secondary">
                       <Icon icon={icon} width="24" height="24" />
                     </span>
-                    <span className="text-black body">{label}</span>
+                    <span className="text-black web-small">{label}</span>
                   </div>
                   <Icon
                     icon="ic:outline-arrow-forward-ios"
-                    width="24"
-                    height="24"
+                    width="20"
+                    height="20"
                     aria-hidden="true"
                   />
                 </Link>
@@ -118,32 +118,32 @@ export default function Settings() {
 
         {/* Notification Section */}
         <section>
-          <h2 className="h4 text-black mb-2">Push Notification</h2>
+          <h2 className="h7 text-black my-3">Push Notification</h2>
           <nav
             aria-label="Notification Settings"
-            className="bg-white rounded-lg space-y-2"
+            className="bg-white rounded-lg space-y-4"
           >
             {notificationItems.map(({ key, label }) => (
               <div
                 key={key}
-                className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                className="flex items-center justify-between p-3 shadow-sm rounded-lg hover:bg-gray-50 transition"
               >
                 <div className="flex items-center gap-3">
                   <span className="text-secondary">
                     <Icon
-                      icon="ic:outline-charging-station"
+                      icon="ic:baseline-charging-station"
                       width="24"
                       height="24"
                     />
                   </span>
-                  <span className="text-black body">{label}</span>
+                  <span className="text-black web-small">{label}</span>
                 </div>
                 <button
                   onClick={() => toggleNotification(key)}
                   aria-label={`Toggle ${label} notification`}
                   aria-pressed={notifications[key]}
                   className="
-    w-[65px] h-[36px]
+    w-[48px] h-[24px]
     rounded-full
     flex items-center
     px-1
@@ -158,11 +158,11 @@ export default function Settings() {
                 >
                   <div
                     className={`
-      w-[28px] h-[28px]
+      w-[18px] h-[18px]
       bg-white
       rounded-full
       transition
-      ${notifications[key] ? "translate-x-7" : "translate-x-0"}
+      ${notifications[key] ? "translate-x-6" : "translate-x-0"}
     `}
                   />
                 </button>

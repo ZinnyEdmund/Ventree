@@ -68,7 +68,9 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const isOwner = user?.role === 'owner';
+    // const isOwner = user?.role === 'owner';
+    const isOwner = 'owner';
+
 
   if (!isOpen) return null;
 
@@ -318,7 +320,10 @@ function DesktopSidebar() {
   const { user } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const isOwner = user?.role === 'owner';
+
+  // const isOwner = user?.role === 'owner';
+  console.log('User Role in Sidebar:', user);
+  const isOwner = 'owner';
 
   const handleLogout = () => {
     dispatch(logout());

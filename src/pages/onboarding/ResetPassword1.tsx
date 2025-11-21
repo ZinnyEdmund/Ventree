@@ -3,30 +3,37 @@ import type { FormEvent } from "react";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 import { Icon } from "@iconify/react";
-import TextInput from "../../components/ui/textInput";
-import {
-  validateBusinessNumber,
-  validatePhoneNumber,
-} from "../../components/common/validation";
+import PasswordInput from "../../components/ui/passwordInput";
+import ConfirmPassword from "../../components/ui/confirmPassword";
+import { validatePassword } from "../../components/common/validation";
 import { useFormSubmit } from "../../components/common/formHooks";
 
 export default function ResetPassword() {
   const [formData, setFormData] = useState({
-    businessName: "",
-    phoneNumber: "",
+    password: "",
+    confirmPassword: "",
   });
   const { isLoading, submit } = useFormSubmit();
 
   const validateForm = (): boolean => {
-    const errors = [
-      validateBusinessNumber(formData.businessName),
-      validatePhoneNumber(formData.phoneNumber),
-    ].filter(Boolean);
+    const passwordError = validatePassword(formData.password);
+    const confirmPasswordError = validatePassword(formData.confirmPassword);
 
-    if (errors.length > 0) {
-      toast.error(errors[0]!);
+    if (passwordError) {
+      toast.error(passwordError);
       return false;
     }
+
+    if (confirmPasswordError) {
+      toast.error(confirmPasswordError);
+      return false;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return false;
+    }
+
     return true;
   };
 
@@ -41,7 +48,7 @@ export default function ResetPassword() {
       },
       "Password reset successful!",
       () => {
-        setFormData({ businessName: "", phoneNumber: "" });
+        setFormData({ password: "", confirmPassword: "" });
       }
     );
   };
@@ -64,24 +71,22 @@ export default function ResetPassword() {
         onSubmit={handleSubmit}
         className="w-full max-w-sm mx-auto space-y-7"
       >
-        <TextInput
-          label="Business Name"
-          placeholder="Enter your shop name"
-          value={formData.businessName}
+        <PasswordInput
+          label="New Password"
+          value={formData.password}
           onChange={(e) =>
-            setFormData({ ...formData, businessName: e.target.value })
+            setFormData({ ...formData, password: e.target.value })
           }
-          disabled={isLoading}
+          noFP={false}
         />
 
-        <TextInput
-          label="Phone Number"
-          placeholder="Enter your phone number"
-          value={formData.phoneNumber}
+        <ConfirmPassword
+          label="Confirm Password"
+          value={formData.confirmPassword}
           onChange={(e) =>
-            setFormData({ ...formData, phoneNumber: e.target.value })
+            setFormData({ ...formData, confirmPassword: e.target.value })
           }
-          disabled={isLoading}
+          noFP={false}
         />
 
         <button

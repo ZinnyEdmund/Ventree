@@ -26,7 +26,7 @@ const PhoneNumberInput: React.FC<PhoneNumberInputProps> = ({
   return (
     <div className={clsx("w-full", className)}>
       {label && (
-        <label className="block mb-2 text-sm font-medium text-black">
+        <label className="block mb-2 label text-black">
           {label}
         </label>
       )}

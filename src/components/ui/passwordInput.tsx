@@ -20,7 +20,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   return (
     <div className="mb-4 relative">
       {label && (
-        <label className="block mb-2 text-sm font-medium text-black">
+        <label className="block mb-2 label text-black">
           {label}
         </label> // 👈 only render if passed}
       )}
@@ -38,7 +38,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
         {/* Toggle password visibility */}
         <button
           type="button"
-          className="absolute right-3 top-4 text-gray-500"
+          className="absolute right-3 top-4 text-black"
           onClick={() => setShowPassword(!showPassword)}
         >
           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

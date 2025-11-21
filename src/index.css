@@ -69,8 +69,8 @@
   --color-glow: #cdfc54;
   --color-accent: #8a8a8a;
   --color-accent-g2: #e6e6e6;
-  --color-accent-g3: #44CA54;
-  --color-accent-g4: #5EF5A3;
+  --color-accent-g3: #44ca54;
+  --color-accent-g4: #5ef5a3;
 }
 
 /* Light theme */
@@ -96,10 +96,10 @@
   --color-primary-2: #7ae37a;
   --color-primary-3: #9bea9b;
   --color-primary-4: #bcf1bb;
-  --color-primary-5: #F3FFF3;
-  --color-primary-6: #ADFFAD1A;
-  --color-primary-7: #33EB35;
-  --color-primary-8: #33EB3566; 
+  --color-primary-5: #f3fff3;
+  --color-primary-6: #adffad1a;
+  --color-primary-7: #33eb35;
+  --color-primary-8: #33eb3566;
 
   /* Secondary Colors */
   --color-secondary: #073e1e;
@@ -107,7 +107,7 @@
   --color-secondary-3: #6a8b77;
   --color-secondary-4: #9bb2a4;
   --color-secondary-5: #cdd8d0;
-  --color-secondary-6: #AAAAAA66;
+  --color-secondary-6: #aaaaaa66;
 
   /* Tertiary Colors */
   --color-Tertiary: #cdfc54;
@@ -159,7 +159,7 @@
     @apply bg-error text-white hover:bg-error/90;
   }
   .border {
-    @apply border border-[1px] border-secondary ;
+    @apply border border-[1px] border-secondary;
   }
 
   .btn-outline {
@@ -194,7 +194,10 @@
   }
   .h6 {
     @apply text-lg font-semibold tracking-wide;
-  } 
+  }
+  .h7 {
+    @apply text-sm font-semibold tracking-wide;
+  }
   .label {
     @apply text-sm font-bold tracking-wide;
   }
