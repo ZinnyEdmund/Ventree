@@ -94,7 +94,7 @@ export default function Login() {
   };
 
   return (
-    <section className="w-full flex flex-col md:space-y-16 space-y-16 justify-between md:p-6">
+    <section className="w-full flex flex-col md:space-y-7 space-y-16 justify-between md:p-3">
       <span className="absolute left-6 top-6 hidden md:inline">
         <Icon
           icon="iconamoon:arrow-left-6-circle-light"
@@ -112,7 +112,7 @@ export default function Login() {
         className="w-full max-w-sm mx-auto space-y-6"
       >
         <TextInput
-          label="Shop Name"
+          label="Business Name"
           placeholder="Enter your shop name"
           value={shopName}
           onChange={(e) => setShopName(e.target.value)}

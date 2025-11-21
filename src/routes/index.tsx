@@ -24,6 +24,7 @@ const LoginPage = lazy(() => import("../pages/onboarding/Login"));
 const WelcomePage = lazy(() => import("../pages/onboarding/Welcome"));
 const Otp = lazy(() => import("../pages/onboarding/Otp"));
 const ResetPasswordPage = lazy(() => import("../pages/onboarding/ResetPassword"));
+const ResetPasswordPage1 = lazy(() => import("../pages/onboarding/ResetPassword1"));
 const DesignSystem = lazy(() => import("../pages/DS/designSystem"));
 const LogoutPage = lazy(() => import("../pages/onboarding/Logout"));
 
@@ -45,6 +46,7 @@ function AppRoutes() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/otp" element={<Otp />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/reset-password1" element={<ResetPasswordPage1 />} />
           </Route>
 
           <Route path="/design" element={<DesignSystem />} />
