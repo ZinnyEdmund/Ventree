@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { Icon } from "@iconify/react";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 interface Good {
@@ -103,14 +104,14 @@ export default function RecordSale() {
     <section className="flex flex-col w-full max-w-4xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-6 sm:py-8">
       {/* Header */}
       <div className="relative mb-8 sm:mb-6">
-        <span className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
+        <Link to="/home" className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
           <Icon
             icon="iconamoon:arrow-left-6-circle-light"
             width="24"
             height="24"
             aria-hidden="true"
           />
-        </span>
+        </Link>
 
         <h2 className="h4 font-semibold text-secondary text-center">
           Sale 000001
