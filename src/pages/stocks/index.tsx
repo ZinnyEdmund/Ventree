@@ -28,7 +28,7 @@ export const ManageStocks = () => {
   
   // Get shopId from your auth state or context
   // TODO: Replace with actual shopId from your Redux store/context
-  const shopId = shop?.id || ""; 
+  const shopId = shop?.shopId || ""; 
 
 
   // Fetch inventory data using RTK Query
@@ -125,7 +125,7 @@ export const ManageStocks = () => {
         }).unwrap();
 
         toast.success("Goods added successfully!");
-        setSalesSuccessModal(true);
+        // setSalesSuccessModal(true);
       }
 
       closeModal();
@@ -228,7 +228,7 @@ export const ManageStocks = () => {
       {/* Error State */}
       {isError && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800">
+          <p className="text-error">
             Failed to load inventory. Please try again.
           </p>
           <button
