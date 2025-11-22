@@ -41,7 +41,7 @@ export const ManageStocks = () => {
   } = useFetchInventoryQuery(shopId);
 
   const [createInventory] = useCreateInventoryMutation();
-  const [updateInventory, { isLoading: isUpdating }] = useUpdateInventoryMutation();
+  const [updateInventory] = useUpdateInventoryMutation();
   const [deleteInventory, { isLoading: isDeleting }] = useDeleteInventoryMutation();
 
   // Transform Stocks data to match GoodsTable structure
