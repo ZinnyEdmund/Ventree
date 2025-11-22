@@ -19,7 +19,6 @@ import { STORAGE_KEYS } from "../../constants/storage";
 export default function Signup() {
   const [shopName, setShopName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [ownerName, setOwnerName] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [registerMutation, { isLoading }] = useRegisterMutation();

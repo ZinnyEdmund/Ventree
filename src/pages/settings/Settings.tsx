@@ -143,7 +143,7 @@ export default function Settings() {
                   aria-label={`Toggle ${label} notification`}
                   aria-pressed={notifications[key]}
                   className="
-    w-[65px] h-[36px]
+    w-[65px] h-9
     rounded-full
     flex items-center
     px-1
@@ -158,7 +158,7 @@ export default function Settings() {
                 >
                   <div
                     className={`
-      w-[28px] h-[28px]
+      w-7 h-7
       bg-white
       rounded-full
       transition

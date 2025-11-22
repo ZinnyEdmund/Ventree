@@ -40,7 +40,7 @@ export const ManageStocks = () => {
     refetch,
   } = useFetchInventoryQuery(shopId);
 
-  const [createInventory, { isLoading: isCreating }] = useCreateInventoryMutation();
+  const [createInventory] = useCreateInventoryMutation();
   const [updateInventory, { isLoading: isUpdating }] = useUpdateInventoryMutation();
   const [deleteInventory, { isLoading: isDeleting }] = useDeleteInventoryMutation();
 
@@ -123,7 +123,7 @@ export const ManageStocks = () => {
           category: formData.category || "General",
           reorderLevel: formData.reorderLevel || 10,
         }).unwrap();
-
+   
         toast.success("Goods added successfully!");
         // setSalesSuccessModal(true);
       }
