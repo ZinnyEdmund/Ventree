@@ -22,6 +22,29 @@ export interface CreateStaffInput {
   role?: string;
 }
 
+export enum PaymentMethodOptions { 
+  cash = "cash",
+  card = "card",
+  mobile = "mobile", 
+  bankTransfer= "bank_transfer"
+}
+
+export interface RecordSaleDto {
+  shopId: string;                     // Required - MongoId
+  itemId: string;                     // Required - MongoId
+  quantity: number;                   // Required - 1 to 10,000
+  soldBy: string;                     // Required - MongoId
+  paymentMethod: PaymentMethodOptions
+  discount?: number;                  // Optional - 0 to 50
+  customerName?: string;              // Optional - 2 to 100 chars
+  customerPhone?: string;             // Optional - Valid international phone
+  notes?: string;                     // Optional - Max 500 chars
+  transactionReference?: string;
+  sellingPrice?: number;
+  taxAmount?: number;
+  profitPercentage: string;
+}
+
 export interface UpdateStaffInput {
   staffName?: string;
   phoneNumber?: string;
@@ -38,10 +61,11 @@ export interface StaffResponse {
 
 // --- User Types
 export interface User {
-  id: string; 
+  userId: string; 
+  shopId: string; 
   shopName: string;
   phoneNumber: string;
-  ownerName: string;
+  userName: string;
   role: Role;
   avatar?: string | null;
   createdAt: string; // ISO date
@@ -143,6 +167,16 @@ export interface AuthResponse extends BaseResponse<{
   user: User;
 }> {}
 
+export interface Staff {
+  id: string;
+  staffName: string;
+  phoneNumber: string;
+  role: string;
+  isActive: boolean;
+  createdAt?: string;  // or Date
+  updatedAt?: string;  // or Date
+}
+
 // Actual API response structure for login
 export interface LoginResponse {
   success: boolean;
@@ -167,7 +201,7 @@ export interface LoginResponse {
         phoneNumber: string;
       };
     };
-    staff: any | null;
+    staff: Staff | null;
   };
 }
 
@@ -252,4 +286,29 @@ export interface InventoryData {
   total: number;
   page: number;
   pages: number;
+}
+
+export interface Sales {
+  shopId: string;
+  itemId: string;
+  itemName: string;
+  itemCategory: string;
+  quantitySold: number;
+  costPrice: number;
+  sellingPrice: number;
+  discount: number;
+  taxAmount: number;
+  totalAmount: number;
+  profitAmount: number;
+  soldBy: string;
+  soldByName: string;
+  paymentMethod: string;
+  date: string; // ISO Date string
+  refunded: boolean;
+  _id: string;
+  createdAt: string; // ISO Date string
+  updatedAt: string; // ISO Date string
+  __v: number;
+  profitPercentage: string; // e.g. "15.00"
+  id: string;
 }

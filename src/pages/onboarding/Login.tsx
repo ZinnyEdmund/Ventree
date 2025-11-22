@@ -49,46 +49,50 @@ export default function Login() {
       console.log({
         shopName: shopName.trim(),
         phoneNumber: formattedPhoneNumber,
-        password})
+        password,
+      });
 
       const result = await loginMutation({
         shopName: shopName.trim(),
         phoneNumber: formattedPhoneNumber,
         password,
       }).unwrap();
-      console.log(result)
+      console.log(result);
       // console.log('Login result:', result);
       if (result.success && result.data) {
-        const { accessToken, refreshToken, role, owner, shop } = result.data;
-        
+        const { accessToken, refreshToken, role, owner, shop, staff } =
+          result.data;
+
         // Construct user object from API response
         const user = {
-          id: shop?.id || '',
-          shopName: shop?.shopName || '',
-          phoneNumber: owner?.phoneNumber || shop?.phoneNumber || '',
-          ownerName: owner?.name || '',
-          role: role as 'owner' | 'staff',
+          userId: role === "owner" ? shop?.id || "" : staff?.id || "",
+          shopId: shop?.id || "",
+          shopName: shop?.shopName || "",
+          phoneNumber: owner?.phoneNumber || shop?.phoneNumber || "",
+          userName:
+            role === "owner" ? owner?.name || "" : staff?.staffName || "",
+          role: role as "owner" | "staff",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        
+
         // Dispatch login action to store tokens and user
         dispatch(login({ user, accessToken, refreshToken }));
-        
+
         toast.success(result.data.message || "Login successful!");
-        
+
         // Use requestAnimationFrame to ensure state is updated and persisted before navigation
         requestAnimationFrame(() => {
           // Redirect based on user role
-          if (user.role === 'staff') {
-            navigate('/record-sales', { replace: true });
+          if (user.role === "staff") {
+            navigate("/record-sales", { replace: true });
           } else {
-            navigate('/home', { replace: true });
+            navigate("/home", { replace: true });
           }
         });
       }
     } catch (error) {
-      console.log(error)
+      console.log(error);
       handleApiError(error);
     }
   };

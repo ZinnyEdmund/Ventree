@@ -30,7 +30,7 @@ export const SetupShopPage = () => {
 
   // Handle add sales person
   const handleAddPerson = async (person: SalesPersonFormValues) => {
-    if (!user?.id) {
+    if (!user?.userId) {
       toast.error("Shop information is missing. Please relogin and try again.");
       return;
     }
@@ -39,7 +39,7 @@ export const SetupShopPage = () => {
 
     try {
       const payload = {
-        shopId: user.id,
+        shopId: user.shopId,
         staffName: person.name.trim(),
         phoneNumber: formatNigerianPhoneNumber(person.phoneNumber),
         password: person.password,
