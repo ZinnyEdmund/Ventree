@@ -421,15 +421,15 @@ export const DeleteExpenseModal: React.FC<DeleteExpenseModalProps> = ({
                 disabled={loading}
               >
                 {loading ? (
-                  <>
+                  <div className="flex items-center gap-2">
                     Deleting...
-                    {/* <Loader2 size={16} className="animate-spin" /> */}
-                  </>
+                    <Loader2 className="animate-spin" width="18" />
+                  </div>
                 ) : (
-                  <>
-                    {/* <Icon icon="mdi:delete-outline" width="18" /> */}
+                  <div className="flex items-center gap-2">
+                    <Icon icon="mdi:delete-outline" width="24" />
                     Delete Expense
-                  </>
+                  </div>
                 )}
               </button>
             </div>
