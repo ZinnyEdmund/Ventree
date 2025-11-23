@@ -68,7 +68,7 @@ export default function Signup() {
         );
         navigate("/otp");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleApiError(error);
     }
   };

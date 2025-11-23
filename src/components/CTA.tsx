@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 export default function CTASection() {
+  const navigate = useNavigate();
   return (
     <section className="px-5 py-20">
       <div className="max-w-6xl  w-full mx-auto bg-secondary rounded-3xl px-8 md:px-16 py-10 text-center">
@@ -14,7 +17,9 @@ export default function CTASection() {
           Whether you run a small shop or a growing store, Ventree helps you save time, avoid loss, and grow your business.
         </p>
         
-        <button className="w-full md:w-80 btn btn-sec border active:border-tertiary">
+        <button 
+        onClick={() => navigate("/login")}
+        className="w-full md:w-80 btn btn-sec border active:border-tertiary">
           Start Now
         </button>
       </div>

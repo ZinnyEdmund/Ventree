@@ -34,7 +34,7 @@ export const BusinessInfoCard: React.FC<BusinessInfoCardProps> = ({
         <div className="flex items-start justify-between gap-4 mb-6">
           <article className="flex gap-3 items-center">
             {/* Logo */}
-            <div className="w-[48px] h-[48px] rounded-full bg-secondary justify-center flex items-center">
+            <div className="w-12 h-12 rounded-full bg-secondary justify-center flex items-center">
               <Icon
                 icon="octicon:person-16"
                 width="24"

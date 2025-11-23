@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 const navLinks = [
   { to: '#hero', label: 'Home' },
@@ -10,6 +11,7 @@ const navLinks = [
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -49,7 +51,9 @@ export default function Navbar() {
 
           {/* Button - Right (Desktop) */}
           <div className="hidden md:block">
-            <button className="w-full md:w-50 btn btn-primary border active:border-tertiary">
+            <button 
+            onClick={() => navigate("/login")}
+            className="w-full md:w-50 btn btn-primary border active:border-tertiary">
               Get Started
             </button>
           </div>

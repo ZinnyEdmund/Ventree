@@ -466,7 +466,7 @@ function SidebarItem({ to, icon, label, onClick }: SidebarItemProps) {
     return (
       <button
         onClick={onClick}
-        className="flex items-center gap-3 py-2 px-5 w-full rounded-lg cursor-pointer transition-colors hover:bg-primary-2 text-white"
+        className="flex items-center gap-3 py-2 px-5 w-full rounded-[4px] cursor-pointer transition-colors hover:bg-[#474747] text-white"
       >
         {icon}
         <span className="text-sm">{label}</span>
@@ -477,10 +477,10 @@ function SidebarItem({ to, icon, label, onClick }: SidebarItemProps) {
   return (
     <NavLink
       to={to}
-      className={`flex items-center gap-3 py-2 px-5 w-full rounded-lg cursor-pointer transition-colors ${
+      className={`flex items-center gap-3 py-2 px-5 w-full rounded-[4px] cursor-pointer transition-colors ${
         isActive
           ? "bg-primary-1 text-black"
-          : "hover:bg-secondary-4 text-white hover:text-white"
+          : "hover:bg-[#474747] text-white hover:text-white"
       }`}
     >
       {icon}
@@ -496,9 +496,6 @@ export default function MainLayout() {
   const [showSupport, setShowSupport] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // const menuRef = useRef<HTMLDivElement | null>(null);
-
-  console.log(isMobileMenuOpen);
-
 
   // Prevent body scroll when open
   useEffect(() => {

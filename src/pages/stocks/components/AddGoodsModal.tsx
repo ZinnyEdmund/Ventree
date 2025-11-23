@@ -6,6 +6,7 @@ import { X } from "lucide-react";
 import TextInput from "../../../components/ui/textInput";
 import SelectInput from "../../../components/ui/selectInput";
 import { toast } from "sonner";
+import { handleApiError } from "../../../lib/errorHandler";
 
 interface AddGoodsModalProps {
   isOpen: boolean;
@@ -185,6 +186,7 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
       } catch (error: any) {
         // Error is handled by parent component
         console.error("Form submission error:", error);
+        handleApiError(error);
       } finally {
         setLoading(false);
       }
@@ -207,6 +209,8 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
   }, [loading, onClose]);
 
   if (!isOpen) return null;
+  const profit =
+    (formData.sellingPrice - formData.costPrice) * formData.quantity;
 
   return (
     <>
@@ -340,18 +344,27 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
 
             {/* Profit Preview */}
             {formData.costPrice > 0 && formData.sellingPrice > 0 && (
-              <div className="p-3 bg-blue-50 rounded-lg">
+              <div className="p-3 bg-primary-5 rounded-lg">
                 <p className="text-sm text-gray-700">
                   <span className="font-medium">Profit per unit:</span>{" "}
-                  <span className="text-green-600 font-semibold">
-                    ₦{(formData.sellingPrice - formData.costPrice).toLocaleString()}
+                  <span className={`${
+                        profit < 0 ? " text-error" : "text-success"
+                      } font-semibold`}>
+                    ₦
+                    {(
+                      formData.sellingPrice - formData.costPrice
+                    ).toLocaleString()}
                   </span>
                 </p>
                 {formData.quantity > 0 && (
                   <p className="text-sm text-gray-700 mt-1">
                     <span className="font-medium">Total expected profit:</span>{" "}
-                    <span className="text-green-600 font-semibold">
-                      ₦{((formData.sellingPrice - formData.costPrice) * formData.quantity).toLocaleString()}
+                    <span
+                      className={`font-semibold ${
+                        profit < 0 ? "text-error" : "text-success"
+                      }`}
+                    >
+                      ₦{profit.toLocaleString()}
                     </span>
                   </p>
                 )}

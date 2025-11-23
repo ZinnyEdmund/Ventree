@@ -28,7 +28,7 @@ export const StatCard: React.FC<StatCardProps> = ({
     };
   
     return (
-      <div className="bg-white rounded-lg p-4 shadow-sm border border-accent-g2">
+      <div className="bg-white rounded-lg p-4 border border-accent-g2">
         <div className={`flex items-center gap-2 mb-2 ${getTextColor()}`}>
           <Icon icon={icon} className="" width="24" />
           <h3 className={`text-sm font-medium`}>{title}</h3>

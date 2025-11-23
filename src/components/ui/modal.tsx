@@ -1,7 +1,6 @@
 import React, { type ReactNode } from "react";
 import { Check, Frown, Info, X } from "lucide-react";
 import clsx from "clsx";
-import { Icon } from "@iconify/react";
 
 interface ModalProps {
   status?: "success" | "error" | "info" | "smiley" | "emoji"; // control icon and color
