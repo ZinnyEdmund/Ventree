@@ -2,14 +2,28 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { LoaderCircle } from "lucide-react";
 import { useCreateSalesMutation } from "../../services/sales.service"; // Adjust path as needed
 import type { RootState } from "../../state/store"; // Adjust path as needed
 import { handleApiError } from "../../lib/errorHandler";
 import { useFetchInventoryQuery } from "../../services/stocks.service";
-import { PaymentMethodOptions, type InventoryData, type Stocks } from "../../types/general";
+import {
+  PaymentMethodOptions,
+  type InventoryData,
+  type Stocks,
+} from "../../types/general";
 import TextInput from "../../components/ui/textInput";
+import {
+  addDraftGood,
+  removeDraftGood,
+  updateDraftGoodQuantity,
+  updateDraftGoodPrice,
+  setDraftPaymentMethod,
+  setDraftEditing,
+  clearDraftSales,
+  syncDraftWithInventory,
+} from "../../state/Store/draftSalesSlice";
 
 interface Good {
   itemId: string;
@@ -33,10 +47,16 @@ const PAYMENT_METHODS: PaymentMethodMap[] = [
 ];
 
 export default function RecordSale() {
-  const [goods, setGoods] = useState<Good[]>([]);
+  const dispatch = useDispatch();
+
+  // Get draft sales from Redux
+  const { goods, paymentMethod, isEditing } = useSelector(
+    (state: RootState) => state.draftSales
+  );
+
   const [name, setName] = useState("");
-  const [isEditing, setIsEditing] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodOptions | "">(PaymentMethodOptions.cash);
+  // const [isEditing, setIsEditing] = useState(false);
+  // const [paymentMethod, setPaymentMethod] = useState<PaymentMethodOptions | "">(PaymentMethodOptions.cash);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -52,7 +72,7 @@ export default function RecordSale() {
     isLoading: isLoadingInventory,
     isError: isInventoryError,
     error: inventoryError,
-  } = useFetchInventoryQuery(shopId);
+  } = useFetchInventoryQuery(shopId, { pollingInterval: 30000 });
 
   // Create sales mutation
   const [createSales, { isLoading: isCreatingSale }] = useCreateSalesMutation();
@@ -72,6 +92,50 @@ export default function RecordSale() {
       item.name.toLowerCase().includes(search)
     );
   }, [inventoryItems, searchTerm]);
+
+  // Sync draft goods with current inventory stock levels
+  useEffect(() => {
+    if (goods.length > 0 && inventoryItems.items.length > 0) {
+      const stockUpdates = goods.map((good) => {
+        const currentItem = inventoryItems.items.find(
+          (item) => item._id === good.itemId
+        );
+        return {
+          itemId: good.itemId,
+          availableStock: currentItem?.availableQuantity || 0,
+        };
+      });
+
+      // Check if any stock levels have changed significantly
+      const hasStockChanges = stockUpdates.some((update) => {
+        const existingGood = goods.find((g) => g.itemId === update.itemId);
+        return (
+          existingGood && existingGood.availableStock !== update.availableStock
+        );
+      });
+
+      if (hasStockChanges) {
+        dispatch(syncDraftWithInventory(stockUpdates));
+
+        // Check for items that now have insufficient stock
+        goods.forEach((good) => {
+          const update = stockUpdates.find((u) => u.itemId === good.itemId);
+          const requestedQty = parseFloat(good.quantity) || 0;
+
+          if (
+            update &&
+            requestedQty > 0 &&
+            update.availableStock < requestedQty
+          ) {
+            toast.warning(
+              `Stock alert: ${good.name} now has only ${update.availableStock} units available. You requested ${requestedQty} units.`,
+              { duration: 5000 }
+            );
+          }
+        });
+      }
+    }
+  }, [inventoryItems, goods, dispatch]);
 
   // Handle inventory error
   useEffect(() => {
@@ -99,14 +163,14 @@ export default function RecordSale() {
         availableStock: item.availableQuantity,
       };
 
-      setGoods((prev) => [...prev, newGood]);
+      dispatch(addDraftGood(newGood));
       setSearchTerm("");
       setName("");
       setShowDropdown(false);
 
-      if (goods.length === 0) setIsEditing(true);
+      if (goods.length === 0) dispatch(setDraftEditing(true));
     },
-    [goods]
+    [goods, dispatch]
   );
 
   const handleSearchChange = useCallback((value: string) => {
@@ -115,36 +179,38 @@ export default function RecordSale() {
     setShowDropdown(value.trim().length > 0);
   }, []);
 
-  const handleDelete = useCallback((index: number) => {
-    setGoods((prev) => prev.filter((_, i) => i !== index));
-  }, []);
+  const handleDelete = useCallback(
+    (index: number) => {
+      dispatch(removeDraftGood(index));
+    },
+    [dispatch]
+  );
 
-  const handleQuantityChange = useCallback((index: number, value: string) => {
-    const cleanValue = value.replace(/,/g, "");
-    const num = parseFloat(cleanValue);
+  const handleQuantityChange = useCallback(
+    (index: number, value: string) => {
+      const cleanValue = value.replace(/,/g, "");
+      const num = parseFloat(cleanValue);
 
-    // Validate quantity
-    if (value !== "" && (isNaN(num) || num <= 0)) {
-      toast.error("Quantity must be a positive number.");
-      return;
-    }
+      // Validate quantity
+      if (value !== "" && (isNaN(num) || num <= 0)) {
+        toast.error("Quantity must be a positive number.");
+        return;
+      }
 
-    setGoods((prev) => {
-      const updated = [...prev];
-      const item = updated[index];
+      const item = goods[index];
 
       // Check if quantity exceeds available stock
       if (item.availableStock && num > item.availableStock) {
         toast.error(
           `Only ${item.availableStock} units available for ${item.name}.`
         );
-        return prev;
+        return;
       }
 
-      updated[index].quantity = value;
-      return updated;
-    });
-  }, []);
+      dispatch(updateDraftGoodQuantity({ index, quantity: value }));
+    },
+    [goods, dispatch]
+  );
 
   const handlePriceChange = useCallback((index: number, value: string) => {
     const cleanValue = value.replace(/,/g, "");
@@ -155,11 +221,7 @@ export default function RecordSale() {
       return;
     }
 
-    setGoods((prev) => {
-      const updated = [...prev];
-      updated[index].price = value === "" ? 0 : num;
-      return updated;
-    });
+    dispatch(updateDraftGoodPrice({ index, price: value === "" ? 0 : num }));
   }, []);
 
   const formatPrice = useCallback((price: number) => {
@@ -190,6 +252,22 @@ export default function RecordSale() {
       return;
     }
 
+    // Final stock validation before submission
+    const stockIssues = goods.filter((item) => {
+      const qty = parseFloat(item.quantity);
+      return item.availableStock !== undefined && qty > item.availableStock;
+    });
+
+    if (stockIssues.length > 0) {
+      const issuesList = stockIssues
+        .map((item) => `${item.name} (${item.availableStock} available)`)
+        .join(", ");
+      toast.error(
+        `Insufficient stock for: ${issuesList}. Please refresh and adjust quantities.`
+      );
+      return;
+    }
+
     try {
       // Create sales records for each item
       const salesPromises = goods.map((item) => {
@@ -209,14 +287,9 @@ export default function RecordSale() {
           sellingPrice: item.price,
           discount: 0,
           taxAmount: 0,
-          // totalAmount,
-          // profitAmount,
           profitPercentage,
           soldBy,
-          // soldByName,
           paymentMethod,
-          // date: new Date().toISOString(),
-          // refunded: false,
         }).unwrap();
       });
 
@@ -225,9 +298,7 @@ export default function RecordSale() {
       toast.success("Sale Recorded Successfully!");
 
       // Reset form
-      setGoods([]);
-      setPaymentMethod("");
-      setIsEditing(false);
+      dispatch(clearDraftSales());
       setName("");
       setSearchTerm("");
     } catch (error) {
@@ -239,7 +310,6 @@ export default function RecordSale() {
     const qty = parseFloat(item.quantity) || 0;
     return sum + qty * item.price;
   }, 0);
-
 
   return (
     <section className="flex flex-col w-full py-6 sm:py-8">
@@ -347,7 +417,7 @@ export default function RecordSale() {
           <h3 className="h4 text-secondary">List of Goods</h3>
           {goods.length > 0 && (
             <button
-              onClick={() => setIsEditing(!isEditing)}
+              onClick={() => dispatch(setDraftEditing(!isEditing))}
               aria-label={isEditing ? "Done editing" : "Edit goods"}
             >
               <Icon
@@ -363,9 +433,7 @@ export default function RecordSale() {
           <table className="w-full text-left border-collapse">
             <thead className="bg-white">
               <tr>
-                <th className="pr-4 py-3 body-bold text-secondary">
-                  Name
-                </th>
+                <th className="pr-4 py-3 body-bold text-secondary">Name</th>
                 <th className="px-2 sm:px-6 py-3 body-bold text-secondary">
                   Quantity
                 </th>
@@ -413,7 +481,7 @@ export default function RecordSale() {
                           aria-label={`Quantity for ${item.name}`}
                         />
                       ) : (
-                        <span className="body-small text-black">
+                        <span className="text-black">
                           {item.quantity || "0"}
                         </span>
                       )}
@@ -430,7 +498,7 @@ export default function RecordSale() {
                           aria-label={`Price for ${item.name}`}
                         />
                       ) : (
-                        <span className="body-small text-black">
+                        <span className=" text-black">
                           ₦{item.price.toLocaleString()}
                         </span>
                       )}
@@ -439,7 +507,7 @@ export default function RecordSale() {
                       <td className="px-1 sm:px-6 py-4">
                         <button
                           onClick={() => handleDelete(index)}
-                          className="text-error hover:text-red-700"
+                          className="text-error hover:text-error-dark transition"
                           aria-label={`Delete ${item.name}`}
                         >
                           <Icon
@@ -479,7 +547,9 @@ export default function RecordSale() {
                 value={method.value}
                 checked={paymentMethod === method.value}
                 onChange={(e) =>
-                  setPaymentMethod(e.target.value as PaymentMethodOptions)
+                  dispatch(
+                    setDraftPaymentMethod(e.target.value as PaymentMethodOptions)
+                  )
                 }
                 className="hidden"
               />
@@ -491,7 +561,11 @@ export default function RecordSale() {
                   rounded-sm
                   border border-success hover:bg-primary-1
                   transition
-                  ${paymentMethod === method.value ? "bg-success" : "bg-transparent"}
+                  ${
+                    paymentMethod === method.value
+                      ? "bg-success"
+                      : "bg-transparent"
+                  }
                 `}
               >
                 {paymentMethod === method.value && (

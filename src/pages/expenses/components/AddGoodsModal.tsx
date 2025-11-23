@@ -6,18 +6,20 @@ import { toast } from "sonner";
 import SelectInput from "../../../components/ui/selectInput";
 import TextInput from "../../../components/ui/textInput";
 import { X } from "lucide-react";
+import type { ICreateExpense } from "../../../types/general";
 
 interface AddGoodsModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: ExpenseFormData) => Promise<void>;
+  onSubmit: (data: ICreateExpense) => Promise<void>;
 }
 
 export interface ExpenseFormData {
+
   category: string;
   amount: number;
-  date: string;
-  note: string;
+  title: string;
+  notes: string;
 }
 
 export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
@@ -25,30 +27,32 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
   onClose,
   onSubmit,
 }) => {
-  const [formData, setFormData] = useState<ExpenseFormData>({
+  const [formData, setFormData] = useState<ICreateExpense>({
+    shopId: "",
     category: "",
     amount: 0,
-    date: "",
-    note: "",
+    title: "",
+    notes: "",
   });
 
   const [loading, setLoading] = useState(false);
 
   // Category options
-  const expenseCategoryOptions = [
-    { value: "product_purchase", label: "Product Purchase" },
-    { value: "transportation", label: "Transportation / Delivery" },
-    { value: "rent", label: "Shop Rent" },
-    { value: "utilities", label: "Utilities (Electricity, Water, Internet)" },
-    { value: "maintenance", label: "Repairs & Maintenance" },
-    { value: "salary", label: "Staff Salary / Wages" },
-    { value: "advertising", label: "Advertising & Promotion" },
-    { value: "packaging", label: "Packaging Materials" },
-    { value: "cleaning", label: "Cleaning & Sanitation" },
-    { value: "equipment", label: "Equipment & Tools" },
-    { value: "taxes", label: "Taxes & Licenses" },
-    { value: "miscellaneous", label: "Miscellaneous" },
-  ];
+  // Category options where label = value
+const expenseCategoryOptions = [
+  { value: "Product Purchase", label: "Product Purchase" },
+  { value: "Transportation / Delivery", label: "Transportation / Delivery" },
+  { value: "Shop Rent", label: "Shop Rent" },
+  { value: "Utilities (Electricity, Water, Internet)", label: "Utilities (Electricity, Water, Internet)" },
+  { value: "Repairs & Maintenance", label: "Repairs & Maintenance" },
+  { value: "Staff Salary / Wages", label: "Staff Salary / Wages" },
+  { value: "Advertising & Promotion", label: "Advertising & Promotion" },
+  { value: "Packaging Materials", label: "Packaging Materials" },
+  { value: "Cleaning & Sanitation", label: "Cleaning & Sanitation" },
+  { value: "Equipment & Tools", label: "Equipment & Tools" },
+  { value: "Taxes & Licenses", label: "Taxes & Licenses" },
+  { value: "Miscellaneous", label: "Others (Miscellaneous)" },
+];
 
   const handleInputChange = useCallback(
     (field: keyof ExpenseFormData, value: string | number) => {
@@ -69,14 +73,14 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
       toast.error("Amount must be greater than 0");
       return false;
     }
-    if (!formData.date.trim()) {
+    if (!formData.title.trim()) {
       toast.error("Please select a date");
       return false;
     }
-    if (!formData.note.trim()) {
-      toast.error("Please enter a note");
-      return false;
-    }
+    // if (formData.notes.trim()) {
+    //   toast.error("Please enter a note");
+    //   return false;
+    // }
     return true;
   }, [formData]);
 
@@ -93,10 +97,11 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
 
         // Reset form
         setFormData({
+          shopId: "",
           category: "",
           amount: 0,
-          date: "",
-          note: "",
+          title: "",
+          notes: "",
         });
 
         onClose();
@@ -112,10 +117,11 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
   const handleClose = useCallback(() => {
     if (loading) return; // Prevent closing while submitting
     setFormData({
+      shopId: "",
       category: "",
       amount: 0,
-      date: "",
-      note: "",
+      title: "",
+      notes: "",
     });
     onClose();
   }, [loading, onClose]);
@@ -173,7 +179,7 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
               label="Amount Spent"
               placeholder="e.g., 5000"
               type="number"
-              value={formData.amount || 0}
+              value={formData.amount}
               onChange={(e: any) =>
                 handleInputChange("amount", Number(e.target.value))
               }
@@ -186,9 +192,9 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
               label="Date"
               placeholder="Select Date"
               type="date"
-              value={formData.date || ""}
+              value={formData.title || ""}
               onChange={(e: any) =>
-                handleInputChange("date", e.target.value)
+                handleInputChange("title", e.target.value)
               }
               required
               disabled={loading}
@@ -199,9 +205,9 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
               label="Note (Optional)"
               placeholder="Add any extra details about this expense"
               type="text"
-              value={formData.note || ""}
+              value={formData.notes || ""}
               onChange={(e: any) =>
-                handleInputChange("note", e.target.value)
+                handleInputChange("notes", e.target.value)
               }
               required
               disabled={loading}

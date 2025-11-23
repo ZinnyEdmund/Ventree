@@ -18,10 +18,12 @@ import {
 import storage from "redux-persist/lib/storage";
 import skipReducer from "./Store/skipSlice";
 import authReducer from "./Store/authSlice";
+import draftSalesReducer from "./Store/draftSalesSlice";
 import { authApi } from "../services/auth.service";
 import { userApi } from "../services/user.service";
 import { staffApi } from "../services/staff.service";
 import { stocksApi } from "../services/stocks.service";
+import { expenseApi } from "../services/expenses.service";
 
 // Transform to exclude _initialized from persistence
 // _initialized is a runtime flag and shouldn't be persisted
@@ -50,13 +52,27 @@ const persistConfig = {
   // Only user and isLoggedIn will be persisted (not _initialized, which is excluded by transform)
 };
 
+// Persist configuration for draft sales
+const draftSalesPersistConfig = {
+  key: "draftSales",
+  storage,
+  whitelist: ["goods", "paymentMethod", "isEditing", "lastUpdated"], // Persist all fields
+};
+
+const persistedDraftSalesReducer = persistReducer(
+  draftSalesPersistConfig,
+  draftSalesReducer
+);
+
 export const reducers = combineReducers({
   skip: skipReducer,
+  draftSales: persistedDraftSalesReducer,
   auth: persistReducer(persistConfig, authReducer),
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [staffApi.reducerPath]: staffApi.reducer,
-  [stocksApi.reducerPath]: stocksApi.reducer
+  [stocksApi.reducerPath]: stocksApi.reducer,
+  [expenseApi.reducerPath]: expenseApi.reducer
 });
 
 export const store = configureStore({
@@ -72,6 +88,7 @@ export const store = configureStore({
       .concat(userApi.middleware)
       .concat(staffApi.middleware)
       .concat(stocksApi.middleware)
+      .concat(expenseApi.middleware)
 });
 
 export const persistor = persistStore(store);

@@ -278,7 +278,7 @@ function DesktopHeader({
             />
           </button>
           <div className="flex items-center justify-center gap-2 my-auto">
-            <div className="w-[32px] h-[32px] rounded-full bg-secondary justify-center flex m-auto items-center">
+            <div className="w-8 h-8 rounded-full bg-secondary justify-center flex m-auto items-center">
               <Icon
                 icon="octicon:person-16"
                 width="18"
@@ -466,7 +466,7 @@ function SidebarItem({ to, icon, label, onClick }: SidebarItemProps) {
     return (
       <button
         onClick={onClick}
-        className="flex items-center gap-3 py-2 px-5 w-full rounded-[4px] cursor-pointer transition-colors hover:bg-[#474747] text-white"
+        className="flex items-center gap-3 py-2 px-5 w-full rounded-sm cursor-pointer transition-colors hover:bg-[#474747] text-white"
       >
         {icon}
         <span className="text-sm">{label}</span>
@@ -477,7 +477,7 @@ function SidebarItem({ to, icon, label, onClick }: SidebarItemProps) {
   return (
     <NavLink
       to={to}
-      className={`flex items-center gap-3 py-2 px-5 w-full rounded-[4px] cursor-pointer transition-colors ${
+      className={`flex items-center gap-3 py-2 px-5 w-full rounded-sm cursor-pointer transition-colors ${
         isActive
           ? "bg-primary-1 text-black"
           : "hover:bg-[#474747] text-white hover:text-white"
