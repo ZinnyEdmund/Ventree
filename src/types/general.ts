@@ -312,3 +312,27 @@ export interface Sales {
   profitPercentage: string; // e.g. "15.00"
   id: string;
 }
+
+export interface ExpenseData {
+  _id: string;
+  shopId: string;
+  title: string;
+  date: string; // ISO Date string
+  category: string;
+  amount: number;
+  notes: string;
+  uploader: string;
+  createdAt: string; // or Date if you convert it on fetch
+  updatedAt: string; // or Date
+  __v: number;
+}
+
+export interface ICreateExpense {
+  shopId: string;
+  staffId?: string; // optional
+  category: string;
+  amount: number;
+  title: string;
+  // date?: string; // optional date in ISO format
+  notes?: string; // optional notes (since you may or may not include it)
+}

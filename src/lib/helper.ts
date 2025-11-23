@@ -56,3 +56,16 @@ export const formatPriceInNaira = (price: number) => {
 export function truncateTextWithStringMethod(text: string, maxLength: number) {
     return text.length > maxLength ? text.substring(0, maxLength) + '...' : text
 }
+
+/**
+ * Format date to DD/MM/YYYY format
+ * @param dateString - ISO date string
+ * @returns Formatted date string
+ */
+export function formatDate(dateString: string): string {
+  const date = new Date(dateString);
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
