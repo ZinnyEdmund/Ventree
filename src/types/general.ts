@@ -142,6 +142,11 @@ export interface VerifyOtpRequest {
   otp: string;
 }
 
+export interface ResendOtpRequest {
+  shopName: string;
+  phoneNumber: string;
+}
+
 export interface RefreshTokenRequest {
   refreshToken: string;
 }

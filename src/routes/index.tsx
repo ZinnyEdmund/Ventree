@@ -22,7 +22,6 @@ import LandingPage from "../pages/landingpage/LandingPage";
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
 const LoginPage = lazy(() => import("../pages/onboarding/Login"));
-// const WelcomePage = lazy(() => import("../pages/onboarding/Welcome"));
 const Otp = lazy(() => import("../pages/onboarding/Otp"));
 const ResetPasswordPage = lazy(() => import("../pages/onboarding/ResetPassword"));
 const ResetPasswordPage1 = lazy(() => import("../pages/onboarding/ResetPassword1"));
@@ -38,7 +37,6 @@ function AppRoutes() {
       <BrowserRouter>
         <Routes>
           {/* Onboarding */}
-          {/* <Route path="/" element={<WelcomePage />} /> */}
           <Route path="/" element={<LandingPage />} />
 
           {/* Authentication */}
