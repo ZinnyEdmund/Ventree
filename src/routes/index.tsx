@@ -21,7 +21,6 @@ import LandingPage from "../pages/landingpage/LandingPage";
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
 const LoginPage = lazy(() => import("../pages/onboarding/Login"));
-const WelcomePage = lazy(() => import("../pages/onboarding/Welcome"));
 const Otp = lazy(() => import("../pages/onboarding/Otp"));
 const ResetPasswordPage = lazy(() => import("../pages/onboarding/ResetPassword"));
 const DesignSystem = lazy(() => import("../pages/DS/designSystem"));
@@ -36,8 +35,7 @@ function AppRoutes() {
       <BrowserRouter>
         <Routes>
           {/* Onboarding */}
-          <Route path="/" element={<WelcomePage />} />
-          <Route path="/landingpage" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage />} />
 
           {/* Authentication */}
           <Route path="/" element={<OnboardWrapper component={<OnboardLayout />} />}>

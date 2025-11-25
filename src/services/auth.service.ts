@@ -7,6 +7,7 @@ import type {
   VerifyOtpRequest,
   RefreshTokenRequest,
   RefreshTokenResponse,
+  ResendOtpRequest,
 } from '../types/general';
 
 const baseUrl = import.meta.env.VITE_APP_BASE_URL;
@@ -51,6 +52,14 @@ export const authApi = createApi({
         body: data,
       }),
     }),
+
+    resendOTP: builder.mutation<RefreshTokenResponse, ResendOtpRequest>({
+      query: (data) => ({
+        url: '/resend-otp',
+        method: 'POST',
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -59,4 +68,5 @@ export const {
   useLoginMutation,
   useVerifyOtpMutation,
   useRefreshTokenMutation,
+  useResendOTPMutation
 } = authApi;
