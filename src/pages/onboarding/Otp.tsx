@@ -16,7 +16,7 @@ export default function OtpPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const navigate = useNavigate();
   const [verifyOtpMutation, { isLoading }] = useVerifyOtpMutation();
-  const [resendOtpMutation, { isSuccess }] = useResendOTPMutation();
+  const [resendOtpMutation] = useResendOTPMutation();
   const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -131,16 +131,10 @@ export default function OtpPage() {
         phoneNumber: formatNigerianPhoneNumber(phoneNumber)
       }).unwrap();
 
-      if (isSuccess) {
-
-      
-      // You might want to create a separate resend-otp endpoint
       toast.success("Code resent successfully!");
 
       setOtp(Array(6).fill(""));
       inputRefs.current[0]?.focus();
-    }
-
     } catch (error) {
       handleApiError(error);
     } finally {
@@ -205,7 +199,7 @@ export default function OtpPage() {
               disabled={isResending}
               className="link-small text-black underline"
             >
-              {isResending ? "Resending" : "Resend Code"}
+              {isResending ? "Resending,," : "Resend Code"}
             </button>
           </p>
         </div>
