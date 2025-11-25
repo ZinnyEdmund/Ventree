@@ -42,7 +42,7 @@ function StepCard({ icon, title, description }: StepCardProps) {
 
 export default function HowItWorks() {
   return (
-    <section className="px-5 py-20">
+    <section className="px-5 pt-20 md:py-20">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16 max-w-5xl mx-auto">
           <h2 className="h2 text-black mb-2">

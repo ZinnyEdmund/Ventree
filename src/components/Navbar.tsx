@@ -27,7 +27,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="md:px-15 md:static fixed top-0 left-0 w-full z-50 ">
+    <nav className="md:px-15 md:mt-4 fixed top-0 left-0 w-full z-50 bg-white md:bg-transparent">
       <div className="md:bg-white rounded-lg max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-18">
           {/* Logo - Left */}
@@ -89,9 +89,6 @@ export default function Navbar() {
                 {link.label}
               </a>
             ))}
-            {/* <button className="w-full bg-black text-white px-6 py-3 rounded-full text-base font-medium hover:bg-gray-800 transition mt-2">
-              Get Started
-            </button> */}
           </div>
         </div>
       )}
