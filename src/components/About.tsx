@@ -27,7 +27,7 @@ const ABOUT = [
 function AboutCard({ icon, title, description }: AboutCardProps) {
   return (
     <div className="bg-white rounded-2xl p-8 text-center hover:shadow-lg transition-shadow duration-300">
-      <div className="w-16 h-16 bg-primary-7 rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-primary-8">
+      <div className="w-16 h-16 bg-linear-to-r from-[#59DC59] to-[#ADFFAD] border-2 border-[#33EB35] rounded-full flex items-center justify-center text-white mx-auto mb-6 shadow-primary-8">
         <Icon icon={icon} width="35" height="35" />
       </div>
       <h3 className="h5 text-grey mb-5">

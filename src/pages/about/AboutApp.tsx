@@ -1,4 +1,5 @@
 import { Icon } from "@iconify/react";
+import { Link } from "react-router-dom";
 
 export default function AboutApp() {
   return (
@@ -6,12 +7,17 @@ export default function AboutApp() {
       <div className="w-full mx-auto space-y-8 rounded-lg p-6">
         {/* Header */}
         <div className="flex items-center gap-2 mb-6 pb-4">
-          <Icon
-            icon="iconamoon:arrow-left-6-circle-light"
-            width={24}
-            height={24}
-            aria-hidden="true"
-          />
+          <Link
+            to="/settings"
+            className="text-black hover:text-gray-800 transition"
+          >
+            <Icon
+              icon="iconamoon:arrow-left-6-circle-light"
+              width={24}
+              height={24}
+              aria-hidden="true"
+            />
+          </Link>
           <h1 className="h3 text-black">About App</h1>
         </div>
 
@@ -23,9 +29,7 @@ export default function AboutApp() {
 
         {/* App Language Section */}
         <div className="mb-6 p-4 shadow-sm rounded-lg">
-          <h2 className="h4 text-black mb-1">
-            App Language
-          </h2>
+          <h2 className="h4 text-black mb-1">App Language</h2>
           <p className="body text-black">English</p>
         </div>
 

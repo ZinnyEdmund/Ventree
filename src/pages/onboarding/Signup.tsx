@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 import {
@@ -19,6 +20,7 @@ import { STORAGE_KEYS } from "../../constants/storage";
 export default function Signup() {
   const [shopName, setShopName] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  // const [ownerName, setOwnerName] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const [registerMutation, { isLoading }] = useRegisterMutation();
@@ -67,20 +69,20 @@ export default function Signup() {
         );
         navigate("/otp");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       handleApiError(error);
     }
   };
 
   return (
-    <section className="w-full flex flex-col md:space-y-6 space-y-16 justify-between md:p-6">
-      <span className="absolute left-6 top-6 hidden md:inline">
+    <section className="w-full flex flex-col md:space-y-2 space-y-16 justify-between md:p-3">
+      <Link to="/" className="absolute left-6 top-6 hidden md:inline">
         <Icon
           icon="iconamoon:arrow-left-6-circle-light"
           width="24"
           height="24"
-        />
-      </span>
+        />  
+      </Link>
       <div className="text-center text-black md:pb-7">
         <h2 className="h3 pb-2">Less Stress</h2>
         <p className="h3">More Business</p>
@@ -91,7 +93,7 @@ export default function Signup() {
         className="w-full max-w-sm mx-auto space-y-6"
       >
         <TextInput
-          label="Shop Name"
+          label="Business Name"
           placeholder="Put your Shop Name"
           value={shopName}
           onChange={(e) => setShopName(e.target.value)}

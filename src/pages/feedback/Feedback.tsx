@@ -1,6 +1,12 @@
-import { useState, useCallback, type KeyboardEvent, type ChangeEvent } from "react";
+import {
+  useState,
+  useCallback,
+  type KeyboardEvent,
+  type ChangeEvent,
+} from "react";
 import { Icon } from "@iconify/react";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 const CONTACT_INFO = {
   email: "ventreeapp@gmail.com",
@@ -25,7 +31,7 @@ export default function Feedback() {
       // TODO: Replace with actual API call
       // await submitFeedback(trimmedFeedback);
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API delay
-      
+
       toast.success("Feedback submitted successfully!");
       setFeedback("");
     } catch (error) {
@@ -36,30 +42,34 @@ export default function Feedback() {
     }
   }, [feedback]);
 
-  const handleKeyDown = useCallback((e: KeyboardEvent<HTMLTextAreaElement>) => {
-    // Submit on Ctrl/Cmd + Enter
-    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
-      e.preventDefault();
-      handleSubmit();
-    }
-  }, [handleSubmit]);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent<HTMLTextAreaElement>) => {
+      // Submit on Ctrl/Cmd + Enter
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        handleSubmit();
+      }
+    },
+    [handleSubmit]
+  );
 
   const handleChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     setFeedback(e.target.value);
   }, []);
-
 
   return (
     <section className="bg-white min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8 py-6">
       <div className="w-full max-w-4xl md:max-w-5xl space-y-6">
         {/* Header */}
         <header className="flex items-center gap-3">
-          <Icon
-            icon="iconamoon:arrow-left-6-circle-light"
-            width={24}
-            height={24}
-            aria-hidden="true"
-          />
+          <Link to="/settings" className="text-black hover:text-gray-800 transition">
+            <Icon
+              icon="iconamoon:arrow-left-6-circle-light"
+              width={24}
+              height={24}
+              aria-hidden="true"
+            />
+          </Link>
           <h1 className="h3 text-black">Help & Feedback</h1>
         </header>
 
@@ -70,7 +80,7 @@ export default function Feedback() {
             <h2 id="feedback-heading" className="h4 text-black mb-4">
               Send Feedback
             </h2>
-            
+
             <textarea
               value={feedback}
               onChange={handleChange}
@@ -101,7 +111,7 @@ export default function Feedback() {
             <p className="web-small text-subtle-text mb-4">
               Need assistance? Reach out to our support team
             </p>
-            
+
             <address className="space-y-2 not-italic">
               <a
                 href={`mailto:${CONTACT_INFO.email}`}
