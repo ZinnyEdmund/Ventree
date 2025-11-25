@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const navLinks = [
   { to: '#hero', label: 'Home' },
@@ -49,9 +50,9 @@ export default function Navbar() {
 
           {/* Button - Right (Desktop) */}
           <div className="hidden md:block">
-            <button className="w-full md:w-50 btn btn-primary border active:border-tertiary">
+            <Link to="/register" className="w-full md:w-50 btn btn-primary border active:border-tertiary">
               Get Started
-            </button>
+            </Link>
           </div>
 
           {/* Mobile menu button */}

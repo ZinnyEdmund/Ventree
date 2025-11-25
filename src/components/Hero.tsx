@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 export default function Hero() {
   return (
     <section className="flex items-center justify-center px-5 py-20">
@@ -8,11 +10,11 @@ export default function Hero() {
         <p className="body md:text-xl text-black mb-9 leading-relaxed max-w-xl mx-auto">
           Ventree helps you keep record of your sales, stock, and profit, all in one simple app. No more paper and confusion.
         </p>
-        <button
+        <Link to="/register"
           className="w-full md:w-80 btn btn-primary px-10 border active:border-tertiary"
         >
           Get Started Now
-        </button>
+        </Link>
       </div>
     </section>
   );
