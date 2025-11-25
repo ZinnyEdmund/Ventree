@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import { useDispatch } from "react-redux";
 import TextInput from "../../components/ui/textInput";
@@ -99,13 +100,13 @@ export default function Login() {
 
   return (
     <section className="w-full flex flex-col md:space-y-7 space-y-16 justify-between md:p-3">
-      <span className="absolute left-6 top-6 hidden md:inline">
+      <Link to="/" className="absolute left-6 top-6 hidden md:inline">
         <Icon
           icon="iconamoon:arrow-left-6-circle-light"
           width="24"
           height="24"
         />
-      </span>
+      </Link>
 
       <div className="text-center text-black">
         <h2 className="h3 pb-2">Welcome Back!</h2>

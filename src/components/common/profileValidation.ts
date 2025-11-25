@@ -1,7 +1,86 @@
 import { useState } from "react";
 import { toast } from "sonner";
+import type { FormState, FieldName, Errors } from "../../components/common/profileTypes";
 
-// FORM SUBMIT HOOK
+// VALIDATORS (cleaned and type-safe)
+const validators: Record<FieldName, (value: string) => string | null> = {
+  ownerName: (value) =>
+    !value.trim() ? "Owner's name is required" :
+    value.trim().length < 2 ? "Owner's name must be at least 2 characters" : null,
+
+  businessName: (value) =>
+    !value.trim() ? "Business name is required" :
+    value.trim().length < 2 ? "Business name must be at least 2 characters" : null,
+
+  phoneNumber: (value) => {
+    if (!value.trim()) return "Phone number is required";
+    const cleaned = value.replace(/[\s\-()]/g, "");
+    return /^\+?\d{10,15}$/.test(cleaned)
+      ? null
+      : "Please enter a valid phone number";
+  },
+
+  businessType: (value) =>
+    !value.trim() ? "Business type is required" : null,
+
+  address: (value) =>
+    !value.trim() ? "Address is required" :
+    value.trim().length < 3 ? "Address must be at least 3 characters" : null,
+};
+
+// FORM VALIDATION HOOK
+export const useProfileFormValidation = () => {
+  const [errors, setErrors] = useState<Errors>({
+    ownerName: null,
+    businessName: null,
+    phoneNumber: null,
+    businessType: null,
+    address: null,
+  });
+
+  const validateField = (name: FieldName, value: string) => {
+    const error = validators[name](value);
+    setErrors((prev) => ({ ...prev, [name]: error }));
+    return error;
+  };
+
+  const validateAll = (formData: FormState) => {
+    const newErrors = Object.fromEntries(
+      (Object.keys(formData) as FieldName[]).map((key) => [
+        key,
+        validators[key](formData[key]),
+      ])
+    ) as Errors;
+
+    setErrors(newErrors);
+
+    return Object.values(newErrors).every((e) => e === null);
+  };
+
+  const clearErrors = () => {
+    setErrors({
+      ownerName: null,
+      businessName: null,
+      phoneNumber: null,
+      businessType: null,
+      address: null,
+    });
+  };
+
+  const clearFieldError = (name: FieldName) => {
+    setErrors((prev: Errors): Errors => ({ ...prev, [name]: null }));
+  };
+
+  return {
+    errors,
+    validateField,
+    validateAll,
+    clearErrors,
+    clearFieldError,
+  };
+};
+
+// SUBMIT HOOK
 export const useProfileFormSubmit = () => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -11,122 +90,17 @@ export const useProfileFormSubmit = () => {
     onSuccess?: () => void
   ) => {
     setIsLoading(true);
+
     try {
       await apiCall();
       toast.success(successMessage);
       onSuccess?.();
     } catch (error) {
-      toast.error(handleApiError(error));
+      toast.error(error instanceof Error ? error.message : "Something went wrong");
     } finally {
       setIsLoading(false);
     }
   };
 
   return { isLoading, submit };
-};
-
-// VALIDATION FUNCTIONS
-export const validateOwnerName = (value: string): string | null => {
-  if (!value.trim()) return "Owner's name is required";
-  if (value.trim().length < 2) return "Owner's name must be at least 2 characters";
-  return null;
-};
-
-export const validateBusinessName = (value: string): string | null => {
-  if (!value.trim()) return "Business name is required";
-  if (value.trim().length < 2) return "Business name must be at least 2 characters";
-  return null;
-};
-
-export const validatePhoneNumber = (value: string): string | null => {
-  if (!value.trim()) return "Phone number is required";
-  
-  // Remove spaces, dashes, and parentheses for validation
-  const cleanedNumber = value.replace(/[\s\-()]/g, '');
-  
-  // Check if it's a valid format (allow + for country code)
-  if (!/^\+?[\d]{10,15}$/.test(cleanedNumber)) {
-    return "Please enter a valid phone number";
-  }
-  
-  return null;
-};
-
-export const validateBusinessType = (value: string): string | null => {
-  if (!value.trim()) return "Business type is required";
-  return null;
-};
-
-// ERROR HANDLING
-export const handleApiError = (error: unknown): string => {
-  if (error instanceof Error) return error.message;
-  if (typeof error === "string") return error;
-  return "Something went wrong. Please try again.";
-};
-
-// FORM VALIDATION HOOK
-export const useProfileFormValidation = () => {
-  const [errors, setErrors] = useState<{
-    ownerName: string | null;
-    businessName: string | null;
-    phoneNumber: string | null;
-    businessType: string | null;
-  }>({
-    ownerName: null,
-    businessName: null,
-    phoneNumber: null,
-    businessType: null,
-  });
-
-  const validateField = (name: string, value: string) => {
-    let error: string | null = null;
-
-    switch (name) {
-      case 'ownerName':
-        error = validateOwnerName(value);
-        break;
-      case 'businessName':
-        error = validateBusinessName(value);
-        break;
-      case 'phoneNumber':
-        error = validatePhoneNumber(value);
-        break;
-      case 'businessType':
-        error = validateBusinessType(value);
-        break;
-    }
-
-    setErrors(prev => ({ ...prev, [name]: error }));
-    return error;
-  };
-
-  const validateAll = (formData: {
-    ownerName: string;
-    businessName: string;
-    phoneNumber: string;
-    businessType: string;
-  }) => {
-    const newErrors = {
-      ownerName: validateOwnerName(formData.ownerName),
-      businessName: validateBusinessName(formData.businessName),
-      phoneNumber: validatePhoneNumber(formData.phoneNumber),
-      businessType: validateBusinessType(formData.businessType),
-    };
-
-    setErrors(newErrors);
-
-    // Return true if no errors
-    return !Object.values(newErrors).some(error => error !== null);
-  };
-
-  const clearErrors = () => {
-    setErrors({
-      ownerName: null,
-      businessName: null,
-      phoneNumber: null,
-      businessType: null,
-    });
-  };
-
-  return { errors, validateField, validateAll, clearErrors };
 };

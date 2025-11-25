@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { LoaderCircle } from "lucide-react";
 import {
@@ -75,13 +76,13 @@ export default function Signup() {
 
   return (
     <section className="w-full flex flex-col md:space-y-2 space-y-16 justify-between md:p-3">
-      <span className="absolute left-6 top-6 hidden md:inline">
+      <Link to="/" className="absolute left-6 top-6 hidden md:inline">
         <Icon
           icon="iconamoon:arrow-left-6-circle-light"
           width="24"
           height="24"
         />  
-      </span>
+      </Link>
       <div className="text-center text-black md:pb-7">
         <h2 className="h3 pb-2">Less Stress</h2>
         <p className="h3">More Business</p>

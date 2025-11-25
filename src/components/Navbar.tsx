@@ -27,7 +27,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="md:px-15 relative">
+    <nav className="md:px-15 md:static fixed top-0 left-0 w-full z-50 ">
       <div className="md:bg-white rounded-lg max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-18">
           {/* Logo - Left */}
@@ -52,7 +52,7 @@ export default function Navbar() {
           {/* Button - Right (Desktop) */}
           <div className="hidden md:block">
             <button 
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/register")}
             className="w-full md:w-50 btn btn-primary border active:border-tertiary">
               Get Started
             </button>

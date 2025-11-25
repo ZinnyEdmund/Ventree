@@ -13,7 +13,7 @@ export default function BookKeeping() {
               Bookkeeping
             </h2>
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => navigate("/register")}
               className="w-full md:w-80 btn btn-primary border active:border-tertiary"
             >
               Get Started Now

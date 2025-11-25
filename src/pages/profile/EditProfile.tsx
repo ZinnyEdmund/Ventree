@@ -1,26 +1,31 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import { Icon } from "@iconify/react";
 import ProfileInput from "../../components/ui/editProfileInput";
 import ProfileSelect from "../../components/ui/editProfileSelect";
+import type { FieldName } from "../../components/common/profileTypes";
 import {
   useProfileFormSubmit,
-  useProfileFormValidation,
+  useProfileFormValidation
 } from "../../components/common/profileValidation";
+import { useProfileAPI } from "../../components/common/profileApi";
+
 
 type FormState = {
   ownerName: string;
   businessName: string;
   phoneNumber: string;
   businessType: string;
+  address: string;
 };
 
 const INITIAL_FORM_DATA: FormState = {
-  ownerName: "Owner",
-  businessName: "Owner Provisions",
-  phoneNumber: "08134775647",
-  businessType: "Provision Store",
+  ownerName: "",
+  businessName: "",
+  phoneNumber: "",
+  businessType: "",
+  address: "",
 };
 
 const BUSINESS_TYPE_OPTIONS = [
@@ -28,6 +33,7 @@ const BUSINESS_TYPE_OPTIONS = [
   { value: "Grocery Store", label: "Grocery Store" },
   { value: "Supermarket", label: "Supermarket" },
   { value: "Mini Mart", label: "Mini Mart" },
+  { value: "Retailer", label: "Retailer" },
 ];
 
 const FORM_FIELDS = [
@@ -49,33 +55,71 @@ const FORM_FIELDS = [
     placeholder: "Enter phone number",
     type: "tel" as const,
   },
+  {
+    label: "Address",
+    name: "address" as const,
+    placeholder: "Enter address",
+    type: "text" as const,
+  },
 ];
 
 export default function EditProfile() {
   const [showSuccess, setShowSuccess] = useState(false);
   const [formData, setFormData] = useState<FormState>(INITIAL_FORM_DATA);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
   const navigate = useNavigate();
 
+  // Custom hooks
   const { isLoading, submit } = useProfileFormSubmit();
-  const { errors, validateField, validateAll, clearErrors } =
+  const { errors, validateField, validateAll, clearErrors, clearFieldError } =
     useProfileFormValidation();
+  const { fetchProfile, updateProfile } = useProfileAPI();
 
-  const updateProfile = async (_data: FormState) => {
-    // TODO: Replace with your actual API endpoint
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-  };
+  // Fetch current profile data on component mount
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        setFetchError(null);
+        const data = await fetchProfile();
+        setFormData(data);
+      } catch (err) {
+        console.error("Error loading profile:", err);
+        setFetchError(err instanceof Error ? err.message : "Failed to load profile");
+      } finally {
+        setFetchLoading(false);
+      }
+    };
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    validateField(name, value);
-  };
+    loadProfile();
+  }, []);
+
+const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
+  const { name, value } = e.target;
+  const field = name as FieldName;
+
+  setFormData((prev) => ({ ...prev, [field]: value }));
+
+  clearFieldError(field);
+  validateField(field, value);
+};
+;
 
   const handleSubmit = async () => {
-    if (!validateAll(formData)) return;
+    console.log("Submit button clicked");
+    console.log("Form data:", formData);
 
+    // Validate form
+    if (!validateAll(formData)) {
+      console.log("Validation failed:", errors);
+      return;
+    }
+
+    console.log("Validation passed, submitting...");
+
+    // Submit form
     await submit(
       () => updateProfile(formData),
       "Profile updated successfully!",
@@ -90,6 +134,39 @@ export default function EditProfile() {
     setShowSuccess(false);
     navigate(-1);
   };
+
+  // Show loading state while fetching initial data
+  if (fetchLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <LoaderCircle className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if initial fetch failed
+  if (fetchError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white p-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Icon icon="ph:warning" width="32" height="32" className="text-red-600" />
+          </div>
+          <h2 className="h4 text-black mb-2">Failed to Load Profile</h2>
+          <p className="body text-gray-600 mb-6">{fetchError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="btn btn-primary"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-white">
@@ -140,7 +217,7 @@ export default function EditProfile() {
               type="button"
               onClick={handleSubmit}
               disabled={isLoading}
-              className="w-full md:w-80 btn btn-primary rounded-md flex items-center justify-center gap-2 border active:border-tertiary"
+              className="w-full md:w-80 btn btn-primary rounded-md flex items-center justify-center gap-2 border active:border-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Saving" : "Save"}
               {isLoading && <LoaderCircle className="w-5 h-5 animate-spin" />}

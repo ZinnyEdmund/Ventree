@@ -18,7 +18,7 @@ export default function CTASection() {
         </p>
         
         <button 
-        onClick={() => navigate("/login")}
+        onClick={() => navigate("/register")}
         className="w-full md:w-80 btn btn-sec border active:border-tertiary">
           Start Now
         </button>
