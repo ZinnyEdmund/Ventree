@@ -336,3 +336,75 @@ export interface ICreateExpense {
   // date?: string; // optional date in ISO format
   notes?: string; // optional notes (since you may or may not include it)
 }
+
+// --- Notifications stuff
+export enum NotificationType {
+  LOW_STOCK = 'low_stock',
+  OUT_OF_STOCK = 'out_of_stock',  
+  SALE_COMPLETED = 'sale_completed'
+}
+
+// matches what backend sends exactly
+export interface INotification {
+  _id: string;
+  shopId: string;
+  staffId?: string;
+  inventoryId?: string;
+  message: string;
+  isRead: boolean;
+  type: NotificationType;
+  metadata?: Record<string, any>; // backend sometimes adds extra stuff here
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface NotificationState {
+  notifications: INotification[];
+  unreadCount: number;
+  isConnected: boolean;
+  connectionError: string | null;
+  lastUpdated: string | null;
+}
+
+export interface NotificationMessage {
+  type: 'notification';
+  data: INotification;
+}
+
+export interface ConnectionConfirmation {
+  message: string;
+  userId: string;
+  shopId: string;
+  role: Role;
+}
+
+// for the helper functions
+export interface NotificationDisplay {
+  icon: string;
+  title: string;
+  color: string;
+}
+
+export interface NotificationResponse extends BaseResponse<INotification[]> {}
+export interface CreateNotificationResponse extends BaseResponse<INotification> {}  
+export interface UpdateNotificationResponse extends BaseResponse<INotification> {}
+
+export interface CreateNotificationDto {
+  shopId: string;
+  staffId?: string;
+  inventoryId?: string; 
+  message: string;
+  type: NotificationType;
+  metadata?: Record<string, any>;
+}
+
+export interface UpdateNotificationDto {
+  isRead?: boolean; // probably only thing we'll update
+}
+
+export interface NotificationQueryParams {
+  shopId: string;
+  limit?: number;
+  offset?: number;
+  unreadOnly?: boolean;
+}

@@ -107,6 +107,9 @@ export const baseQueryWithLogout: BaseQueryFn<
             setRefreshTokenCookie(newRefreshToken);
           }
 
+          // notify websocket to reconnect with new token
+          window.dispatchEvent(new Event('tokenRefreshed'));
+
           console.log('Retrying original request with new token...');
           // Retry the original request with the new token
           result = await baseQuery(args, api, extraOptions);

@@ -50,7 +50,6 @@ export default function ProtectedRoute({
 
   // User must have both tokens (in cookies) and user data (in Redux)
   const isAuthenticated = hasTokens && isLoggedIn && !!user;
-
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
