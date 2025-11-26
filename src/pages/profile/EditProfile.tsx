@@ -92,20 +92,19 @@ export default function EditProfile() {
     };
 
     loadProfile();
-  }, []);
+  }, [fetchProfile]);
 
-const handleChange = (
-  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-) => {
-  const { name, value } = e.target;
-  const field = name as FieldName;
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    const field = name as FieldName;
 
-  setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
 
-  clearFieldError(field);
-  validateField(field, value);
-};
-;
+    clearFieldError(field);
+    validateField(field, value);
+  };
 
   const handleSubmit = async () => {
     console.log("Submit button clicked");
@@ -132,7 +131,11 @@ const handleChange = (
 
   const handleModalClose = () => {
     setShowSuccess(false);
-    navigate(-1);
+    // FIX: Navigate to profile with state to force refresh
+    navigate("/my-profile", { 
+      replace: true,
+      state: { refresh: Date.now() } // Add timestamp to force refresh
+    });
   };
 
   // Show loading state while fetching initial data

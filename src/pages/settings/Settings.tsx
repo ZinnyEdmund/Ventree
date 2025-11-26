@@ -62,7 +62,7 @@ export default function Settings() {
 
   // Get user data from Redux auth state
   const user = useSelector((state: RootState) => state.auth.user);
-  const shopId = (user as { id?: string } | undefined)?.id;
+  const shopId = (user as { shopId?: string } | undefined)?.shopId;
 
   // Fetch settings on mount
   useEffect(() => {
@@ -180,7 +180,7 @@ export default function Settings() {
 
   return (
     <main className="flex justify-center min-h-screen pb-6 md:px-1 bg-bg">
-      <div className="w-full max-w-5xl">
+      <div className="w-full max-w-7xl">
         {/* Header */}
         <header className="flex items-center justify-center relative mb-5 px-6 pt-6">
           <Link
