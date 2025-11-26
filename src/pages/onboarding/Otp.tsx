@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import type { ClipboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import { Icon } from "@iconify/react";
 import { useResendOTPMutation, useVerifyOtpMutation } from "../../services/auth.service";
@@ -144,13 +145,13 @@ export default function OtpPage() {
 
   return (
     <section className="w-full flex flex-col md:space-y-6 space-y-16 justify-between md:p-6">
-      <span className="absolute left-6 top-6 hidden md:inline">
+      <Link to="/" className="absolute left-6 top-6 hidden md:inline">
         <Icon
           icon="iconamoon:arrow-left-6-circle-light"
           width="24"
           height="24"
         />
-      </span>
+      </Link>
       <div className="text-center">
         <h2 className="h3 text-black mb-2">Confirm Your Phone Number</h2>
         <p className="body-small text-subtle mb-8">

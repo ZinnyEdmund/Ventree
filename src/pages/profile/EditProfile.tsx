@@ -1,83 +1,123 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import { Icon } from "@iconify/react";
 import ProfileInput from "../../components/ui/editProfileInput";
 import ProfileSelect from "../../components/ui/editProfileSelect";
+import type { FieldName } from "../../components/common/profileTypes";
 import {
   useProfileFormSubmit,
-  useProfileFormValidation,
+  useProfileFormValidation
 } from "../../components/common/profileValidation";
+import { useProfileAPI } from "../../components/common/profileApi";
+
 
 type FormState = {
   ownerName: string;
   businessName: string;
   phoneNumber: string;
   businessType: string;
+  address: string;
 };
+
+const INITIAL_FORM_DATA: FormState = {
+  ownerName: "",
+  businessName: "",
+  phoneNumber: "",
+  businessType: "",
+  address: "",
+};
+
+const BUSINESS_TYPE_OPTIONS = [
+  { value: "Provision Store", label: "Provision Store" },
+  { value: "Grocery Store", label: "Grocery Store" },
+  { value: "Supermarket", label: "Supermarket" },
+  { value: "Mini Mart", label: "Mini Mart" },
+  { value: "Retailer", label: "Retailer" },
+];
+
+const FORM_FIELDS = [
+  {
+    label: "Owner's Name",
+    name: "ownerName" as const,
+    placeholder: "Enter owner's name",
+    type: "text" as const,
+  },
+  {
+    label: "Business Name",
+    name: "businessName" as const,
+    placeholder: "Enter business name",
+    type: "text" as const,
+  },
+  {
+    label: "Phone Number",
+    name: "phoneNumber" as const,
+    placeholder: "Enter phone number",
+    type: "tel" as const,
+  },
+  {
+    label: "Address",
+    name: "address" as const,
+    placeholder: "Enter address",
+    type: "text" as const,
+  },
+];
 
 export default function EditProfile() {
   const [showSuccess, setShowSuccess] = useState(false);
-  const [formData, setFormData] = useState<FormState>({
-    ownerName: "Owner",
-    businessName: "Owner Provisions",
-    phoneNumber: "08134775647",
-    businessType: "Provision Store",
-  });
+  const [formData, setFormData] = useState<FormState>(INITIAL_FORM_DATA);
+  const [fetchLoading, setFetchLoading] = useState(true);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
+  // Custom hooks
   const { isLoading, submit } = useProfileFormSubmit();
-  const { errors, validateField, validateAll, clearErrors } =
+  const { errors, validateField, validateAll, clearErrors, clearFieldError } =
     useProfileFormValidation();
+  const { fetchProfile, updateProfile } = useProfileAPI();
 
-  // Business type options
-  const businessTypeOptions = [
-    { value: "Provision Store", label: "Provision Store" },
-    { value: "Grocery Store", label: "Grocery Store" },
-    { value: "Supermarket", label: "Supermarket" },
-    { value: "Mini Mart", label: "Mini Mart" },
-  ];
+  // Fetch current profile data on component mount
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        setFetchError(null);
+        const data = await fetchProfile();
+        setFormData(data);
+      } catch (err) {
+        console.error("Error loading profile:", err);
+        setFetchError(err instanceof Error ? err.message : "Failed to load profile");
+      } finally {
+        setFetchLoading(false);
+      }
+    };
 
-  // API CALL FUNCTION
-  const updateProfile = async (_data: FormState) => {
-    // TODO: Replace with your actual API endpoint
-    /*
-    const response = await fetch('https://your-api.com/api/profile/update', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${yourAuthToken}`,
-      },
-      body: JSON.stringify(data),
-    });
+    loadProfile();
+  }, []);
 
-    if (!response.ok) {
-      throw new Error('Failed to update profile');
-    }
+const handleChange = (
+  e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+) => {
+  const { name, value } = e.target;
+  const field = name as FieldName;
 
-    return await response.json();
-    */
+  setFormData((prev) => ({ ...prev, [field]: value }));
 
-    // Temporary placeholder
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-  };
-
-  // HANDLERS
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Validate field on change
-    validateField(name, value);
-  };
+  clearFieldError(field);
+  validateField(field, value);
+};
+;
 
   const handleSubmit = async () => {
-    // Validate all fields
-    const isValid = validateAll(formData);
+    console.log("Submit button clicked");
+    console.log("Form data:", formData);
 
-    if (!isValid) {
-      return; // Don't submit if validation fails
+    // Validate form
+    if (!validateAll(formData)) {
+      console.log("Validation failed:", errors);
+      return;
     }
+
+    console.log("Validation passed, submitting...");
 
     // Submit form
     await submit(
@@ -90,18 +130,46 @@ export default function EditProfile() {
     );
   };
 
-  const handleCancel = () => {
-    setFormData({
-      ownerName: "Owner",
-      businessName: "Owner Provisions",
-      phoneNumber: "08134775647",
-      businessType: "Provision Store",
-    });
-    clearErrors();
+  const handleModalClose = () => {
+    setShowSuccess(false);
+    navigate(-1);
   };
 
+  // Show loading state while fetching initial data
+  if (fetchLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <div className="text-center">
+          <LoaderCircle className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-gray-600">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if initial fetch failed
+  if (fetchError) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-white p-4">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Icon icon="ph:warning" width="32" height="32" className="text-red-600" />
+          </div>
+          <h2 className="h4 text-black mb-2">Failed to Load Profile</h2>
+          <p className="body text-gray-600 mb-6">{fetchError}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="btn btn-primary"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 md:bg-white">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-white">
       <div className="w-full max-w-5xl bg-white rounded-xl overflow-hidden">
         {/* Header */}
         <div className="md:text-white text-black md:py-15 md:px-6 py-4 text-left md:text-center md:bg-black bg-center md:bg-[url('images/onboarding-pattern.svg')]">
@@ -110,42 +178,25 @@ export default function EditProfile() {
 
         {/* Form Content */}
         <div className="md:py-8 py-5 space-y-6">
-          <ProfileInput
-            label="Owner's Name"
-            name="ownerName"
-            value={formData.ownerName}
-            onChange={handleChange}
-            disabled={isLoading}
-            error={errors.ownerName}
-            placeholder="Enter owner's name"
-          />
-
-          <ProfileInput
-            label="Business Name"
-            name="businessName"
-            value={formData.businessName}
-            onChange={handleChange}
-            disabled={isLoading}
-            error={errors.businessName}
-            placeholder="Enter business name"
-          />
-
-          <ProfileInput
-            label="Phone Number"
-            name="phoneNumber"
-            type="tel"
-            value={formData.phoneNumber}
-            onChange={handleChange}
-            disabled={isLoading}
-            error={errors.phoneNumber}
-            placeholder="Enter phone number"
-          />
+          {FORM_FIELDS.map(({ label, name, placeholder, type }) => (
+            <ProfileInput
+              key={name}
+              label={label}
+              name={name}
+              type={type}
+              value={formData[name]}
+              onChange={handleChange}
+              disabled={isLoading}
+              error={errors[name]}
+              placeholder={placeholder}
+            />
+          ))}
 
           <ProfileSelect
             label="Business Type"
             name="businessType"
             value={formData.businessType}
-            options={businessTypeOptions}
+            options={BUSINESS_TYPE_OPTIONS}
             onChange={handleChange}
             disabled={isLoading}
             error={errors.businessType}
@@ -155,9 +206,9 @@ export default function EditProfile() {
           <div className="flex flex-col gap-4 pt-4 md:flex-row md:justify-between">
             <button
               type="button"
-              onClick={handleCancel}
+              onClick={() => navigate(-1)}
               disabled={isLoading}
-              className="w-full md:w-80 btn btn-tertiary rounded-md  border active:border-tertiary"
+              className="w-full md:w-80 btn btn-tertiary rounded-md border active:border-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Cancel
             </button>
@@ -166,7 +217,7 @@ export default function EditProfile() {
               type="button"
               onClick={handleSubmit}
               disabled={isLoading}
-              className="w-full md:w-80 btn btn-primary rounded-md flex items-center justify-center gap-2  border active:border-tertiary"
+              className="w-full md:w-80 btn btn-primary rounded-md flex items-center justify-center gap-2 border active:border-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Saving" : "Save"}
               {isLoading && <LoaderCircle className="w-5 h-5 animate-spin" />}
@@ -178,22 +229,20 @@ export default function EditProfile() {
         {showSuccess && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
             <div className="bg-white rounded-2xl p-12 max-w-md w-full text-center shadow-2xl min-h-[380px] flex flex-col items-center justify-center">
-              {/* Icon */}
               <div className="w-20 h-20 bg-success rounded-full flex items-center justify-center mx-auto mb-8">
-                <span className="text-white">
-                  <Icon icon="stash:check-solid" width="48" height="48" />
-                </span>
+                <Icon
+                  icon="stash:check-solid"
+                  width="48"
+                  height="48"
+                  className="text-white"
+                />
               </div>
 
-              {/* Text Content */}
-              <div className="mb-10">
-                <h2 className="h4 text-secondary mb-3">Success!</h2>
-              </div>
+              <h2 className="h4 text-secondary mb-10">Success!</h2>
 
-              {/* Button */}
               <button
-                onClick={() => setShowSuccess(false)}
-                className="w-full max-w-[200px] px-8 py-3 btn btn-sec border active:border-tertiary"
+                onClick={handleModalClose}
+                className="w-full max-w-[200px] btn btn-sec border active:border-tertiary"
               >
                 Done
               </button>
