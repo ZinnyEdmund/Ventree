@@ -22,7 +22,7 @@ export const actions = [
   { title: "Record Sale", icon: "ic:outline-list-alt", description: "Add a new sale quickly", to:"/record-sales" },
   { title: "Add Goods", icon: "ic:outline-shopping-bag", description: "Add new items to your stock", to:"/stocks" },
   { title: "Manage Employees", icon: "ic:outline-person-add-alt", description: "View or add shop attendants", to:"/setup-shop" },
-  { title: "Add Expenses", icon: "ic:outline-remove", description: "Add what you have spent", to:"/home/expenses" },
+  { title: "Add Expenses", icon: "ic:outline-remove", description: "Add what you have spent", to:"/expenses" },
 ];
 
 export const salesHistory = [

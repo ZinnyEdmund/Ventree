@@ -66,7 +66,7 @@ export default function Login() {
 
         // Construct user object from API response
         const user = {
-          userId: role === "owner" ? shop?.id || "" : staff?.id || "",
+          userId: role === "owner" ? staff?.id || shop?.id || "" : staff?.id || "",
           shopId: shop?.id || "",
           shopName: shop?.shopName || "",
           phoneNumber: owner?.phoneNumber || shop?.phoneNumber || "",

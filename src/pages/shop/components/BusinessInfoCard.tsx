@@ -1,15 +1,13 @@
-// ============================================
-// 1. BusinessInfoCard.tsx - Business Information Display/Edit
-// ============================================
 import { useState } from "react";
 import { Pen } from "lucide-react";
 import { EditBusinessModal } from "./EditBusinessModal";
 import { Icon } from "@iconify/react";
 import { truncateTextWithStringMethod } from "../../../lib/helper";
+import type { EnumBusinessType } from "../../../types/general";
 
 export interface BusinessInfo {
   businessName: string;
-  businessType: string;
+  businessType: EnumBusinessType;
   phoneNumber: string;
   email: string;
   address: string;
@@ -19,11 +17,13 @@ export interface BusinessInfo {
 interface BusinessInfoCardProps {
   businessInfo: BusinessInfo;
   onUpdate: (info: BusinessInfo) => Promise<void>;
+  isLoading: boolean;
 }
 
 export const BusinessInfoCard: React.FC<BusinessInfoCardProps> = ({
   businessInfo,
   onUpdate,
+  isLoading,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -46,16 +46,17 @@ export const BusinessInfoCard: React.FC<BusinessInfoCardProps> = ({
             {/* Business Name & Owner */}
             <div>
               <h2 className="">
-                {truncateTextWithStringMethod("Okafor Ifeanyi", 15)}
+                {truncateTextWithStringMethod(businessInfo.businessName || "Business Name", 15)}
               </h2>
-              <p className="text-accent text-sm">Client</p>
+              <p className="text-accent text-sm">Owner</p>
             </div>
           </article>
 
           {/* Edit Button */}
           <button
             onClick={() => setIsEditing(true)}
-            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
           >
             <span>Edit</span>
             <Pen size={16} />
@@ -81,13 +82,13 @@ export const BusinessInfoCard: React.FC<BusinessInfoCardProps> = ({
           <div className="flex items-start gap-3">
             {/* Logo */}
             <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center text-white font-semibold">
-              {businessInfo.businessName.charAt(0)}
+              {businessInfo.businessName.charAt(0) || "B"}
             </div>
 
             {/* Business Name & Owner */}
             <div>
               <h2 className="font-semibold text-gray-900">
-                {businessInfo.businessName}
+                {businessInfo.businessName || "Business Name"}
               </h2>
               <p className="text-sm text-gray-600">Owner</p>
             </div>
@@ -96,7 +97,8 @@ export const BusinessInfoCard: React.FC<BusinessInfoCardProps> = ({
           {/* Edit Icon */}
           <button
             onClick={() => setIsEditing(true)}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isLoading}
           >
             <Pen size={20} />
           </button>

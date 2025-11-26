@@ -2,7 +2,6 @@
 // ManageStocks.tsx - Properly Integrated with RTK Query
 // ============================================
 import { useState, useEffect, useMemo } from "react";
-import { StatCard } from "../home/components/StatCard";
 import { useAddGoodsModal } from "../../hooks/useAddGoodsModal";
 import { AddGoodsModal, type GoodsFormData } from "./components/AddGoodsModal";
 import { GoodsTable } from "./components/GoodsTable";
@@ -15,7 +14,6 @@ import {
   useDeleteInventoryMutation,
 } from "../../services/stocks.service";
 import type { Stocks } from "../../types/general";
-import { stats } from "../../lib/dummyData";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../state/store";
 
@@ -211,7 +209,7 @@ export const ManageStocks = () => {
         <p className="text-black">Easily track and manage your shop items</p>
       </article>
 
-      {/* Stats Grid */}
+      {/* Stats Grid
       <main className="py-3 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, index) => (
           <StatCard
@@ -223,7 +221,7 @@ export const ManageStocks = () => {
             variant={stat.variant}
           />
         ))}
-      </main>
+      </main> */}
 
       {/* Error State */}
       {isError && (

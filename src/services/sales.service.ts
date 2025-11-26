@@ -3,7 +3,8 @@ import { baseQueryWithLogout } from "./baseQueryLogout";
 import type {
   BaseResponse,
   RecordSaleDto,
-  Sales
+  Sales,
+  SalesResponse
 } from "../types/general";
 
 export const salesApi = createApi({
@@ -33,9 +34,9 @@ export const salesApi = createApi({
       invalidatesTags: ["Sales"],
     }),
 
-    getSalesByShop: builder.query<BaseResponse<Sales>, string>({
+    getSalesByShop: builder.query<SalesResponse, string>({
       query: (shopId) => ({
-        url: `/v1/sales/${shopId}`,
+        url: `/v1/sales/${shopId}/list`,
         method: "GET",
       }),
       providesTags: ["Sales"],
