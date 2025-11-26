@@ -3,9 +3,10 @@ import type { FormEvent } from "react";
 import type { ClipboardEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Link } from "react-router-dom";
 import { LoaderCircle } from "lucide-react";
 import { Icon } from "@iconify/react";
-import { useVerifyOtpMutation } from "../../services/auth.service";
+import { useResendOTPMutation, useVerifyOtpMutation } from "../../services/auth.service";
 import { handleApiError } from "../../lib/errorHandler";
 import { formatNigerianPhoneNumber } from "../../components/common/validation";
 import { STORAGE_KEYS } from "../../constants/storage";
@@ -16,6 +17,7 @@ export default function OtpPage() {
   const [phoneNumber, setPhoneNumber] = useState("");
   const navigate = useNavigate();
   const [verifyOtpMutation, { isLoading }] = useVerifyOtpMutation();
+  const [resendOtpMutation] = useResendOTPMutation();
   const [isResending, setIsResending] = useState(false);
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
 
@@ -125,8 +127,13 @@ export default function OtpPage() {
     setIsResending(true);
     try {
       // Re-register to get a new OTP
-      // You might want to create a separate resend-otp endpoint
+      await resendOtpMutation({
+        shopName,
+        phoneNumber: formatNigerianPhoneNumber(phoneNumber)
+      }).unwrap();
+
       toast.success("Code resent successfully!");
+
       setOtp(Array(6).fill(""));
       inputRefs.current[0]?.focus();
     } catch (error) {
@@ -138,13 +145,13 @@ export default function OtpPage() {
 
   return (
     <section className="w-full flex flex-col md:space-y-6 space-y-16 justify-between md:p-6">
-      <span className="absolute left-6 top-6 hidden md:inline">
+      <Link to="/" className="absolute left-6 top-6 hidden md:inline">
         <Icon
           icon="iconamoon:arrow-left-6-circle-light"
           width="24"
           height="24"
         />
-      </span>
+      </Link>
       <div className="text-center">
         <h2 className="h3 text-black mb-2">Confirm Your Phone Number</h2>
         <p className="body-small text-subtle mb-8">
@@ -193,7 +200,7 @@ export default function OtpPage() {
               disabled={isResending}
               className="link-small text-black underline"
             >
-              {isResending ? "Resending" : "Resend Code"}
+              {isResending ? "Resending,," : "Resend Code"}
             </button>
           </p>
         </div>

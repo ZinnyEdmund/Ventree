@@ -1,4 +1,8 @@
+import { useNavigate } from "react-router-dom";
+
 export default function Hero() {
+  const navigate = useNavigate();
+
   return (
     <section className="flex items-center justify-center px-5 py-20">
       <div className="text-center max-w-4xl">
@@ -9,6 +13,7 @@ export default function Hero() {
           Ventree helps you keep record of your sales, stock, and profit, all in one simple app. No more paper and confusion.
         </p>
         <button
+        onClick={() => navigate("/register")}
           className="w-full md:w-80 btn btn-primary px-10 border active:border-tertiary"
         >
           Get Started Now

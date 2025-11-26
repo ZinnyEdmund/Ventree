@@ -14,6 +14,7 @@ import Settings from "../pages/settings/Settings"
 import { BusinessInsightsPage } from "../pages/insights";
 import { ExpensesPage } from "../pages/expenses";
 import ChangePassword from "../pages/changePassword/ChangePassword";
+import ProfilePage from "../pages/profile/ProfilePage";
 import EditProfile from "../pages/profile/EditProfile";
 import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
@@ -21,9 +22,9 @@ import LandingPage from "../pages/landingpage/LandingPage";
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
 const LoginPage = lazy(() => import("../pages/onboarding/Login"));
-const WelcomePage = lazy(() => import("../pages/onboarding/Welcome"));
 const Otp = lazy(() => import("../pages/onboarding/Otp"));
 const ResetPasswordPage = lazy(() => import("../pages/onboarding/ResetPassword"));
+const ResetPasswordPage1 = lazy(() => import("../pages/onboarding/ResetPassword1"));
 const DesignSystem = lazy(() => import("../pages/DS/designSystem"));
 const LogoutPage = lazy(() => import("../pages/onboarding/Logout"));
 
@@ -36,8 +37,7 @@ function AppRoutes() {
       <BrowserRouter>
         <Routes>
           {/* Onboarding */}
-          <Route path="/" element={<WelcomePage />} />
-          <Route path="/landingpage" element={<LandingPage />} />
+          <Route path="/" element={<LandingPage />} />
 
           {/* Authentication */}
           <Route path="/" element={<OnboardWrapper component={<OnboardLayout />} />}>
@@ -45,6 +45,7 @@ function AppRoutes() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/otp" element={<Otp />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
+            <Route path="/reset-password1" element={<ResetPasswordPage1 />} />
           </Route>
 
           <Route path="/design" element={<DesignSystem />} />
@@ -65,10 +66,11 @@ function AppRoutes() {
             <Route path="/record-sales" element={<ProtectedRoute><RecordSale /></ProtectedRoute>} />
           </Route>
 
+          <Route path="/my-profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
           <Route path="/change-password" element={<ProtectedRoute><ChangePassword /></ProtectedRoute>} />
-          <Route path="/editprofile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-          <Route path="/feedback" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
-          <Route path="/aboutapp" element={<ProtectedRoute><AboutApp /></ProtectedRoute>} />
+          <Route path="/edit-profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
+          <Route path="/help-center" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
+          <Route path="/about-us" element={<ProtectedRoute><AboutApp /></ProtectedRoute>} />
           
         </Routes>
       </BrowserRouter>
