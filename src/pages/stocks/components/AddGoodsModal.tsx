@@ -254,7 +254,7 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
             {/* Category */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Category <span className="text-red-500">*</span>
+                Category <span className="text-error">*</span>
               </label>
               <SelectInput
                 name="Category"

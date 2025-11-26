@@ -18,6 +18,8 @@ import EditProfile from "../pages/profile/EditProfile";
 import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
 import LandingPage from "../pages/landingpage/LandingPage";
+import { HistoryPage } from "../pages/history";
+
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
 const LoginPage = lazy(() => import("../pages/onboarding/Login"));
@@ -56,8 +58,9 @@ function AppRoutes() {
             <Route path="/setup-shop" element={<ProtectedRoute requiredRole="owner"><SetupShopPage /></ProtectedRoute>} />
             <Route path="/settings" element={<ProtectedRoute requiredRole="owner"><Settings /></ProtectedRoute>} />
             <Route path="/insights" element={<ProtectedRoute requiredRole="owner"><BusinessInsightsPage /></ProtectedRoute>} />
-            <Route path="/home/expenses" element={<ProtectedRoute requiredRole="owner"><ExpensesPage /></ProtectedRoute>} />
+            <Route path="/expenses" element={<ProtectedRoute requiredRole="owner"><ExpensesPage /></ProtectedRoute>} />
             <Route path="/notification" element={<ProtectedRoute requiredRole="owner"><Notification /></ProtectedRoute>} />
+            <Route path="/history" element={<ProtectedRoute requiredRole="owner"><HistoryPage /></ProtectedRoute>} />
             
             {/* Available to both owner and staff */}
             <Route path="/record-sales" element={<ProtectedRoute><RecordSale /></ProtectedRoute>} />

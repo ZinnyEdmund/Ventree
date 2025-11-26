@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
 
 interface SelectInputProps {
+  label?: string;
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -12,6 +13,7 @@ interface SelectInputProps {
 }
 
 export default function SelectInput({
+  label,
   name,
   value,
   onChange,
@@ -21,7 +23,14 @@ export default function SelectInput({
   className, // 👈 new
 }: SelectInputProps) {
   return (
-    <div className={clsx("relative w-full", className)}>
+    <div>
+      {label && (
+        <label className="block mb-2 text-sm font-medium text-black">
+          {label}
+        </label>
+      )}
+
+<div className={clsx("relative w-full", className)}>
       <select
         name={name}
         value={value}
@@ -44,6 +53,8 @@ export default function SelectInput({
         size={18}
       />
     </div>
+    </div>
+    
   );
 }
 

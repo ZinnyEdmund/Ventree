@@ -6,12 +6,20 @@ import TextInput from "../../../components/ui/textInput";
 import { toast } from "sonner";
 import type { BusinessInfo } from "./BusinessInfoCard";
 import { useState } from "react";
+import SelectInput from "../../../components/ui/selectInput";
 
 export interface EditBusinessModalProps {
   businessInfo: BusinessInfo;
   onClose: () => void;
   onSave: (info: BusinessInfo) => Promise<void>;
 }
+
+const businessTypeOptions = [
+  { value: "retail", label: "Retail" },
+  { value: "wholesale", label: "Wholesale" },
+  { value: "manufacturer", label: "Manufacturer" },
+  { value: "other", label: "Other" },
+];
 
 export const EditBusinessModal: React.FC<EditBusinessModalProps> = ({
   businessInfo,
@@ -65,13 +73,24 @@ export const EditBusinessModal: React.FC<EditBusinessModalProps> = ({
                 }
                 required
               />
-              <TextInput
+              {/* <TextInput
                 label="Business Type"
                 value={formData.businessType}
                 onChange={(e) =>
                   setFormData({ ...formData, businessType: e.target.value })
                 }
                 placeholder="Add your business type"
+              /> */}
+              <SelectInput
+                label="Business Type"
+                name="Business Type"
+                placeholder="Business Type"
+                options={businessTypeOptions}
+                value={formData.businessType}
+                onChange={(e: any) =>
+                  setFormData({ ...formData, businessType: e.target.value })
+                }
+                required
               />
               <TextInput
                 label="Phone Number"

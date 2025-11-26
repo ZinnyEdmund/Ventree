@@ -209,7 +209,7 @@ const expenseCategoryOptions = [
               onChange={(e: any) =>
                 handleInputChange("notes", e.target.value)
               }
-              required
+              
               disabled={loading}
             />
 

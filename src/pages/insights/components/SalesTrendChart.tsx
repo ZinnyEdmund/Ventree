@@ -1,7 +1,6 @@
 // ============================================
 // 1. SalesTrendChart.tsx - Sales Trend Bar Chart
 // ============================================
-import { Icon } from "@iconify/react";
 import { CustomContentOfTooltip } from "./BarChart";
 
 export interface SalesTrendData {
@@ -30,7 +29,7 @@ export const SalesTrendChart: React.FC<SalesTrendChartProps> = ({
 
         <div className="flex items-center gap-2 text-sm">
           <span>{period}</span>
-          <Icon icon="mdi:calendar" width="16" height="16" />
+          {/* <Icon icon="mdi:calendar" width="16" height="16" /> */}
         </div>
       </div>
 

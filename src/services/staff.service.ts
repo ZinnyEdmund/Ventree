@@ -1,6 +1,6 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
 import { baseQueryWithLogout } from './baseQueryLogout';
-import type { CreateStaffInput, StaffResponse, UpdateStaffInput } from '../types/general';
+import type { BaseResponse, CreateStaffInput, StaffListData, StaffResponse, UpdateStaffInput } from '../types/general';
 
 export const staffApi = createApi({
   reducerPath: 'staffApi',
@@ -15,20 +15,27 @@ export const staffApi = createApi({
       }),
       invalidatesTags: ['Staff'],
     }),
-    updateStaff: builder.mutation<StaffResponse, { id: string; data: UpdateStaffInput }>({
-      query: ({ id, data }) => ({
-        url: `/staff/${id}`,
-        method: 'PATCH',
+    updateStaff: builder.mutation<StaffResponse, { shopId: string; staffId: string; data: UpdateStaffInput }>({
+      query: ({ shopId, staffId, data }) => ({
+        url: `/v1/staff/${shopId}/${staffId}`,
+        method: 'PUT',
         body: data,
       }),
       invalidatesTags: ['Staff'],
     }),
-    getStaffByShop: builder.query<StaffResponse, string>({
+    getStaffByShop: builder.query<BaseResponse<StaffListData>, string>({
       query: (shopId) => ({
-        url: `/staff?shopId=${shopId}`,
+        url: `/v1/staff/${shopId}`,
         method: 'GET',
       }),
       providesTags: ['Staff'],
+    }),
+    deleteStaff: builder.mutation<StaffResponse, { shopId: string; staffId: string; }>({
+      query: ({ shopId, staffId }) => ({
+        url: `/v1/staff/${shopId}/${staffId}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Staff'],
     }),
   }),
 });
@@ -37,5 +44,6 @@ export const {
   useCreateStaffMutation,
   useUpdateStaffMutation,
   useGetStaffByShopQuery,
+  useDeleteStaffMutation
 } = staffApi;
 

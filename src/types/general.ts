@@ -53,6 +53,41 @@ export interface UpdateStaffInput {
   isActive?: boolean;
 }
 
+export enum EnumBusinessType {
+  RETAIL = "retail",
+  WHOLESALE = "wholesale",
+  MANUFACTURER = "manufacturer",
+  OTHER = "other"
+}
+
+export interface UpdateShopDTO {
+  shopName?: string;
+  phoneNumber?: string;
+  ownerName?: string;
+  businessType?: EnumBusinessType; // or: businessTypeValues[number]
+  address?: string;
+}
+
+export interface SubmitKYCInfo {
+  address: string;
+  businessType: EnumBusinessType;
+}
+export interface KYCData {
+  id: string;
+  shopName: string;
+  businessType: string;
+  address: string;
+  kycStatus: string;        // or "verified" | "pending" | "rejected"
+  kycSubmittedAt: string;   // ISO timestamp
+}
+
+export interface StaffListData {
+  page: number;
+  pages: number;
+  total: number;
+  staff: Staff[];
+}
+
 export interface StaffResponse {
   success: boolean;
   message: string;
@@ -161,7 +196,7 @@ export interface ResetPasswordRequest {
 // --- Base Response
 export interface BaseResponse<T = unknown> {
   success: boolean;
-  message: string;
+  message?: string;
   data: T;
 }
 
@@ -340,4 +375,117 @@ export interface ICreateExpense {
   title: string;
   // date?: string; // optional date in ISO format
   notes?: string; // optional notes (since you may or may not include it)
+}
+
+export interface ShopOwner {
+  name: string;
+}
+
+export interface IShop {
+  _id: string;
+  shopName: string;
+  phoneNumber: string;
+  businessType: EnumBusinessType;
+  isVerified: boolean;
+  kycStatus: string;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
+  kycSubmittedAt: string;
+  __v: number;
+  owner: ShopOwner;
+}
+
+export interface DashboardResponse {
+  success: boolean;
+  data: {
+    shop: Shop;
+    owner: Owner;
+    staff: Staff;
+    dashboard: DashboardStats;
+  };
+}
+
+export interface Shop {
+  id: string;
+  shopName: string;
+  phoneNumber: string;
+  businessType: string;
+  isVerified: boolean;
+  kycStatus: string;
+  owner: Owner;
+}
+
+export interface Owner {
+  name: string;
+  phoneNumber: string;
+}
+
+export interface Staff {
+  id: string;
+  staffName: string;
+  phoneNumber: string;
+  role: string;
+  isActive: boolean;
+  createdAt?: string;   // or Date if you want
+  updatedAt?: string;   // or Date if you want
+}
+
+export interface DashboardStats {
+  period: string;
+  sales: number;
+  expenses: number;
+  lowStockItems: number;
+  profit: number;
+}
+
+export enum TimePeriod {
+  DAILY = "today",
+  WEEKLY = "week",
+}
+
+export interface SoldBy {
+  _id: string;
+  staffName: string;
+}
+
+export interface Sale {
+  _id: string;
+  shopId: string;
+  itemId: string;
+  itemName: string;
+  itemCategory: string;
+  quantitySold: number;
+  costPrice: number;
+  sellingPrice: number;
+  totalAmount: number;
+  amountPaid: number;
+  amountOwed: number;
+  discount: number;
+  taxAmount: number;
+  profitAmount: number;
+  paymentMethod: string;
+  isCredit: boolean;
+  creditStatus: string;
+  refunded: boolean;
+  payments: any[]; // If you want, we can define a proper interface for payments
+  soldBy?: SoldBy;
+  soldByName?: string;
+
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+
+  __v: number;
+}
+
+export interface SalesResponse {
+  success: boolean;
+  message: string;
+  data: {
+    page: number;
+    pages: number;
+    total: number;
+    sales: Sale[];
+  };
 }

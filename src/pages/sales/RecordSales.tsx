@@ -353,15 +353,8 @@ export default function RecordSale() {
               />
 
               <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                {isLoadingInventory ? (
+                {isLoadingInventory && (
                   <LoaderCircle width={20} className="animate-spin" />
-                ) : (
-                  <Icon
-                    icon="ic:outline-arrow-drop-down-circle"
-                    width="22"
-                    height="22"
-                    aria-hidden="true"
-                  />
                 )}
               </span>
 

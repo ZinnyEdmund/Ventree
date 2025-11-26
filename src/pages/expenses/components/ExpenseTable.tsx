@@ -395,7 +395,7 @@ export const ExpenseTable: React.FC<ExpenseTableProps> = ({
                 </div>
                 <div>
                   <span className="text-gray-600">
-                    {formatDate(row.original.date)}
+                    {formatDate(row.original.title)}
                   </span>
                 </div>
               </div>

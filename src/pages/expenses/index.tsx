@@ -21,8 +21,10 @@ import {
   useUpdateExpensesMutation,
   useDeleteExpensesMutation,
 } from "../../services/expenses.service";
-import type { ExpenseData, ICreateExpense } from "../../types/general";
+import { TimePeriod, type ExpenseData, type ICreateExpense } from "../../types/general";
 import { handleApiError } from "../../lib/errorHandler";
+import { usePersistentDashboard } from "../../hooks/usePersistentDashboard";
+import { RefreshCw } from "lucide-react";
 
 export const ExpensesPage = () => {
   const { isOpen, openModal, closeModal } = useAddGoodsModal();
@@ -32,6 +34,8 @@ export const ExpensesPage = () => {
   const [viewExpense, setViewExpense] = useState<ExpenseData | null>(null);
   const [editExpense, setEditExpense] = useState<ExpenseData | null>(null);
   const [deleteExpense, setDeleteExpense] = useState<ExpenseData | null>(null);
+
+  
 
   // Get shopId from Redux
   const { user } = useSelector((state: RootState) => state.auth);
@@ -129,42 +133,94 @@ export const ExpensesPage = () => {
     handleApiError(expensesError);
   }
 
+  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>(TimePeriod.DAILY);
+  // Fetch dashboard data with selected period
+  const {
+    data: dashboardData,
+    isFetching,
+    refetch,
+  } = usePersistentDashboard(user?.shopId || "", selectedPeriod);
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return `₦${amount.toLocaleString()}`;
+  };
+
+  // Extract dashboard stats
+  const dashboard = dashboardData?.data?.dashboard;
+
+  // Build stats array from API data or show loading/default
+  const stats = dashboard
+    ? [
+        {
+          title: "Expenses",
+          Icon: "ic:outline-monetization-on",
+          value: formatCurrency(dashboard.expenses),
+          description: "What you spent",
+        }
+      ]
+    : [
+        {
+          title: "Expenses",
+          Icon: "ic:outline-monetization-on",
+          value: "₦0",
+          description: "What you spent",
+        }
+    ];
+
+    // Handle period change
+  const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPeriod(e.target.value as TimePeriod);
+  };
+
   return (
     <section className="py-6">
       {/* Header */}
       <article className="mb-2">
         <div className="flex gap-2 items-center mb-2">
-          <Link to="/home">
+          {/* <Link to="/home">
             <Icon
               icon="ic:outline-arrow-circle-left"
               width="24px"
               className="text-secondary"
             />
-          </Link>
+          </Link> */}
           <h1 className="h4 md:text-3xl text-secondary">Expense Management</h1>
         </div>
         <p className="text-black">Easily track and manage what you have spent</p>
       </article>
 
+      <div className="flex items-center justify-between mb-4">
+
       {/* Time Filter */}
       <SelectInputBorderless
         placeholder="Today"
         options={[
-          { value: "today", label: "Today" },
-          { value: "yesterday", label: "Yesterday" },
-          { value: "last-7-days", label: "Last 7 days" },
-          { value: "last-30-days", label: "Last 30 days" },
-          { value: "custom", label: "Custom" },
+          { value: TimePeriod.DAILY, label: "Today" },
+          { value: TimePeriod.WEEKLY, label: "Last 7 days" },
         ]}
         name="time-filter"
         value="today"
-        onChange={(e) => console.log(e.target.value)}
+        onChange={handlePeriodChange}
+        // disabled={isFetching}
         className="w-30 flex items-center gap-2 h4 text-secondary border-none"
       />
 
+      {/* Refresh Button - Desktop */}
+      <button
+            onClick={() => refetch()}
+            disabled={isFetching}
+            className="hidden md:flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            title="Refresh dashboard"
+          >
+            <RefreshCw size={16} className={isFetching ? "animate-spin" : ""} />
+            <span>Refresh</span>
+          </button>
+        </div>
+
       {/* Stats Grid */}
       <main className="py-3 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {expenseStats.map((stat, index) => (
+        {stats.map((stat, index) => (
           <StatCard
             key={index}
             icon={stat.Icon}
