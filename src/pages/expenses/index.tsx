@@ -1,9 +1,6 @@
 import { useState, useCallback } from "react";
-import { Icon } from "@iconify/react";
 import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
 import { StatCard } from "../home/components/StatCard";
-import { expenseStats } from "../../lib/dummyData";
 import { useAddGoodsModal } from "../../hooks/useAddGoodsModal";
 import { AddGoodsModal } from "./components/AddGoodsModal";
 import { ExpenseTable } from "./components/ExpenseTable";
@@ -34,8 +31,6 @@ export const ExpensesPage = () => {
   const [viewExpense, setViewExpense] = useState<ExpenseData | null>(null);
   const [editExpense, setEditExpense] = useState<ExpenseData | null>(null);
   const [deleteExpense, setDeleteExpense] = useState<ExpenseData | null>(null);
-
-  
 
   // Get shopId from Redux
   const { user } = useSelector((state: RootState) => state.auth);

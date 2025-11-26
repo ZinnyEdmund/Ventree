@@ -21,7 +21,7 @@ export const Home = () => {
   const [salesExpanded, setSalesExpanded] = useState(true);
   const [notificationsExpanded, setNotificationsExpanded] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>(TimePeriod.DAILY);
-  const [selectedSale, setSelectedSale] = useState<any>(null);
+  const [ setSelectedSale] = useState<any>(null);
   const { user } = useSelector((state: RootState) => state.auth);
 
   // Fetch dashboard data with selected period

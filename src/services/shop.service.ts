@@ -30,7 +30,7 @@ export const shopApi = createApi({
         }),
         providesTags: ['Shop'],
     }),
-    getShopDashboard: builder.query<DashboardResponse, {shopId: string, period: TimePeriod }>({
+    getShopDashboard: builder.query<DashboardResponse, {shopId: string, period?: TimePeriod }>({
         query: ({shopId, period}) => ({
           url: `/v1/user/shop/${shopId}/dashboard?period=${period}`,
           method: 'GET',

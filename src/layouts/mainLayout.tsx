@@ -506,7 +506,7 @@ export default function MainLayout() {
   }, [isMobileMenuOpen]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-bg text-text">
+    <div className="flex h-screen max-w-[1500px] mx-auto overflow-hidden bg-bg text-text">
       {/* Mobile Header */}
       <MobileHeader
         onMenuClick={() => setIsMobileMenuOpen(true)}

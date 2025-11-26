@@ -14,16 +14,13 @@ import { BestSellersTable } from "./components/BestSellersTable";
 import { LowStockAlert } from "./components/LowStockAlert";
 import { ExpensesReport } from "./components/ExpensesReport";
 import { NetProfitTrend } from "./components/NetProfitTrend";
-import  { TimePeriod } from "../../types/general";
 import { usePersistentDashboard } from "../../hooks/usePersistentDashboard";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../state/store";
 import { RefreshCw } from "lucide-react";
-import { useState } from "react";
 
 export const BusinessInsightsPage = () => {
   const { user } = useSelector((state: RootState) => state.auth);
-  const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>(TimePeriod.DAILY);
 
 
   // Fetch dashboard data with selected period
@@ -31,7 +28,7 @@ export const BusinessInsightsPage = () => {
     data: dashboardData,
     isFetching,
     refetch,
-  } = usePersistentDashboard(user?.shopId || "", selectedPeriod);
+  } = usePersistentDashboard(user?.shopId || "");
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -99,11 +96,6 @@ export const BusinessInsightsPage = () => {
           variant: "success" as const,
         },
       ];
-
-  // Handle period change
-  const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPeriod(e.target.value as TimePeriod);
-  };
 
   return (
     <section className="py-6">

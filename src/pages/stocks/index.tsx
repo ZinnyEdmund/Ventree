@@ -2,7 +2,6 @@
 // ManageStocks.tsx - Properly Integrated with RTK Query
 // ============================================
 import { useState, useEffect, useMemo } from "react";
-import { StatCard } from "../home/components/StatCard";
 import { useAddGoodsModal } from "../../hooks/useAddGoodsModal";
 import { AddGoodsModal, type GoodsFormData } from "./components/AddGoodsModal";
 import { GoodsTable } from "./components/GoodsTable";
@@ -15,7 +14,6 @@ import {
   useDeleteInventoryMutation,
 } from "../../services/stocks.service";
 import type { Stocks } from "../../types/general";
-import { stats } from "../../lib/dummyData";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../state/store";
 

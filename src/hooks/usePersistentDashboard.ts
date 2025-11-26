@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { useGetShopDashboardQuery } from '../services/shop.service';
 import { TimePeriod } from '../types/general';
 
-export const usePersistentDashboard = (shopId: string, period: TimePeriod) => {
+export const usePersistentDashboard = (shopId: string, period?: TimePeriod) => {
   const cacheKey = `dashboard-${shopId}-${period}`;
   
   const queryResult = useGetShopDashboardQuery(
