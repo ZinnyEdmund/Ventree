@@ -142,6 +142,8 @@
 .dark {
 }
 
+
+
 @layer components {
   .btn {
     @apply px-4 py-3 rounded-lg font-medium transition-colors cursor-pointer;
