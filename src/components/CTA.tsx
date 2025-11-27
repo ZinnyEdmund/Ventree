@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 export default function CTASection() {
   const navigate = useNavigate();
   return (
-    <section className="px-5 py-20">
+    <section className="px-5 pt-20 md:py-20">
       <div className="max-w-6xl  w-full mx-auto bg-secondary rounded-3xl px-8 md:px-16 py-10 text-center">
         <h2 className="h2 text-white mb-10 leading-tight">
           Built for You, the <span className="text-primary-1">Everyday</span> Business Owner

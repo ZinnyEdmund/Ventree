@@ -11,8 +11,8 @@ const quickLinks = [
 
 const socialLinks = [
   { icon: 'mage:facebook', label: 'Facebook', url: 'https://facebook.com/ventree' },
-  { icon: 'mdi:instagram', label: 'Instagram', url: 'https://instagram.com/ventree' },
-  { icon: 'mdi:twitter', label: 'Twitter', url: 'https://twitter.com/ventree' },
+  { icon: 'mdi:instagram', label: 'Instagram', url: 'https://www.instagram.com/useventree' },
+  { icon: 'mdi:twitter', label: 'Twitter', url: ' https://x.com/useVentree' },
   { icon: 'mdi:youtube', label: 'YouTube', url: 'https://youtube.com/@ventree' }
 ];
 
@@ -74,7 +74,7 @@ export default function FooterWithCTA() {
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+                  className="w-10 h-10 bg-black text-white rounded-full flex items-center justify-center hover:bg-grey transition-colors"
                   aria-label={social.label}
                 >
                   <Icon icon={social.icon} width="20" height="20" />

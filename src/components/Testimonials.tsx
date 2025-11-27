@@ -39,7 +39,7 @@ function TestimonialCard({ quote, author, role }: TestimonialProps) {
 
 export default function Testimonials() {
   return (
-    <section className="px-5 py-20">
+    <section className="px-5 pt-20 md:py-20">
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-16 max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 bg-primary-6 text-primary-1 border border-primary-1 px-4 py-2 rounded-xl text-sm font-medium mb-6">
