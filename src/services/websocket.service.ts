@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { store } from '../state/store';
-import { getAccessTokenCookie } from '../lib/cookies';
+import { getAccessTokenCookie, getRefreshTokenCookie } from '../lib/cookies';
 import {
   setConnectionStatus,
   setConnectionError,
@@ -25,7 +25,11 @@ export class WebSocketService {
       return;
     }
 
-    const token = getAccessTokenCookie();
+    // try access token first, fallback to refresh token
+    const accessToken = getAccessTokenCookie();
+    const refreshToken = getRefreshTokenCookie();
+    const token = accessToken || refreshToken;
+    
     if (!token) {
       console.error('No auth token available - cannot connect to WebSocket');
       return;

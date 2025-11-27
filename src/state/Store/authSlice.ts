@@ -29,9 +29,13 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state._initialized = true;
       
-      // Store tokens in cookies (secure storage)
+      // Store tokens in cookies
       setAccessTokenCookie(action.payload.accessToken);
       setRefreshTokenCookie(action.payload.refreshToken);
+      
+      // manual backup since redux-persist is broken
+      localStorage.setItem('ventree_user', JSON.stringify(action.payload.user));
+      console.log('💾 saved user manually:', action.payload.user);
     },
     setAccessToken(_state, action: PayloadAction<string>) {
       // Update access token in cookie
@@ -48,32 +52,30 @@ const authSlice = createSlice({
     // Initialize auth state from cookies and persisted user
     // This should be called AFTER Redux Persist rehydration completes
     initializeAuth(state) {
-      const accessToken = getAccessTokenCookie();
       const refreshToken = getRefreshTokenCookie();
-      const hasTokens = !!(accessToken || refreshToken);
       
-      // User is logged in if they have BOTH tokens (in cookies) AND user data (in Redux)
-      if (hasTokens && state.user) {
-        // Both tokens and user exist - user is authenticated
-        state.isLoggedIn = true;
-        state._initialized = true;
-      } else if (!hasTokens) {
-        // No tokens - clear everything (tokens expired or were cleared)
-        state.isLoggedIn = false;
-        state.user = null;
-        state._initialized = true;
-      } else if (hasTokens && !state.user) {
-        // Tokens exist but no user data - this shouldn't happen if persistence worked
-        // But handle it gracefully: keep logged out
-        state.isLoggedIn = false;
-        // Don't clear user if it was just not persisted - keep as is
-        state._initialized = true;
-      } else {
-        // No tokens and no user - definitely not logged in
-        state.isLoggedIn = false;
-        state.user = null;
-        state._initialized = true;
+      // redux-persist is broken, try manual fallback
+      if (refreshToken && !state.user) {
+        try {
+          const saved = localStorage.getItem('ventree_user');
+          console.log('🔍 checking manual backup:', saved);
+          if (saved) {
+            state.user = JSON.parse(saved);
+            console.log('✅ restored user manually:', state.user);
+          }
+        } catch (e) {
+          console.log('❌ manual restore failed:', e);
+        }
       }
+      
+      if (refreshToken && state.user) {
+        state.isLoggedIn = true;
+      } else {
+        state.isLoggedIn = false;
+        state.user = null;
+      }
+      
+      state._initialized = true;
     },
     // Legacy: kept for backward compatibility
     checkAuthStatus(state) {
@@ -101,6 +103,12 @@ const authSlice = createSlice({
     // Handle rehydration from Redux Persist
     builder.addCase(REHYDRATE, (state, action: any) => {
       const persistedState = action.payload?.auth as AuthState | undefined;
+      
+      console.log('🔄 REHYDRATE debug:', { 
+        persistedState,
+        userFromPersist: persistedState?.user,
+        userType: typeof persistedState?.user
+      });
       
       if (persistedState) {
         // Restore persisted user data (if it was persisted)

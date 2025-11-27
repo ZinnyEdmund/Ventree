@@ -32,26 +32,22 @@ import { notificationsApi } from "../services/notifications.service";
 const authTransform = createTransform(
   // transform state on its way to being serialized and persisted
   (inboundState: any) => {
+    if (!inboundState) return inboundState;
     const { _initialized, ...stateToPersist } = inboundState;
     return stateToPersist;
   },
   // transform state being rehydrated
   (outboundState: any) => {
+    if (!outboundState) return outboundState;
     return { ...outboundState, _initialized: false };
-  },
-  // define which reducers this transform gets called for
-  { whitelist: ["auth"] }
+  }
+  // no whitelist needed when applying to specific reducer
 );
 
 const persistConfig = {
-  key: "auth",
-  storage,
-  // When using persistReducer on a specific reducer, whitelist refers to state properties
-  // We want to persist user and isLoggedIn, but not _initialized
-  // The transform will handle excluding _initialized, so we don't need an explicit whitelist
-  transforms: [authTransform],
-  // Note: accessToken is not in auth state (stored in cookies)
-  // Only user and isLoggedIn will be persisted (not _initialized, which is excluded by transform)
+  key: "auth", 
+  storage
+  // no transforms, no whitelists - persist everything
 };
 
 // Persist configuration for draft sales

@@ -5,16 +5,18 @@ import { webSocketService } from './services/websocket.service';
 import type { RootState } from './state/store';
 
 function App() {
-  const { isLoggedIn } = useSelector((state: RootState) => state.auth);
+  const { isLoggedIn, _initialized } = useSelector((state: RootState) => state.auth);
 
   useEffect(() => {
-    // connect websocket when logged in, disconnect when not
+    // don't mess with websocket until redux has loaded from storage
+    if (!_initialized) return;
+    
     if (isLoggedIn) {
       webSocketService.connect();
     } else {
       webSocketService.disconnect(); 
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, _initialized]);
 
   return <AppRoutes />;
 }

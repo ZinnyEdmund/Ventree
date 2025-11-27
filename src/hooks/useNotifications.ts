@@ -33,8 +33,8 @@ export const useNotifications = () => {
   } = useFetchNotificationsQuery(
     { shopId: user?.shopId ?? '' },
     { 
-      skip: !isLoggedIn || !user?.shopId,
-      pollingInterval: 60000 // fallback if websocket dies
+      skip: !isLoggedIn || !user?.shopId
+      // removed polling since we use websocket
     }
   );
   
@@ -121,7 +121,7 @@ export const useNotifications = () => {
     return () => window.removeEventListener('tokenRefreshed', handleTokenRefresh);
   }, [handleTokenRefresh]);
 
-  // only sync API data on first load when we have no notifications
+  // sync API data only if we really have no notifications (not after reload)
   useEffect(() => {
     if (notificationsData?.success && notificationsData?.data && notifications.length === 0) {
       dispatch(setNotifications(notificationsData.data));
