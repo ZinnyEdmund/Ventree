@@ -12,11 +12,13 @@ import {
 import { ArrowDown, ArrowUp, ArrowUpDown, Info, RefreshCw } from "lucide-react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../state/store";
-import { useGetSalesItemsByShopQuery } from "../../services/sales.service";
+import { useGetSalesItemsByShopQuery, useGetSaleTicketByIdQuery, useRecordCreditMutation } from "../../services/sales.service";
 import {
   PaymentMethodOptions,
   type SaleHistoryItem,
+  type SaleTicket,
 } from "../../types/general";
+import { RecordCreditPaymentModal } from "./components/RecordPaymentModal";
 
 interface TicketRow {
   id: string;
@@ -69,6 +71,7 @@ interface TableProps {
     description: string;
   };
   columns: ColumnDef<TicketRow, any>[];
+  onRowAction?: (ticketId: string) => void;
 }
 
 const TableCard: React.FC<TableProps> = ({
@@ -76,6 +79,7 @@ const TableCard: React.FC<TableProps> = ({
   isLoading,
   emptyState,
   columns,
+  onRowAction,
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -159,7 +163,10 @@ const TableCard: React.FC<TableProps> = ({
                     {ticket.ticketNumber}
                   </p>
                 </div>
-                <button className="p-2 rounded-lg hover:bg-gray-100">
+                <button 
+                  className="p-2 rounded-lg hover:bg-gray-100"
+                  onClick={() => onRowAction?.(ticket.id)}
+                >
                   <Info size={18} className="text-gray-500" />
                 </button>
               </div>
@@ -191,140 +198,10 @@ const TableCard: React.FC<TableProps> = ({
   );
 };
 
-const debtorColumns: ColumnDef<TicketRow, any>[] = [
-  ticketColumnHelper.accessor("customerName", {
-    header: "Name",
-    cell: (info) => (
-      <div className="font-semibold text-gray-900">
-        {info.getValue() || "Walk-in Customer"}
-      </div>
-    ),
-  }),
-  ticketColumnHelper.accessor("totalAmount", {
-    header: ({ column }) => (
-      <button
-        className="flex items-center gap-2"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Price
-        {column.getIsSorted() === "asc" ? (
-          <ArrowUp size={14} />
-        ) : column.getIsSorted() === "desc" ? (
-          <ArrowDown size={14} />
-        ) : (
-          <ArrowUpDown size={14} className="text-gray-400" />
-        )}
-      </button>
-    ),
-    cell: (info) => (
-      <div className="font-semibold text-gray-900">
-        {formatCurrency(info.getValue())}
-      </div>
-    ),
-  }),
-  ticketColumnHelper.accessor("soldByName", {
-    header: "Sold By",
-    cell: (info) => (
-      <div className="text-gray-700">
-         {info.getValue() || "You"}
-      </div>
-    ),
-  }),
-  ticketColumnHelper.accessor("date", {
-    header: "Date",
-    cell: (info) => (
-      <div className="text-gray-700">{getTimeAgo(info.getValue())}</div>
-    ),
-  }),
-  ticketColumnHelper.accessor("paymentMethod", {
-    header: "Payment",
-    cell: (info) => <PaymentBadge method={info.getValue()} />,
-  }),
-  ticketColumnHelper.display({
-    id: "debtorActions",
-    header: "",
-    cell: () => (
-      <button className="p-2 rounded-lg hover:bg-gray-100">
-        <Info size={16} className="text-gray-500" />
-      </button>
-    ),
-  }),
-];
-
-const ticketColumns: ColumnDef<TicketRow, any>[] = [
-  ticketColumnHelper.accessor("ticketNumber", {
-    header: ({ column }) => (
-      <button
-        className="flex items-center gap-2"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        ID
-        {column.getIsSorted() === "asc" ? (
-          <ArrowUp size={14} />
-        ) : column.getIsSorted() === "desc" ? (
-          <ArrowDown size={14} />
-        ) : (
-          <ArrowUpDown size={14} className="text-gray-400" />
-        )}
-      </button>
-    ),
-    cell: (info) => (
-      <div className="font-semibold text-gray-900">{info.getValue()}</div>
-    ),
-  }),
-  ticketColumnHelper.accessor("totalAmount", {
-    header: ({ column }) => (
-      <button
-        className="flex items-center gap-2"
-        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-      >
-        Price
-        {column.getIsSorted() === "asc" ? (
-          <ArrowUp size={14} />
-        ) : column.getIsSorted() === "desc" ? (
-          <ArrowDown size={14} />
-        ) : (
-          <ArrowUpDown size={14} className="text-gray-400" />
-        )}
-      </button>
-    ),
-    cell: (info) => (
-      <div className="font-semibold text-gray-900">
-        {formatCurrency(info.getValue())}
-      </div>
-    ),
-  }),
-  ticketColumnHelper.accessor("soldByName", {
-    header: "Sold By",
-    cell: (info) => (
-      <div className="text-gray-700">
-      {info.getValue() || "You"}
-      </div>
-    ),
-  }),
-  ticketColumnHelper.accessor("date", {
-    header: "Date",
-    cell: (info) => (
-      <div className="text-gray-700">{getTimeAgo(info.getValue())}</div>
-    ),
-  }),
-  ticketColumnHelper.accessor("paymentMethod", {
-    header: "Payment",
-    cell: (info) => <PaymentBadge method={info.getValue()} />,
-  }),
-  ticketColumnHelper.display({
-    id: "ticketActions",
-    header: "",
-    cell: () => (
-      <button className="p-2 rounded-lg hover:bg-gray-100">
-        <Info size={16} className="text-gray-500" />
-      </button>
-    ),
-  }),
-];
-
 export const HistoryPage = () => {
   const { user } = useSelector((state: RootState) => state.auth);
+  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     data: salesItemsData,
@@ -334,6 +211,17 @@ export const HistoryPage = () => {
   } = useGetSalesItemsByShopQuery(user?.shopId || "", {
     skip: !user?.shopId,
   });
+
+  // Fetch full ticket details when a ticket is selected
+  const { data: ticketDetailsData, isLoading: isLoadingTicket } = useGetSaleTicketByIdQuery(
+    {
+      shopId: user?.shopId || "",
+      ticketId: selectedTicketId || "",
+    },
+    {
+      skip: !selectedTicketId || !user?.shopId,
+    }
+  );
 
   const tickets = useMemo<TicketRow[]>(() => {
     const items = salesItemsData?.data.items || [];
@@ -381,7 +269,162 @@ export const HistoryPage = () => {
     [tickets]
   );
 
+  // Find the selected ticket details
+  const selectedTicket = useMemo(() => {
+    if (!selectedTicketId) return null;
+    return tickets.find(ticket => ticket.id === selectedTicketId);
+  }, [selectedTicketId, tickets]);
+
+  const handleRowAction = (ticketId: string) => {
+    setSelectedTicketId(ticketId);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedTicketId(null);
+  };
+
   const isBusy = isLoading || isFetching;
+
+  // Create columns with action handlers
+  const debtorColumns: ColumnDef<TicketRow, any>[] = [
+    ticketColumnHelper.accessor("customerName", {
+      header: "Name",
+      cell: (info) => (
+        <div className="font-semibold text-gray-900">
+          {info.getValue() || "Walk-in Customer"}
+        </div>
+      ),
+    }),
+    ticketColumnHelper.accessor("totalAmount", {
+      header: ({ column }) => (
+        <button
+          className="flex items-center gap-2"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Price
+          {column.getIsSorted() === "asc" ? (
+            <ArrowUp size={14} />
+          ) : column.getIsSorted() === "desc" ? (
+            <ArrowDown size={14} />
+          ) : (
+            <ArrowUpDown size={14} className="text-gray-400" />
+          )}
+        </button>
+      ),
+      cell: (info) => (
+        <div className="font-semibold text-gray-900">
+          {formatCurrency(info.getValue())}
+        </div>
+      ),
+    }),
+    ticketColumnHelper.accessor("soldByName", {
+      header: "Sold By",
+      cell: (info) => (
+        <div className="text-gray-700">
+           {info.getValue() || "You"}
+        </div>
+      ),
+    }),
+    ticketColumnHelper.accessor("date", {
+      header: "Date",
+      cell: (info) => (
+        <div className="text-gray-700">{getTimeAgo(info.getValue())}</div>
+      ),
+    }),
+    ticketColumnHelper.accessor("paymentMethod", {
+      header: "Payment",
+      cell: (info) => <PaymentBadge method={info.getValue()} />,
+    }),
+    ticketColumnHelper.display({
+      id: "debtorActions",
+      header: "",
+      cell: ({ row }) => (
+        <button 
+          className="p-2 rounded-lg hover:bg-gray-100"
+          onClick={() => handleRowAction(row.original.id)}
+        >
+          <Info size={16} className="text-gray-500" />
+        </button>
+      ),
+    }),
+  ];
+
+  const ticketColumns: ColumnDef<TicketRow, any>[] = [
+    ticketColumnHelper.accessor("ticketNumber", {
+      header: ({ column }) => (
+        <button
+          className="flex items-center gap-2"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ID
+          {column.getIsSorted() === "asc" ? (
+            <ArrowUp size={14} />
+          ) : column.getIsSorted() === "desc" ? (
+            <ArrowDown size={14} />
+          ) : (
+            <ArrowUpDown size={14} className="text-gray-400" />
+          )}
+        </button>
+      ),
+      cell: (info) => (
+        <div className="font-semibold text-gray-900">{info.getValue()}</div>
+      ),
+    }),
+    ticketColumnHelper.accessor("totalAmount", {
+      header: ({ column }) => (
+        <button
+          className="flex items-center gap-2"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Price
+          {column.getIsSorted() === "asc" ? (
+            <ArrowUp size={14} />
+          ) : column.getIsSorted() === "desc" ? (
+            <ArrowDown size={14} />
+          ) : (
+            <ArrowUpDown size={14} className="text-gray-400" />
+          )}
+        </button>
+      ),
+      cell: (info) => (
+        <div className="font-semibold text-gray-900">
+          {formatCurrency(info.getValue())}
+        </div>
+      ),
+    }),
+    ticketColumnHelper.accessor("soldByName", {
+      header: "Sold By",
+      cell: (info) => (
+        <div className="text-gray-700">
+        {info.getValue() || "You"}
+        </div>
+      ),
+    }),
+    ticketColumnHelper.accessor("date", {
+      header: "Date",
+      cell: (info) => (
+        <div className="text-gray-700">{getTimeAgo(info.getValue())}</div>
+      ),
+    }),
+    ticketColumnHelper.accessor("paymentMethod", {
+      header: "Payment",
+      cell: (info) => <PaymentBadge method={info.getValue()} />,
+    }),
+    ticketColumnHelper.display({
+      id: "ticketActions",
+      header: "",
+      cell: ({ row }) => (
+        <button 
+          className="p-2 rounded-lg hover:bg-gray-100"
+          onClick={() => handleRowAction(row.original.id)}
+        >
+          <Info size={16} className="text-gray-500" />
+        </button>
+      ),
+    }),
+  ];
 
   return (
     <section className="py-6 space-y-8">
@@ -391,9 +434,6 @@ export const HistoryPage = () => {
             Debtors
           </h1>
           <h2 className="text-sm text-gray-900">The people that are owing you.</h2>
-          {/* <p className="text-gray-500 text-sm">
-            Track every credit sale and stay on top of repayments.
-          </p> */}
         </header>
 
         <TableCard
@@ -404,6 +444,7 @@ export const HistoryPage = () => {
             description: "Credit sales will appear here once recorded.",
           }}
           columns={debtorColumns}
+          onRowAction={handleRowAction}
         />
       </article>
 
@@ -412,9 +453,6 @@ export const HistoryPage = () => {
           <div>
             <h1 className="h4 md:text-2xl text-secondary">Sales History</h1>
             <p className="text-sm text-gray-900">See what you have sold.</p>
-            {/* <p className="text-gray-500 text-sm">
-              Every ticket recorded in your shop appears here.
-            </p> */}
           </div>
 
           <button
@@ -435,8 +473,37 @@ export const HistoryPage = () => {
             description: "Once you record sales, they will show up here.",
           }}
           columns={ticketColumns}
+          onRowAction={handleRowAction}
         />
       </article>
+
+      {/* Record Credit Payment Modal */}
+      {isModalOpen && (
+        <>
+          {isLoadingTicket ? (
+            // Loading overlay while fetching ticket details
+            <>
+              <div className="fixed inset-0 bg-black/50 z-40" />
+              <div className="fixed inset-0 flex items-center justify-center z-50">
+                <div className="bg-white rounded-2xl p-8 shadow-xl">
+                  <div className="flex items-center gap-3">
+                    <Icon icon="mdi:loading" className="animate-spin" width="24" />
+                    <span className="text-gray-700">Loading ticket details...</span>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : ticketDetailsData?.data ? (
+            <RecordCreditPaymentModal
+              isOpen={isModalOpen}
+              onClose={handleCloseModal}
+              ticket={ticketDetailsData.data}
+              shopId={user?.shopId || ""}
+              currentUserId={user?.userId || ""}
+            />
+          ) : null}
+        </>
+      )}
     </section>
   );
 };

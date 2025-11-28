@@ -2,6 +2,7 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQueryWithLogout } from "./baseQueryLogout";
 import type {
   BaseResponse,
+  RecordCreditPaymentDTO,
   RecordSaleDto,
   SaleTicket,
   Sales,
@@ -23,6 +24,24 @@ export const salesApi = createApi({
       }),
       invalidatesTags: ["Sales"],
     }),
+
+    recordCredit: builder.mutation<BaseResponse<SaleTicket>, RecordCreditPaymentDTO & { shopId: string , ticketId: string }>({
+      query: ({shopId, ticketId, ...body}) => ({
+        url: `/v1/sales/${shopId}/${ticketId}/payment`,
+        method: "POST",
+        body,
+      }),
+      invalidatesTags: ["Sales"],
+    }),
+
+    // getSaleTicketById: builder.mutation<BaseResponse<SaleTicket>, { shopId: string , ticketId: string }>({
+    //   query: ({shopId, ticketId, ...body}) => ({
+    //     url: `/v1/sales/${shopId}/${ticketId}`,
+    //     method: "GET",
+    //     body,
+    //   }),
+    //   invalidatesTags: ["Sales"],
+    // }),
 
     updateInventory: builder.mutation<
       BaseResponse<Sales>,
@@ -68,6 +87,14 @@ export const salesApi = createApi({
       providesTags: ["Sales"],
     }),
 
+    getSaleTicketById: builder.query<BaseResponse<SaleTicket>, { shopId: string; ticketId: string }>({
+      query: ({ shopId, ticketId }) => ({
+        url: `/v1/sales/${shopId}/${ticketId}`,
+        method: "GET",
+      }),
+      providesTags: ["Sales"],
+    }),
+
     deleteSales: builder.mutation<
       { success: boolean; message: string },
       { shopId: string; salesId: string }
@@ -88,5 +115,7 @@ export const {
   useGetSalesItemsByShopQuery,
   useDeleteSalesMutation,
   useGetSaleInShopQuery,
-  useGetCreditsByShopQuery
+  useGetCreditsByShopQuery,
+  useRecordCreditMutation,
+  useGetSaleTicketByIdQuery
 } = salesApi;

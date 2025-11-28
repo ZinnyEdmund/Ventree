@@ -67,7 +67,6 @@ export const SetupShopPage = () => {
   useEffect(() => {
     if (staffData?.data) {
       const staffList = Array.isArray(staffData.data.staff) ? staffData.data.staff : [staffData.data.staff];
-      console.log(staffList)
       const mappedStaff: SalesPerson[] = staffList.map((staff) => ({
         id: staff._id,
         name: staff.staffName,

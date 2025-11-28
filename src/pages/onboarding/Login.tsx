@@ -47,18 +47,12 @@ export default function Login() {
       // Format phone number to Nigerian international format
       const formattedPhoneNumber = formatNigerianPhoneNumber(phoneNumber);
 
-      console.log({
-        shopName: shopName.trim(),
-        phoneNumber: formattedPhoneNumber,
-        password,
-      });
 
       const result = await loginMutation({
         shopName: shopName.trim(),
         phoneNumber: formattedPhoneNumber,
         password,
       }).unwrap();
-      console.log(result);
       // console.log('Login result:', result);
       if (result.success && result.data) {
         const { accessToken, refreshToken, role, owner, shop, staff } =

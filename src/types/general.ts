@@ -561,3 +561,11 @@ export interface SalesItemsResponse {
     pages: number;
   };
 }
+
+export interface RecordCreditPaymentDTO {
+  amount: number;
+  paymentMethod: "cash" | "transfer";
+  receivedBy: string;             // staff ID
+  transactionReference?: string;
+  notes?: string;
+}

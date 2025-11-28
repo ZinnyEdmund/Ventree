@@ -60,7 +60,6 @@ export default function ProtectedRoute({
   if (requiredRole || allowedRoles) {
     const userRole = user?.role  || "owner";
 
-    console.log('User Role:', userRole);
     if (requiredRole) {
       // Single role required
       if (userRole !== requiredRole) {

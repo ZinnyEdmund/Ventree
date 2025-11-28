@@ -39,7 +39,6 @@ export const Home = () => {
     skip: !user?.shopId,
   });
 
-  console.log("Sales Item Data:", salesItemsData);
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -134,7 +133,6 @@ export const Home = () => {
     setSelectedSale(sale);
   };
 
-  console.log(user)
 
   return (
     <section className="py-6">

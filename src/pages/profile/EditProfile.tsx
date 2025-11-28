@@ -107,8 +107,6 @@ export default function EditProfile() {
   };
 
   const handleSubmit = async () => {
-    console.log("Submit button clicked");
-    console.log("Form data:", formData);
 
     // Validate form
     if (!validateAll(formData)) {
