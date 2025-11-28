@@ -170,7 +170,7 @@ export default function Settings() {
   if (isLoading) {
     return (
       <main className="flex justify-center items-center min-h-screen bg-bg">
-        <div className="text-center">
+        <div className="text-center justify-center">
           <Icon icon="line-md:loading-loop" width="48" height="48" className="text-secondary" />
           <p className="text-black mt-4">Loading settings...</p>
         </div>

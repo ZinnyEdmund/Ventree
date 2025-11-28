@@ -56,7 +56,7 @@ export default function ResetPassword() {
 
   return (
     <section className="w-full flex flex-col md:space-y-16 space-y-16 justify-between md:p-6">
-      <Link to="/" className="absolute left-6 top-6 hidden md:inline">
+      <Link to="/login" className="absolute left-6 top-6 hidden md:inline">
         <Icon
           icon="iconamoon:arrow-left-6-circle-light"
           width="24"
