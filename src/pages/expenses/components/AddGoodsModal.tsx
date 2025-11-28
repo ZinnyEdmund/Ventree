@@ -163,7 +163,7 @@ const expenseCategoryOptions = [
               </label>
               <SelectInput
                 name="Expense Category"
-                placeholder="Inches, painter, cup"
+                placeholder="Select Category"
                 options={expenseCategoryOptions}
                 value={formData.category}
                 onChange={(e: any) =>

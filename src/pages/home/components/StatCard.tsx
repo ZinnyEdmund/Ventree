@@ -27,13 +27,18 @@ export const StatCard: React.FC<StatCardProps> = ({
       }
     };
   
+    // Check if value is negative
+    const isNegative = value.trim().startsWith('₦-');
+
     return (
       <div className="bg-white rounded-lg p-4 border border-accent-g2">
         <div className={`flex items-center gap-2 mb-2 ${getTextColor()}`}>
           <Icon icon={icon} className="" width="24" />
           <h3 className={`text-sm font-medium`}>{title}</h3>
         </div>
-        <p className="h6 font-bold text-black mb-1">{value}</p>
+        <p className={`h6 font-bold mb-1 ${isNegative ? 'text-error' : 'text-black'}`}>
+          {value}
+        </p>
         <p className="text-sm text-[#1E1E1E80]">{description}</p>
       </div>
     );
