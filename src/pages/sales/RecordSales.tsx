@@ -315,14 +315,14 @@ export default function RecordSale() {
     <section className="flex flex-col w-full py-6 sm:py-8">
       {/* Header */}
       <div className="relative mb-8 sm:mb-6">
-        <Link to="/home" className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
+        {/* <Link to="/home" className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
           <Icon
             icon="iconamoon:arrow-left-6-circle-light"
             width="24"
             height="24"
             aria-hidden="true"
           />
-        </Link>
+        </Link> */}
 
         <h2 className="h4 font-semibold text-secondary text-center">
           Sale 0001
