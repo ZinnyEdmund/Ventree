@@ -42,7 +42,7 @@ function AboutCard({ icon, title, description }: AboutCardProps) {
 
 export default function About() {
   return (
-    <section className="px-5 py-20">
+    <section className="px-5 pt-20 md:py-16">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-16 max-w-4xl mx-auto">

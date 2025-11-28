@@ -11,17 +11,17 @@ import {
 } from "@tanstack/react-table";
 import { Icon } from "@iconify/react";
 import { Eye, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
-import type { Sale } from "../../../types/general";
+import type { SaleHistoryItem } from "../../../types/general";
 // import { formatDate, formatTime } from "../../../lib/helper";
 
 
 interface SalesHistoryTableProps {
-  sales: Sale[];
+  sales: SaleHistoryItem[];
   isLoading?: boolean;
-  onView: (sale: Sale) => void;
+  onView: (sale: SaleHistoryItem) => void;
 }
 
-const columnHelper = createColumnHelper<Sale>();
+const columnHelper = createColumnHelper<SaleHistoryItem>();
 
 export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
   sales,
@@ -50,7 +50,7 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
   };
 
   // Define columns
-  const columns = useMemo<ColumnDef<Sale, any>[]>(
+  const columns = useMemo<ColumnDef<SaleHistoryItem, any>[]>(
     () => [
       columnHelper.accessor("itemName", {
         header: ({ column }) => (
@@ -72,7 +72,7 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
           <div className="font-medium text-gray-900">{info.getValue()}</div>
         ),
       }),
-      columnHelper.accessor("totalAmount", {
+      columnHelper.accessor("lineTotal", {
         header: ({ column }) => (
           <button
             className="flex items-center gap-2 font-semibold"
@@ -94,7 +94,7 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
           </div>
         ),
       }),
-      columnHelper.accessor("soldBy.staffName", {
+      columnHelper.accessor("soldByName", {
         header: "Sold By",
         cell: (info) => (
           <div className="text-gray-700">
@@ -102,7 +102,7 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
           </div>
         ),
       }),
-      columnHelper.accessor("createdAt", {
+      columnHelper.accessor("date", {
         header: ({ column }) => (
           <button
             className="flex items-center gap-2 font-semibold"
@@ -240,7 +240,7 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
                     {sale.itemName}
                   </h3>
                   <p className="text-lg font-semibold text-gray-900">
-                    {formatCurrency(sale.totalAmount)}
+                    {formatCurrency(sale.lineTotal)}
                   </p>
                 </div>
 
@@ -256,12 +256,12 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
               <div className="flex items-center justify-between text-sm">
                 <div>
                   <span className="text-gray-600">
-                    Sold by {sale.soldBy?.staffName || "You"}
+                    Sold by {sale.soldByName || "You"}
                   </span>
                 </div>
                 <div>
                   <span className="text-gray-600">
-                    {getTimeAgo(sale.createdAt)}
+                    {getTimeAgo(sale.date)}
                   </span>
                 </div>
               </div>

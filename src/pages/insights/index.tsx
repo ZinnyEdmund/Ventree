@@ -40,6 +40,13 @@ export const BusinessInsightsPage = () => {
   const dashboard = dashboardData?.data?.dashboard;
 
   // Build stats array from API data or show loading/default
+  const lowStockCount = dashboard
+    ? typeof dashboard.lowStockItems === "number"
+      ? dashboard.lowStockItems
+      : dashboard.lowStockItems?.count ?? 0
+    : 0;
+
+  // Build stats array from API data or show loading/default
   const stats = dashboard
     ? [
         {
@@ -57,7 +64,7 @@ export const BusinessInsightsPage = () => {
         {
           title: "Low Stock",
           Icon: "ic:outline-trending-down",
-          value: `${dashboard.lowStockItems} Items`,
+          value: `${lowStockCount} Item${lowStockCount === 1 ? "" : "s"}`,
           description: "Almost Finished",
           variant: "warning" as const,
         },

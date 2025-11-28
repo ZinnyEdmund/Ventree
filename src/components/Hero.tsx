@@ -4,7 +4,7 @@ export default function Hero() {
   const navigate = useNavigate();
 
   return (
-    <section className="flex items-center justify-center px-5 py-20">
+    <section className="flex items-center justify-center px-5 pt-20 md:py-35">
       <div className="text-center max-w-4xl">
         <h1 className="text-black h1 mb-6 leading-tight">
           Run your shop the smart and easy way

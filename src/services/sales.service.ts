@@ -3,8 +3,10 @@ import { baseQueryWithLogout } from "./baseQueryLogout";
 import type {
   BaseResponse,
   RecordSaleDto,
+  SaleTicket,
   Sales,
-  SalesResponse
+  SalesItemsResponse,
+  SalesResponse,
 } from "../types/general";
 
 export const salesApi = createApi({
@@ -13,7 +15,7 @@ export const salesApi = createApi({
   tagTypes: ["Sales"],
   endpoints: (builder) => ({
 
-    createSales: builder.mutation<BaseResponse<Sales>, RecordSaleDto>({
+    createSales: builder.mutation<BaseResponse<SaleTicket>, RecordSaleDto>({
       query: (body) => ({
         url: "/v1/sales",
         method: "POST",
@@ -50,6 +52,14 @@ export const salesApi = createApi({
       providesTags: ["Sales"],
     }),
 
+    getSalesItemsByShop: builder.query<SalesItemsResponse, string>({
+      query: (shopId) => ({
+        url: `/v1/sales/${shopId}/items`,
+        method: "GET",
+      }),
+      providesTags: ["Sales"],
+    }),
+
     getSaleInShop: builder.query<BaseResponse<Sales>, { shopId: string; salesId: string }>({
       query: ({ shopId, salesId }) => ({
         url: `/v1/sales/${shopId}/${salesId}`,
@@ -75,6 +85,7 @@ export const {
   useCreateSalesMutation,
   useUpdateInventoryMutation,
   useGetSalesByShopQuery,
+  useGetSalesItemsByShopQuery,
   useDeleteSalesMutation,
   useGetSaleInShopQuery,
   useGetCreditsByShopQuery
