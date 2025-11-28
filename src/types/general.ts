@@ -22,27 +22,30 @@ export interface CreateStaffInput {
   role?: string;
 }
 
-export enum PaymentMethodOptions { 
+export enum PaymentMethodOptions {
   cash = "cash",
-  card = "card",
-  mobile = "mobile", 
-  bankTransfer= "bank_transfer"
+  transfer = "transfer",
+  pos = "pos",
+  credit = "credit",
+}
+
+export interface RecordSaleItemDto {
+  itemId: string;
+  quantity: number;
+  sellingPrice: number;
 }
 
 export interface RecordSaleDto {
-  shopId: string;                     // Required - MongoId
-  itemId: string;                     // Required - MongoId
-  quantity: number;                   // Required - 1 to 10,000
-  soldBy: string;                     // Required - MongoId
-  paymentMethod: PaymentMethodOptions
-  discount?: number;                  // Optional - 0 to 50
-  customerName?: string;              // Optional - 2 to 100 chars
-  customerPhone?: string;             // Optional - Valid international phone
-  notes?: string;                     // Optional - Max 500 chars
+  shopId: string;
+  items: RecordSaleItemDto[];
+  soldBy: string;
+  paymentMethod: PaymentMethodOptions;
+  customerName?: string;
+  customerPhone?: string;
+  customerAddress?: string;
+  dueDate?: string;
+  notes?: string;
   transactionReference?: string;
-  sellingPrice?: number;
-  taxAmount?: number;
-  profitPercentage: string;
 }
 
 export interface UpdateStaffInput {
@@ -131,9 +134,9 @@ export interface ClientType {
   user: User;  // relation to User
 }
 
-export interface ClientProfile extends BaseResponse<ClientType> {}
+export type ClientProfile = BaseResponse<ClientType>;
 
-export interface ServiceProviderProfile extends BaseResponse<{ 
+export type ServiceProviderProfile = BaseResponse<{ 
   id: number;
   userId: number;
   fullName: string;
@@ -154,7 +157,7 @@ export interface ServiceProviderProfile extends BaseResponse<{
 
   user: User;  // relation to User
   // services: ServiceProviderService[]; // if you want type for this, see below
-}> {}
+}>;
 
 
 // --- Auth Requests
@@ -201,11 +204,11 @@ export interface BaseResponse<T = unknown> {
 }
 
 // --- Auth Responses
-export interface AuthResponse extends BaseResponse<{
+export type AuthResponse = BaseResponse<{
   accessToken: string;
   refreshToken: string;
   user: User;
-}> {}
+}>;
 
 export interface Staff {
   id: string;
@@ -246,10 +249,10 @@ export interface LoginResponse {
 }
 
 // Refresh token response - may use either BaseResponse format or direct data format
-export interface RefreshTokenResponse extends BaseResponse<{
+export type RefreshTokenResponse = BaseResponse<{
   accessToken: string;
   refreshToken: string;
-}> {}
+}>;
 
 // Alternative format (if API returns data directly like LoginResponse)
 export interface RefreshTokenDataResponse {
@@ -468,7 +471,7 @@ export interface Sale {
   isCredit: boolean;
   creditStatus: string;
   refunded: boolean;
-  payments: any[]; // If you want, we can define a proper interface for payments
+  payments: unknown[]; // If needed, define a detailed payment interface
   soldBy?: SoldBy;
   soldByName?: string;
 
@@ -477,6 +480,40 @@ export interface Sale {
   updatedAt: string;
 
   __v: number;
+}
+
+export interface SaleTicketItem {
+  itemId: string;
+  itemName: string;
+  itemCategory: string;
+  quantitySold: number;
+  costPrice: number;
+  sellingPrice: number;
+  discount: number;
+  lineTotal: number;
+  lineProfit: number;
+}
+
+export interface SaleTicket {
+  _id: string;
+  ticketNumber: string;
+  shopId: string;
+  items: SaleTicketItem[];
+  subtotal: number;
+  taxAmount: number;
+  totalAmount: number;
+  totalProfit: number;
+  totalItemCount: number;
+  soldBy: string;
+  soldByName: string;
+  paymentMethod: PaymentMethodOptions;
+  date: string;
+  refunded: boolean;
+  isCredit: boolean;
+  creditStatus: string;
+  amountPaid: number;
+  amountOwed: number;
+  payments: unknown[];
 }
 
 export interface SalesResponse {

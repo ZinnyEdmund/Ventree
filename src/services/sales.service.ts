@@ -3,8 +3,9 @@ import { baseQueryWithLogout } from "./baseQueryLogout";
 import type {
   BaseResponse,
   RecordSaleDto,
+  SaleTicket,
   Sales,
-  SalesResponse
+  SalesResponse,
 } from "../types/general";
 
 export const salesApi = createApi({
@@ -13,7 +14,7 @@ export const salesApi = createApi({
   tagTypes: ["Sales"],
   endpoints: (builder) => ({
 
-    createSales: builder.mutation<BaseResponse<Sales>, RecordSaleDto>({
+    createSales: builder.mutation<BaseResponse<SaleTicket>, RecordSaleDto>({
       query: (body) => ({
         url: "/v1/sales",
         method: "POST",
