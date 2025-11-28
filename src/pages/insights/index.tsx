@@ -18,6 +18,7 @@ import { usePersistentDashboard } from "../../hooks/usePersistentDashboard";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../state/store";
 import { RefreshCw } from "lucide-react";
+import { TimePeriod } from "../../types/general";
 
 export const BusinessInsightsPage = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -28,7 +29,7 @@ export const BusinessInsightsPage = () => {
     data: dashboardData,
     isFetching,
     refetch,
-  } = usePersistentDashboard(user?.shopId || "");
+  } = usePersistentDashboard(user?.shopId || "", TimePeriod.WEEKLY);
 
   // Format currency
   const formatCurrency = (amount: number) => {

@@ -36,7 +36,15 @@ export const salesApi = createApi({
 
     getSalesByShop: builder.query<SalesResponse, string>({
       query: (shopId) => ({
-        url: `/v1/sales/${shopId}/list`,
+        url: `/v1/sales/${shopId}`,
+        method: "GET",
+      }),
+      providesTags: ["Sales"],
+    }),
+
+    getCreditsByShop: builder.query<SalesResponse, string>({
+      query: (shopId) => ({
+        url: `/v1/sales/${shopId}/credits?creditStatus=pending`,
         method: "GET",
       }),
       providesTags: ["Sales"],
@@ -69,4 +77,5 @@ export const {
   useGetSalesByShopQuery,
   useDeleteSalesMutation,
   useGetSaleInShopQuery,
+  useGetCreditsByShopQuery
 } = salesApi;
