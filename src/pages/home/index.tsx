@@ -14,7 +14,7 @@ import type { RootState } from "../../state/store";
 import { TimePeriod } from "../../types/general";
 import { RefreshCw } from "lucide-react";
 import { usePersistentDashboard } from "../../hooks/usePersistentDashboard";
-import { useGetSalesByShopQuery } from "../../services/sales.service";
+import { useGetSalesItemsByShopQuery } from "../../services/sales.service";
 
 // Main Home Component
 export const Home = () => {
@@ -33,13 +33,13 @@ export const Home = () => {
 
   // Fetch sales data
   const {
-    data: salesData,
+    data: salesItemsData,
     isLoading: isLoadingSales,
-  } = useGetSalesByShopQuery(user?.shopId || "", {
+  } = useGetSalesItemsByShopQuery(user?.shopId || "", {
     skip: !user?.shopId,
   });
 
-  console.log("Sales Data:", salesData);
+  console.log("Sales Item Data:", salesItemsData);
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -50,7 +50,11 @@ export const Home = () => {
   const dashboard = dashboardData?.data?.dashboard;
 
   // Extract sales - handle both array and single object response
-  const sales = salesData?.data.sales ? (Array.isArray(salesData.data.sales) ? salesData.data.sales : [salesData.data.sales]) : [];
+  const sales = salesItemsData?.data.items
+    ? Array.isArray(salesItemsData.data.items)
+      ? salesItemsData.data.items
+      : [salesItemsData.data.items]
+    : [];
   
   // Get only the 5 most recent sales
   const recentSales = sales;

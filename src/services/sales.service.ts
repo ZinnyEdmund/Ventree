@@ -5,6 +5,7 @@ import type {
   RecordSaleDto,
   SaleTicket,
   Sales,
+  SalesItemsResponse,
   SalesResponse,
 } from "../types/general";
 
@@ -43,6 +44,14 @@ export const salesApi = createApi({
       providesTags: ["Sales"],
     }),
 
+    getSalesItemsByShop: builder.query<SalesItemsResponse, string>({
+      query: (shopId) => ({
+        url: `/v1/sales/${shopId}/items`,
+        method: "GET",
+      }),
+      providesTags: ["Sales"],
+    }),
+
     getSaleInShop: builder.query<BaseResponse<Sales>, { shopId: string; salesId: string }>({
       query: ({ shopId, salesId }) => ({
         url: `/v1/sales/${shopId}/${salesId}`,
@@ -68,6 +77,7 @@ export const {
   useCreateSalesMutation,
   useUpdateInventoryMutation,
   useGetSalesByShopQuery,
+  useGetSalesItemsByShopQuery,
   useDeleteSalesMutation,
   useGetSaleInShopQuery,
 } = salesApi;

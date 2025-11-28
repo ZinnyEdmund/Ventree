@@ -482,6 +482,30 @@ export interface Sale {
   __v: number;
 }
 
+export interface SaleHistoryItem {
+  _id: string;
+  ticketNumber: string;
+  soldBy: string;
+  soldByName: string;
+  paymentMethod: string;
+  date: string;
+  refunded: boolean;
+  ticketId: string;
+  itemId: string;
+  itemName: string;
+  itemCategory: string;
+  quantitySold: number;
+  costPrice: number;
+  sellingPrice: number;
+  discount: number;
+  lineTotal: number;
+  lineProfit: number;
+  customerName?: string;
+  customerPhone?: string;
+  customerAddress?: string;
+  dueDate?: string;
+}
+
 export interface SaleTicketItem {
   itemId: string;
   itemName: string;
@@ -524,5 +548,16 @@ export interface SalesResponse {
     pages: number;
     total: number;
     sales: Sale[];
+  };
+}
+
+export interface SalesItemsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    items: SaleHistoryItem[];
+    total: number;
+    page: number;
+    pages: number;
   };
 }
