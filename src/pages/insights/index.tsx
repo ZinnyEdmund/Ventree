@@ -18,6 +18,7 @@ import { usePersistentDashboard } from "../../hooks/usePersistentDashboard";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../state/store";
 import { RefreshCw } from "lucide-react";
+import { TimePeriod } from "../../types/general";
 
 export const BusinessInsightsPage = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -28,7 +29,7 @@ export const BusinessInsightsPage = () => {
     data: dashboardData,
     isFetching,
     refetch,
-  } = usePersistentDashboard(user?.shopId || "");
+  } = usePersistentDashboard(user?.shopId || "", TimePeriod.WEEKLY);
 
   // Format currency
   const formatCurrency = (amount: number) => {
@@ -37,6 +38,13 @@ export const BusinessInsightsPage = () => {
 
   // Extract dashboard stats
   const dashboard = dashboardData?.data?.dashboard;
+
+  // Build stats array from API data or show loading/default
+  const lowStockCount = dashboard
+    ? typeof dashboard.lowStockItems === "number"
+      ? dashboard.lowStockItems
+      : dashboard.lowStockItems?.count ?? 0
+    : 0;
 
   // Build stats array from API data or show loading/default
   const stats = dashboard
@@ -56,7 +64,7 @@ export const BusinessInsightsPage = () => {
         {
           title: "Low Stock",
           Icon: "ic:outline-trending-down",
-          value: `${dashboard.lowStockItems} Items`,
+          value: `${lowStockCount} Item${lowStockCount === 1 ? "" : "s"}`,
           description: "Almost Finished",
           variant: "warning" as const,
         },

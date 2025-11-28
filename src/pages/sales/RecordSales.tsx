@@ -1,6 +1,5 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { LoaderCircle } from "lucide-react";
@@ -11,6 +10,7 @@ import { useFetchInventoryQuery } from "../../services/stocks.service";
 import {
   PaymentMethodOptions,
   type InventoryData,
+  type RecordSaleDto,
   type Stocks,
 } from "../../types/general";
 import TextInput from "../../components/ui/textInput";
@@ -42,8 +42,9 @@ interface PaymentMethodMap {
 
 const PAYMENT_METHODS: PaymentMethodMap[] = [
   { label: "Cash", value: PaymentMethodOptions.cash },
-  { label: "Credit", value: PaymentMethodOptions.card },
-  { label: "Transfer", value: PaymentMethodOptions.bankTransfer },
+  { label: "Transfer", value: PaymentMethodOptions.transfer },
+  { label: "POS", value: PaymentMethodOptions.pos },
+  { label: "Credit", value: PaymentMethodOptions.credit },
 ];
 
 export default function RecordSale() {
@@ -59,12 +60,17 @@ export default function RecordSale() {
   // const [paymentMethod, setPaymentMethod] = useState<PaymentMethodOptions | "">(PaymentMethodOptions.cash);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [transactionReference, setTransactionReference] = useState("");
+  const [notes, setNotes] = useState("");
 
   // Get shopId and user info from Redux store
   const { user } = useSelector((state: RootState) => state.auth);
   const shopId = user?.shopId || "";
   const soldBy = user?.userId || "";
-  const soldByName = user?.userName || "";
 
   // Fetch inventory
   const {
@@ -76,6 +82,11 @@ export default function RecordSale() {
 
   // Create sales mutation
   const [createSales, { isLoading: isCreatingSale }] = useCreateSalesMutation();
+
+  const isCreditSale = paymentMethod === PaymentMethodOptions.credit;
+  const requiresTransactionReference =
+    paymentMethod === PaymentMethodOptions.transfer ||
+    paymentMethod === PaymentMethodOptions.pos;
 
   // Extract inventory items
   const inventoryItems: InventoryData = useMemo(() => {
@@ -143,6 +154,19 @@ export default function RecordSale() {
       handleApiError(inventoryError);
     }
   }, [isInventoryError, inventoryError]);
+
+  useEffect(() => {
+    if (!isCreditSale) {
+      setCustomerName("");
+      setCustomerPhone("");
+      setCustomerAddress("");
+      setDueDate("");
+    }
+
+    if (!requiresTransactionReference) {
+      setTransactionReference("");
+    }
+  }, [isCreditSale, requiresTransactionReference]);
 
   const handleSelectItem = useCallback(
     (item: Stocks) => {
@@ -230,6 +254,11 @@ export default function RecordSale() {
   }, []);
 
   const handleRecord = useCallback(async () => {
+    if (!shopId || !soldBy) {
+      toast.error("Missing shop or staff information. Please sign in again.");
+      return;
+    }
+
     if (goods.length === 0) {
       toast.error("Please add at least one item before recording a sale.");
       return;
@@ -252,6 +281,23 @@ export default function RecordSale() {
       return;
     }
 
+    if (isCreditSale) {
+      if (!customerName.trim()) {
+        toast.error("Customer name is required for credit sales.");
+        return;
+      }
+
+      if (!customerPhone.trim()) {
+        toast.error("Customer phone number is required for credit sales.");
+        return;
+      }
+    }
+
+    if (requiresTransactionReference && !transactionReference.trim()) {
+      toast.error("Transaction reference is required for POS or transfer sales.");
+      return;
+    }
+
     // Final stock validation before submission
     const stockIssues = goods.filter((item) => {
       const qty = parseFloat(item.quantity);
@@ -268,43 +314,78 @@ export default function RecordSale() {
       return;
     }
 
+    const itemsPayload = goods.map((item) => ({
+      itemId: item.itemId,
+      quantity: parseFloat(item.quantity),
+      sellingPrice: item.price,
+    }));
+
+    const payload: RecordSaleDto = {
+      shopId,
+      soldBy,
+      paymentMethod,
+      items: itemsPayload,
+    };
+
+    if (isCreditSale) {
+      payload.customerName = customerName.trim();
+      payload.customerPhone = customerPhone.trim();
+      if (customerAddress.trim()) {
+        payload.customerAddress = customerAddress.trim();
+      }
+      if (dueDate) {
+        const dueDateIso = new Date(dueDate).toISOString();
+        payload.dueDate = dueDateIso;
+      }
+    }
+
+    if (transactionReference.trim()) {
+      payload.transactionReference = transactionReference.trim();
+    }
+
+    if (notes.trim()) {
+      payload.notes = notes.trim();
+    }
+
     try {
-      // Create sales records for each item
-      const salesPromises = goods.map((item) => {
-        const qty = parseFloat(item.quantity);
-        const totalAmount = qty * item.price;
-        const costTotal = qty * item.costPrice;
-        const profitAmount = totalAmount - costTotal;
-        const profitPercentage =
-          costTotal > 0
-            ? ((profitAmount / costTotal) * 100).toFixed(2)
-            : "0.00";
+      const response = await createSales(payload).unwrap();
+      const ticketNumber = response?.data?.ticketNumber;
 
-        return createSales({
-          shopId,
-          itemId: item.itemId,
-          quantity: qty,
-          sellingPrice: item.price,
-          discount: 0,
-          taxAmount: 0,
-          profitPercentage,
-          soldBy,
-          paymentMethod,
-        }).unwrap();
-      });
-
-      await Promise.all(salesPromises);
-
-      toast.success("Sale Recorded Successfully!");
+      toast.success(
+        ticketNumber
+          ? `Sale ${ticketNumber} recorded successfully!`
+          : "Sale recorded successfully!"
+      );
 
       // Reset form
       dispatch(clearDraftSales());
       setName("");
       setSearchTerm("");
+      setCustomerName("");
+      setCustomerPhone("");
+      setCustomerAddress("");
+      setDueDate("");
+      setTransactionReference("");
+      setNotes("");
     } catch (error) {
       handleApiError(error);
     }
-  }, [goods, paymentMethod, shopId, soldBy, soldByName, createSales]);
+  }, [
+    shopId,
+    soldBy,
+    goods,
+    paymentMethod,
+    isCreditSale,
+    requiresTransactionReference,
+    customerName,
+    customerPhone,
+    customerAddress,
+    dueDate,
+    transactionReference,
+    notes,
+    createSales,
+    dispatch,
+  ]);
 
   const total = goods.reduce((sum, item) => {
     const qty = parseFloat(item.quantity) || 0;
@@ -315,14 +396,14 @@ export default function RecordSale() {
     <section className="flex flex-col w-full py-6 sm:py-8">
       {/* Header */}
       <div className="relative mb-8 sm:mb-6">
-        <Link to="/home" className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
+        {/* <Link to="/home" className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
           <Icon
             icon="iconamoon:arrow-left-6-circle-light"
             width="24"
             height="24"
             aria-hidden="true"
           />
-        </Link>
+        </Link> */}
 
         <h2 className="h4 font-semibold text-secondary text-center">
           Sale 0001
@@ -532,7 +613,7 @@ export default function RecordSale() {
           {PAYMENT_METHODS.map((method) => (
             <label
               key={method.value}
-              className="flex items-center w-1/3 cursor-pointer gap-2"
+            className="flex items-center w-1/4 cursor-pointer gap-2"
             >
               <input
                 type="radio"
@@ -577,6 +658,74 @@ export default function RecordSale() {
             </label>
           ))}
         </div>
+      </div>
+
+      {isCreditSale && (
+        <div className="mb-8">
+          <h3 className="h4 text-secondary mb-4">Credit Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <TextInput
+              label="Customer Name"
+              placeholder="e.g. John Doe"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              required
+            />
+            <TextInput
+              label="Customer Phone"
+              placeholder="e.g. 08012345678"
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+              required
+            />
+            <TextInput
+              label="Customer Address (Optional)"
+              placeholder="Enter address"
+              value={customerAddress}
+              onChange={(e) => setCustomerAddress(e.target.value)}
+            />
+            {/* <div className="flex flex-col">
+              <label className="block link-small text-black mb-2">
+                Due Date (Optional)
+              </label>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="w-full bg-white body-small border border-secondary-4 rounded-md px-3 py-3 focus:ring-2 focus:ring-tertiary outline-none"
+              />
+            </div> */}
+            <TextInput
+              label="Due Date (Optional)"
+              placeholder="Select Date"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              // required
+            />
+          </div>
+        </div>
+      )}
+
+      {requiresTransactionReference && (
+        <div className="mb-8">
+          <h3 className="h4 text-secondary mb-4">Transaction Reference</h3>
+          <TextInput
+            placeholder="Enter transaction reference"
+            value={transactionReference}
+            onChange={(e) => setTransactionReference(e.target.value)}
+          />
+        </div>
+      )}
+
+      <div className="mb-8">
+        <h3 className="h4 text-secondary mb-2">Notes (Optional)</h3>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Add any notes about this sale"
+          className="w-full bg-white body-small border border-secondary-4 rounded-md px-3 py-3 min-h-[120px] focus:ring-2 focus:ring-tertiary outline-none"
+        />
       </div>
 
       {/* Record Button */}
