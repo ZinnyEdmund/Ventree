@@ -42,13 +42,13 @@ function StepCard({ icon, title, description }: StepCardProps) {
 
 export default function HowItWorks() {
   return (
-    <section className="px-5 pt-20 md:py-20">
+    <section className="px-5 pt-20 md:py-3">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16 max-w-5xl mx-auto">
+        {/* <div className="text-center mb-16 max-w-5xl mx-auto">
           <h2 className="h2 text-black mb-2">
             How Ventree Helps You <span className="text-primary-1">Grow</span>
           </h2>
-        </div>
+        </div> */}
 
         <div className="grid md:grid-cols-3 gap-12">
           {STEPS.map((step, index) => (
