@@ -114,7 +114,6 @@ export const BestSellersTable: React.FC<BestSellersTableProps> = ({
   onRetry,
   title = "Best Sellers",
 }) => {
-  console.log(data)
   // Export mutation
   const [exportBestSellers, { isLoading: isExporting }] =
     useExportBestSellersMutation();

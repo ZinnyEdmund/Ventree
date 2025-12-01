@@ -54,8 +54,6 @@ export const Home = () => {
   // Combined loading state
   const isLoading = isFetchingDashboard || isLoadingSalesOrFetching;
 
-  console.log(isLoading)
-  
   // Combined error state
   const hasError = isDashboardError || isSalesError;
   const error = dashboardError || salesError;
@@ -128,7 +126,6 @@ export const Home = () => {
       : dashboard.lowStockItems?.count ?? 0
     : 0;
 
-  console.log("what are you loading", isLoading, isFetchingSales, isFetchingDashboard, isLoadingSales)
   const stats = dashboard
     ? [
         {

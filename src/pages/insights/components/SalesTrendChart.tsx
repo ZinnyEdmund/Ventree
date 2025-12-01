@@ -83,7 +83,6 @@ export const SalesTrendChart: React.FC<SalesTrendChartProps> = ({
   title = "Sales Trend",
   period = "This Week",
 }) => {
-  console.log(data)
   // Export mutation
   const [exportTrend, { isLoading: isExporting }] = useExportSalesTrendMutation();
 

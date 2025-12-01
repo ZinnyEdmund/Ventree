@@ -112,11 +112,9 @@ export default function EditProfile() {
 
     // Validate form
     if (!validateAll(formData)) {
-      console.log("Validation failed:", errors);
       return;
     }
 
-    console.log("Validation passed, submitting...");
 
     // Submit form
     await submit(

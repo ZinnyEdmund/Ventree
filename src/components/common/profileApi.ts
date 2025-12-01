@@ -73,11 +73,9 @@ export const useProfileAPI = () => {
     try {
       // Try access token first, then refresh token as fallback
       let token = getAccessTokenCookie();
-      console.log("Access token from cookie:", token);
 
       if (!token) {
         token = getRefreshTokenCookie(); // Add this line
-        console.log("Using refresh token instead:", token); // Add this line
       }
 
       if (!token) {
@@ -114,7 +112,6 @@ export const useProfileAPI = () => {
       }
 
       const result = await response.json();
-      console.log("Profile updated successfully", result);
 
       // Update Redux store with new data
       dispatch({

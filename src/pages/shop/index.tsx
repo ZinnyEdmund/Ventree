@@ -130,7 +130,6 @@ export const SetupShopPage = () => {
       };
 
       const result = await updateProfile({ shopId: user.shopId, data: payload }).unwrap();
-      console.log(result)
       setBusinessInfo(info);
     } catch (error) {
       handleApiError(error);

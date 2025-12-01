@@ -95,8 +95,6 @@ export const ManageStocks = () => {
   // ============================================
   const handleAddGoods = async (rawFormDate: GoodsFormData) => {
     const formData = cleanObject(rawFormDate)
-    console.log("Hwllo")
-    console.log(formData)
     try {
       if (editingItemId) {
         // Update existing item
