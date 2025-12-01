@@ -53,12 +53,12 @@ export default function FooterWithCTA() {
             bg-black bg-center"
       style={{ backgroundImage: "url('images/onboarding-pattern.svg')" }}
     >
-      <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <div className="grid gap-12 mb-12 text-center md:text-left items-center md:items-start justify-items-center md:justify-items-start md:grid-cols-3">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 w-full">
+        <div className="grid gap-12 mb-12 text-center md:text-left items-center md:items-start justify-items-center md:justify-items-start md:grid-cols-3 md:gap-8">
           {/* Logo and Tagline */}
-          <div>
+          <div className="animate-[fadeInUp_0.6s_ease-out_0.1s] opacity-0 [animation-fill-mode:forwards]">
             <div className="flex items-center justify-center md:justify-start mb-4">
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center transition-transform duration-300 hover:scale-105">
                 <img src="/images/Delogo.svg" alt="Logo" />
               </div>
             </div>
@@ -66,15 +66,19 @@ export default function FooterWithCTA() {
           </div>
 
           {/* Quick Links */}
-          <div>
+          <div className="animate-[fadeInUp_0.6s_ease-out_0.2s] opacity-0 [animation-fill-mode:forwards]">
             <h3 className="text-white font-bold mb-4">Quick Links</h3>
             <ul className="space-y-3">
-              {quickLinks.map((link) => (
-                <li key={link.label}>
+              {quickLinks.map((link, index) => (
+                <li 
+                  key={link.label}
+                  className="animate-[fadeInLeft_0.4s_ease-out] opacity-0 [animation-fill-mode:forwards]"
+                  style={{ animationDelay: `${0.3 + index * 0.1}s` }}
+                >
                   <a
                     href={link.to}
                     onClick={(e) => handleSmoothScroll(e, link.to)}
-                    className="text-white hover:text-primary-7 transition-colors cursor-pointer"
+                    className="text-white hover:text-primary-7 transition-all duration-300 cursor-pointer inline-block hover:translate-x-1"
                   >
                     {link.label}
                   </a>
@@ -84,16 +88,17 @@ export default function FooterWithCTA() {
           </div>
 
           {/* Stay Connected */}
-          <div>
+          <div className="animate-[fadeInUp_0.6s_ease-out_0.3s] opacity-0 [animation-fill-mode:forwards]">
             <h3 className="text-white font-bold mb-4">Stay Connected</h3>
             <div className="flex gap-4 justify-center md:justify-start">
-              {socialLinks.map((social) => (
+              {socialLinks.map((social, index) => (
                 <a
                   key={social.label}
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center hover:bg-grey transition-colors"
+                  className="w-10 h-10 bg-white text-black rounded-full flex items-center justify-center hover:bg-grey transition-all duration-300 hover:scale-110 hover:-translate-y-1 animate-[scaleIn_0.4s_ease-out] opacity-0 [animation-fill-mode:forwards]"
+                  style={{ animationDelay: `${0.4 + index * 0.1}s` }}
                   aria-label={social.label}
                 >
                   <Icon icon={social.icon} width="20" height="20" />
@@ -104,7 +109,7 @@ export default function FooterWithCTA() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="border-t border-secondary-6 pt-8 flex flex-col justify-between items-center gap-4 text-sm text-white">
+        <div className="border-t border-secondary-6 pt-8 flex flex-col justify-between items-center gap-4 text-sm text-white animate-[fadeInUp_0.6s_ease-out_0.5s] opacity-0 [animation-fill-mode:forwards]">
           <p className="text-center">
             © {currentYear} Ventree. All rights reserved.
           </p>
@@ -116,7 +121,7 @@ export default function FooterWithCTA() {
               >
                 <Link
                   to={link.to}
-                  className="hover:text-primary-7 transition-colors whitespace-nowrap"
+                  className="hover:text-primary-7 transition-colors whitespace-nowrap hover:underline"
                 >
                   {link.label}
                 </Link>
@@ -126,6 +131,7 @@ export default function FooterWithCTA() {
           </div>
         </div>
       </div>
+
     </footer>
   );
 }
