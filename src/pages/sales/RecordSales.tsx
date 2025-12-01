@@ -103,7 +103,7 @@ export default function RecordSale() {
         />
     );
   }
-  
+
   // Create sales mutation
   const [createSales, { isLoading: isCreatingSale }] = useCreateSalesMutation();
 
@@ -520,6 +520,7 @@ export default function RecordSale() {
           <h3 className="h4 text-secondary">List of Goods</h3>
           {goods.length > 0 && (
             <button
+            className="cursor-pointer"
               onClick={() => dispatch(setDraftEditing(!isEditing))}
               aria-label={isEditing ? "Done editing" : "Edit goods"}
             >
