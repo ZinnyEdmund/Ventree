@@ -491,6 +491,7 @@ export default function RecordSale() {
           <h3 className="h4 text-secondary">List of Goods</h3>
           {goods.length > 0 && (
             <button
+            className="cursor-pointer"
               onClick={() => dispatch(setDraftEditing(!isEditing))}
               aria-label={isEditing ? "Done editing" : "Edit goods"}
             >
@@ -581,7 +582,7 @@ export default function RecordSale() {
                       <td className="px-1 sm:px-6 py-4">
                         <button
                           onClick={() => handleDelete(index)}
-                          className="text-error hover:text-error-dark transition"
+                          className="text-error cursor-pointer hover:text-error-dark transition"
                           aria-label={`Delete ${item.name}`}
                         >
                           <Icon
