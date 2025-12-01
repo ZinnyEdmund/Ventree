@@ -64,7 +64,7 @@ export default function Notifications() {
       notifications.map((note) => (
         <article
           key={note.id}
-          className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white rounded-xl hover:shadow-md transition-shadow"
+          className="flex items-start gap-3 md:gap-4 p-4 md:p-6 bg-white rounded-xl"
         >
           <div className="shrink-0 flex items-center justify-center w-8 h-8 bg-primary-5 rounded-full">
             <Icon icon={note.icon} width="24" height="24" aria-hidden="true" />
