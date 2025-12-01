@@ -22,10 +22,11 @@ import draftSalesReducer from "./Store/draftSalesSlice";
 import { authApi } from "../services/auth.service";
 import { userApi } from "../services/user.service";
 import { staffApi } from "../services/staff.service";
-import { stocksApi } from "../services/stocks.service";
+import { inventoryApi } from "../services/stocks.service";
 import { expenseApi } from "../services/expenses.service";
 import { shopApi } from "../services/shop.service";
 import { salesApi } from "../services/sales.service";
+import { analyticsApi } from "../services/analytics.service";
 
 // Transform to exclude _initialized from persistence
 // _initialized is a runtime flag and shouldn't be persisted
@@ -74,10 +75,11 @@ export const reducers = combineReducers({
   [authApi.reducerPath]: authApi.reducer,
   [userApi.reducerPath]: userApi.reducer,
   [staffApi.reducerPath]: staffApi.reducer,
-  [stocksApi.reducerPath]: stocksApi.reducer,
+  [inventoryApi.reducerPath]: inventoryApi.reducer,
   [expenseApi.reducerPath]: expenseApi.reducer,
   [shopApi.reducerPath]: shopApi.reducer,
-  [salesApi.reducerPath]: salesApi.reducer 
+  [salesApi.reducerPath]: salesApi.reducer,
+  [analyticsApi.reducerPath]: analyticsApi.reducer
 });
 
 export const store = configureStore({
@@ -92,10 +94,11 @@ export const store = configureStore({
       .concat(authApi.middleware)
       .concat(userApi.middleware)
       .concat(staffApi.middleware)
-      .concat(stocksApi.middleware)
+      .concat(inventoryApi.middleware)
       .concat(expenseApi.middleware)
       .concat(shopApi.middleware)
       .concat(salesApi.middleware)
+      .concat(analyticsApi.middleware)
 });
 
 export const persistor = persistStore(store);

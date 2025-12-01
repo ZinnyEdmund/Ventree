@@ -9,18 +9,15 @@ interface LoadingStateProps {
 }
 
 const sizeClasses = {
-  sm: "w-12 h-12",
-  md: "w-20 h-20",
-  lg: "w-32 h-32",
-  xl: "w-40 h-40",
+  sm: "w-42 h-42",
+  md: "w-60 h-60",
+  lg: "w-80 h-80",
+  xl: "w-100 h-100",
 };
 
 export const LoadingState: React.FC<LoadingStateProps> = ({
-  size = "lg",
-  text = "Loading...",
   overlay = true,
   backgroundColor = "rgba(255, 255, 255, 0.95)",
-  pulseColor = "rgba(26, 92, 58, 0.3)", // Your brand green with opacity
 }) => {
   const [mounted, setMounted] = useState(false);
 
@@ -37,12 +34,12 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
       className={`${containerClasses} ${mounted ? "opacity-100" : "opacity-0"} transition-opacity duration-300`}
       style={{ backgroundColor: overlay ? backgroundColor : "transparent" }}
     >
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-4 ">
         {/* Logo with Pulse Animation */}
         <div className="relative flex items-center justify-center">
           {/* Pulse Rings */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <div
+            {/* <div
               className="absolute rounded-full animate-ping"
               style={{
                 width: "100%",
@@ -50,8 +47,8 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
                 backgroundColor: pulseColor,
                 animationDuration: "1.5s",
               }}
-            />
-            <div
+            /> */}
+            {/* <div
               className="absolute rounded-full animate-pulse"
               style={{
                 width: "120%",
@@ -59,30 +56,30 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
                 backgroundColor: pulseColor,
                 animationDuration: "2s",
               }}
-            />
+            /> */}
           </div>
 
           {/* Logo */}
           <div
-            className={`relative ${sizeClasses[size]} flex items-center justify-center animate-pulse-scale`}
+            className={`relative ${sizeClasses.md}  md:${sizeClasses.lg} flex items-center justify-center animate-pulse-scale`}
           >
             <img
               src="/images/logo.svg"
               alt="Loading"
-              className="w-full h-full object-contain"
+              className=" "
             />
           </div>
         </div>
 
         {/* Loading Text */}
-        {text && (
+        {/* {text && (
           <p className="text-gray-700 font-medium text-lg animate-pulse">
             {text}
           </p>
-        )}
+        )} */}
 
         {/* Loading Dots Animation */}
-        <div className="flex gap-2">
+        {/* <div className="flex gap-2">
           <span
             className="w-2 h-2 bg-green-600 rounded-full animate-bounce"
             style={{ animationDelay: "0ms", animationDuration: "1s" }}
@@ -95,7 +92,7 @@ export const LoadingState: React.FC<LoadingStateProps> = ({
             className="w-2 h-2 bg-green-600 rounded-full animate-bounce"
             style={{ animationDelay: "300ms", animationDuration: "1s" }}
           />
-        </div>
+        </div> */}
       </div>
 
       {/* Custom CSS for pulse-scale animation */}

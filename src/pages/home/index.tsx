@@ -15,36 +15,98 @@ import { TimePeriod } from "../../types/general";
 import { RefreshCw } from "lucide-react";
 import { usePersistentDashboard } from "../../hooks/usePersistentDashboard";
 import { useGetSalesItemsByShopQuery } from "../../services/sales.service";
+import LoadingState from "../../components/common/LoadingState";
+import ErrorState from "../../components/common/ErrorState";
 
 // Main Home Component
 export const Home = () => {
   const [salesExpanded, setSalesExpanded] = useState(true);
   const [notificationsExpanded, setNotificationsExpanded] = useState(true);
   const [selectedPeriod, setSelectedPeriod] = useState<TimePeriod>(TimePeriod.DAILY);
-  const [ setSelectedSale] = useState<any>(null);
+  const [setSelectedSale] = useState<any>(null);
   const { user } = useSelector((state: RootState) => state.auth);
+  const [pageSize] = useState(5);
 
   // Fetch dashboard data with selected period
   const {
     data: dashboardData,
-    isFetching,
-    refetch,
+    isFetching: isFetchingDashboard,
+    isError: isDashboardError,
+    error: dashboardError,
+    refetch: refetchDashboard,
   } = usePersistentDashboard(user?.shopId || "", selectedPeriod);
 
   // Fetch sales data
   const {
     data: salesItemsData,
     isLoading: isLoadingSales,
+    isFetching: isFetchingSales,
+    isError: isSalesError,
+    error: salesError,
     refetch: refetchSales,
-  } = useGetSalesItemsByShopQuery(user?.shopId || "", {
+  } = useGetSalesItemsByShopQuery({
+    shopId: user?.shopId || "", limit: pageSize }, {
     skip: !user?.shopId,
   });
 
+  const isLoadingSalesOrFetching = isLoadingSales || isFetchingSales;
+
+  // Combined loading state
+  const isLoading = isFetchingDashboard || isLoadingSalesOrFetching;
+
+  console.log(isLoading)
+  
+  // Combined error state
+  const hasError = isDashboardError || isSalesError;
+  const error = dashboardError || salesError;
+
+  // Retry function that refetches all queries
+  const handleRetryAll = () => {
+    refetchDashboard();
+    refetchSales();
+  };
 
   // Format currency
   const formatCurrency = (amount: number) => {
     return `₦${amount.toLocaleString()}`;
   };
+
+  // Handle period change
+  const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedPeriod(e.target.value as TimePeriod);
+  };
+
+  // Handle view sale
+  const handleViewSale = (sale: any) => {
+    setSelectedSale(sale);
+  };
+
+  // LOADING STATE - Show loading spinner while fetching data
+  if (isLoading && !dashboardData && !salesItemsData) {
+    return (
+      <LoadingState 
+        text="Loading your dashboard..." 
+        size="lg"
+      />
+    );
+  }
+
+  // ERROR STATE - Show error with retry for all queries
+  if (hasError && !dashboardData) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <ErrorState
+          errorCode="500"
+          message={
+            (error as any)?.data?.message || 
+            (error as any)?.message || 
+            "Failed to load dashboard data. Please try again."
+          }
+          onRetry={handleRetryAll}
+        />
+      </div>
+    );
+  }
 
   // Extract dashboard stats
   const dashboard = dashboardData?.data?.dashboard;
@@ -66,6 +128,7 @@ export const Home = () => {
       : dashboard.lowStockItems?.count ?? 0
     : 0;
 
+  console.log("what are you loading", isLoading, isFetchingSales, isFetchingDashboard, isLoadingSales)
   const stats = dashboard
     ? [
         {
@@ -124,17 +187,6 @@ export const Home = () => {
         },
       ];
 
-  // Handle period change
-  const handlePeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedPeriod(e.target.value as TimePeriod);
-  };
-
-  // Handle view sale
-  const handleViewSale = (sale: any) => {
-    setSelectedSale(sale);
-  };
-
-
   return (
     <section className="py-6">
       {/* Header */}
@@ -146,12 +198,12 @@ export const Home = () => {
 
           {/* Refresh Button - Desktop */}
           <button
-            onClick={() => refetch()}
-            disabled={isFetching}
+            onClick={handleRetryAll}
+            disabled={isLoading}
             className="hidden md:flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Refresh dashboard"
           >
-            <RefreshCw size={16} className={isFetching ? "animate-spin" : ""} />
+            <RefreshCw size={16} className={isLoading ? "animate-spin" : ""} />
             <span>Refresh</span>
           </button>
         </div>
@@ -161,7 +213,7 @@ export const Home = () => {
           <select
             value={selectedPeriod}
             onChange={handlePeriodChange}
-            disabled={isFetching}
+            disabled={isLoading}
             className="h4 text-secondary py-2 rounded-lg transition-colors font-medium cursor-pointer focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <option value={TimePeriod.DAILY}>Today</option>
@@ -170,41 +222,50 @@ export const Home = () => {
 
           {/* Refresh Button - Mobile */}
           <button
-            onClick={() => refetch()}
-            disabled={isFetching}
+            onClick={handleRetryAll}
+            disabled={isLoading}
             className="md:hidden p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
             title="Refresh"
           >
-            <RefreshCw size={20} className={isFetching ? "animate-spin" : ""} />
+            <RefreshCw size={20} className={isLoading ? "animate-spin" : ""} />
           </button>
         </div>
       </article>
 
-      {/* Error Alert */}
-      {/* {isError && (
+      {/* Error Alert Banner (for non-critical errors while data is available) */}
+      {hasError && dashboardData && (
         <div className="mb-4 bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <Icon
-              icon="mdi:alert-circle-outline"
-              width="24"
-              height="24"
-              className="text-red-500 flex-shrink-0 mt-0.5"
-            />
+            <svg 
+              className="w-6 h-6 text-error shrink-0 mt-0.5" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor"
+            >
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth={2} 
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" 
+              />
+            </svg>
             <div className="flex-1">
-              <p className="text-red-800 font-medium">Failed to load dashboard</p>
+              <p className="text-red-800 font-medium">Failed to load some data</p>
               <p className="text-sm text-red-600 mt-1">
-                {(error as any)?.data?.message || "Please try again later"}
+                {(error as any)?.data?.message || 
+                 (error as any)?.message || 
+                 "Some data may be outdated"}
               </p>
             </div>
             <button
-              onClick={() => refetch()}
+              onClick={handleRetryAll}
               className="text-red-600 hover:text-red-800 text-sm font-medium"
             >
               Retry
             </button>
           </div>
         </div>
-      )} */}
+      )}
 
       {/* Stats Grid */}
       <main className="py-3 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -234,44 +295,6 @@ export const Home = () => {
         ))}
       </main>
 
-      {/* Sales History
-      <div className="py-3">
-        <div className="flex items-center justify-between">
-          <SectionHeader
-            title="Sales History"
-            isExpanded={salesExpanded}
-            onToggle={() => setSalesExpanded(!salesExpanded)}
-          />
-        </div>
-
-        {salesExpanded && (
-          <>
-            <div className="space-y-0 rounded-lg bg-white">
-              {salesHistory.map((sale, index) => (
-                <SalesHistoryItem
-                  key={index}
-                  product={sale.product}
-                  price={sale.price}
-                  soldBy={sale.soldBy}
-                  time={sale.time}
-                  onMenuClick={() =>
-                    console.log(`Menu clicked for ${sale.product}`)
-                  }
-                />
-              ))}
-            </div>
-            <div className="flex justify-end mt-4">
-              <Link
-                to="/history"
-                className="text-secondary font-semibold hover:underline"
-              >
-                View All
-              </Link>
-            </div>
-          </>
-        )}
-      </div> */}
-
       {/* Sales History */}
       <div className="py-3">
         <div className="flex items-center justify-between mb-4">
@@ -286,8 +309,10 @@ export const Home = () => {
           <>
             <SalesHistoryTable
               sales={recentSales}
-              isLoading={isLoadingSales}
+              isLoading={isLoadingSalesOrFetching && !salesItemsData}
+              error={isSalesError ? (salesError as Error) : null}
               onView={handleViewSale}
+              onRetry={refetchSales}
             />
             {recentSales.length > 5 && (
               <div className="flex justify-end mt-4">
@@ -302,7 +327,6 @@ export const Home = () => {
           </>
         )}
       </div>
-
 
       {/* Notifications */}
       <div className="py-3">

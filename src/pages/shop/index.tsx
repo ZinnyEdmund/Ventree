@@ -17,6 +17,8 @@ import {
   useUpdateProfileMutation,
   useGetShopProfileQuery 
 } from "../../services/shop.service";
+import { LoadingState } from "../../components/common/LoadingState";
+import { ErrorState } from "../../components/common/ErrorState";
 
 export const SetupShopPage = () => {
   const { user } = useSelector((state: RootState) => state.auth);
@@ -28,17 +30,29 @@ export const SetupShopPage = () => {
    const [deleteStaff, { isLoading: isDeletingStaff }] = useDeleteStaffMutation();
    
    // Fetch shop profile
-   const { data: shopProfileData, isLoading: isLoadingShop } = useGetShopProfileQuery(
+   const { 
+     data: shopProfileData, 
+  isLoading: isLoadingShop,
+  error: shopError,        // ✅ ADD
+  refetch: refetchShop     // ✅ ADD
+    } = useGetShopProfileQuery(
      user?.shopId || "", 
      { skip: !user?.shopId }
    );
    
    // Fetch staff list
-   const { data: staffData, isLoading: isLoadingStaff } = useGetStaffByShopQuery(
+   const { 
+    data: staffData, 
+  isLoading: isLoadingStaff,
+  error: staffError,       // ✅ ADD
+  refetch: refetchStaff    // ✅ ADD
+    } = useGetStaffByShopQuery(
      user?.shopId || "", 
      { skip: !user?.shopId }
    );
- 
+
+
+
    const [businessInfo, setBusinessInfo] = useState<BusinessInfo>({
      businessName: "",
      businessType: EnumBusinessType.RETAIL,
@@ -79,6 +93,23 @@ export const SetupShopPage = () => {
     }
   }, [staffData]);
 
+  const handleRetry = () => {
+  refetchShop();
+  refetchStaff();
+};
+
+  if (isLoadingShop || isLoadingStaff) {
+    return <LoadingState text="Loading expenses..." size="lg" />;
+  }
+
+  if (shopError || staffError) {
+  return (
+      <ErrorState 
+        message="Failed to load shop information. Please try again." 
+        onRetry={handleRetry}
+      />
+  );
+}
   // Handle business info update
   const handleUpdateBusinessInfo = async (info: BusinessInfo) => {
     // TODO: Replace with your API call

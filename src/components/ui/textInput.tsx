@@ -11,10 +11,12 @@ interface TextInputProps {
   required?: boolean;
   className?: string; // 👈 new
   disabled?: boolean;
+  description?: string
 }
 
 const TextInput: React.FC<TextInputProps> = ({
   label,
+  description,
   type = "text",
   value,
   onChange,
@@ -30,6 +32,11 @@ const TextInput: React.FC<TextInputProps> = ({
         <label className="block mb-2 label text-black">
           {label}
         </label>
+      )}
+      {description && (
+        <p className="block text-xs -mt-2 mb-1  text-gray">
+          {description}
+        </p>
       )}
       <input
         type={type}

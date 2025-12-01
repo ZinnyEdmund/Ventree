@@ -6,13 +6,8 @@ import { LoaderCircle } from "lucide-react";
 import { useCreateSalesMutation } from "../../services/sales.service"; // Adjust path as needed
 import type { RootState } from "../../state/store"; // Adjust path as needed
 import { handleApiError } from "../../lib/errorHandler";
-import { useFetchInventoryQuery } from "../../services/stocks.service";
-import {
-  PaymentMethodOptions,
-  type InventoryData,
-  type RecordSaleDto,
-  type Stocks,
-} from "../../types/general";
+import { useGetInventoryListQuery } from "../../services/stocks.service";
+import { PaymentMethodOptions, type RecordSaleDto } from "../../types/general";
 import TextInput from "../../components/ui/textInput";
 import {
   addDraftGood,
@@ -24,6 +19,9 @@ import {
   clearDraftSales,
   syncDraftWithInventory,
 } from "../../state/Store/draftSalesSlice";
+import { useDebounce } from "../../hooks/useDebounce";
+import type { InventoryData, Stocks } from "../../types/inventory";
+import ErrorState from "../../components/common/ErrorState";
 
 interface Good {
   itemId: string;
@@ -56,8 +54,6 @@ export default function RecordSale() {
   );
 
   const [name, setName] = useState("");
-  // const [isEditing, setIsEditing] = useState(false);
-  // const [paymentMethod, setPaymentMethod] = useState<PaymentMethodOptions | "">(PaymentMethodOptions.cash);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -73,13 +69,41 @@ export default function RecordSale() {
   const soldBy = user?.userId || "";
 
   // Fetch inventory
+  // const {
+  //   data: inventoryResponse,
+  //   isLoading: isLoadingInventory,
+  //   isError: isInventoryError,
+  //   error: inventoryError,
+  // } = useFetchInventoryQuery(shopId, { pollingInterval: 30000 });
+
+  // Debounced search for backend query
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
   const {
     data: inventoryResponse,
     isLoading: isLoadingInventory,
     isError: isInventoryError,
     error: inventoryError,
-  } = useFetchInventoryQuery(shopId, { pollingInterval: 30000 });
+    refetch,
+  } = useGetInventoryListQuery(
+    {
+      shopId,
+      search: debouncedSearch || undefined,
+    },
+    {
+      skip: !shopId,
+    }
+  );
 
+  if (inventoryError) {
+    return (
+        <ErrorState
+          message="Failed to load Inventory. Please try again." 
+          onRetry={refetch}
+        />
+    );
+  }
+  
   // Create sales mutation
   const [createSales, { isLoading: isCreatingSale }] = useCreateSalesMutation();
 
@@ -95,42 +119,43 @@ export default function RecordSale() {
     );
   }, [inventoryResponse]);
 
-  // Filter inventory based on search
-  const filteredInventory = useMemo(() => {
-    if (!searchTerm.trim()) return inventoryItems.items;
-    const search = searchTerm.toLowerCase();
-    return inventoryItems.items.filter((item) =>
-      item.name.toLowerCase().includes(search)
-    );
-  }, [inventoryItems, searchTerm]);
-
   // Sync draft goods with current inventory stock levels
+  // ✅ NEW - Only updates items that ARE in the current search results
   useEffect(() => {
     if (goods.length > 0 && inventoryItems.items.length > 0) {
-      const stockUpdates = goods.map((good) => {
-        const currentItem = inventoryItems.items.find(
-          (item) => item._id === good.itemId
-        );
-        return {
-          itemId: good.itemId,
-          availableStock: currentItem?.availableQuantity || 0,
-        };
-      });
+      const stockUpdates = goods
+        .map((good) => {
+          const currentItem = inventoryItems.items.find(
+            (item) => item._id === good.itemId
+          );
+
+          // ✅ Only return update if item is found in current inventory
+          if (!currentItem) return null;
+
+          return {
+            itemId: good.itemId,
+            availableStock: currentItem.availableQuantity,
+          };
+        })
+        .filter(Boolean); // Remove null entries
 
       // Check if any stock levels have changed significantly
       const hasStockChanges = stockUpdates.some((update) => {
-        const existingGood = goods.find((g) => g.itemId === update.itemId);
+        const existingGood = goods.find((g) => g.itemId === update?.itemId);
         return (
-          existingGood && existingGood.availableStock !== update.availableStock
+          existingGood && existingGood.availableStock !== update?.availableStock
         );
       });
 
       if (hasStockChanges) {
-        dispatch(syncDraftWithInventory(stockUpdates));
+        const cleanUpdates = stockUpdates.filter(
+          (u): u is { itemId: string; availableStock: number } => u !== null
+        );
 
-        // Check for items that now have insufficient stock
+        dispatch(syncDraftWithInventory(cleanUpdates));
+
         goods.forEach((good) => {
-          const update = stockUpdates.find((u) => u.itemId === good.itemId);
+          const update = cleanUpdates.find((u) => u.itemId === good.itemId);
           const requestedQty = parseFloat(good.quantity) || 0;
 
           if (
@@ -294,7 +319,9 @@ export default function RecordSale() {
     }
 
     if (requiresTransactionReference && !transactionReference.trim()) {
-      toast.error("Transaction reference is required for POS or transfer sales.");
+      toast.error(
+        "Transaction reference is required for POS or transfer sales."
+      );
       return;
     }
 
@@ -441,9 +468,9 @@ export default function RecordSale() {
               </span>
 
               {/* Dropdown for filtered inventory */}
-              {showDropdown && filteredInventory.length > 0 && (
+              {showDropdown && inventoryItems.items.length > 0 && (
                 <div className="absolute z-10 w-full mt-1 bg-white border border-secondary-4 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                  {filteredInventory.map((item) => (
+                  {inventoryItems.items.map((item) => (
                     <button
                       key={item._id}
                       type="button"
@@ -473,13 +500,15 @@ export default function RecordSale() {
                 </div>
               )}
 
-              {showDropdown && searchTerm && filteredInventory.length === 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-secondary-4 rounded-md shadow-lg p-4">
-                  <p className="body-small text-subtle-text text-center">
-                    No products found
-                  </p>
-                </div>
-              )}
+              {showDropdown &&
+                searchTerm &&
+                inventoryItems.items.length === 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-secondary-4 rounded-md shadow-lg p-4">
+                    <p className="body-small text-subtle-text text-center">
+                      No products found
+                    </p>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -531,7 +560,7 @@ export default function RecordSale() {
                 goods.map((item, index) => (
                   <tr
                     key={`${item.itemId}-${index}`}
-                    className="border-b last:border-none border-secondary-4 hover:bg-gray-50  transition"
+                    className="border-b last:border-none border-secondary-4 transition"
                   >
                     <td className="pr-4 py-5 sm:py-4">
                       <div className="max-w-[120px] sm:max-w-none">
@@ -581,7 +610,7 @@ export default function RecordSale() {
                       <td className="px-1 sm:px-6 py-4">
                         <button
                           onClick={() => handleDelete(index)}
-                          className="text-error hover:text-error-dark transition"
+                          className="text-error hover:text-error-dark transition cursor-pointer"
                           aria-label={`Delete ${item.name}`}
                         >
                           <Icon
@@ -613,7 +642,7 @@ export default function RecordSale() {
           {PAYMENT_METHODS.map((method) => (
             <label
               key={method.value}
-            className="flex items-center w-1/4 cursor-pointer gap-2"
+              className="flex items-center w-1/4 cursor-pointer gap-2"
             >
               <input
                 type="radio"
@@ -622,7 +651,9 @@ export default function RecordSale() {
                 checked={paymentMethod === method.value}
                 onChange={(e) =>
                   dispatch(
-                    setDraftPaymentMethod(e.target.value as PaymentMethodOptions)
+                    setDraftPaymentMethod(
+                      e.target.value as PaymentMethodOptions
+                    )
                   )
                 }
                 className="hidden"

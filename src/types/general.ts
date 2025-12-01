@@ -482,6 +482,22 @@ export interface Sale {
   __v: number;
 }
 
+export interface salesResponse {
+  _id: string;
+  amountOwed: number;
+  amountPaid?: number;
+  creditStatus: string;
+  date: string; // or Date if you parse it
+  isCredit: boolean;
+  paymentMethod: "cash" | "transfer" | "pos" | string;
+  refunded: boolean;
+  soldByName: string;
+  ticketNumber: string;
+  totalAmount: number;
+  totalItemCount: number;
+  customerName?: string
+}
+
 export interface SaleHistoryItem {
   _id: string;
   ticketNumber: string;
@@ -547,7 +563,66 @@ export interface SalesResponse {
     page: number;
     pages: number;
     total: number;
-    sales: Sale[];
+    tickets: salesResponse[];
+  };
+}
+
+export interface CreditSale {
+  _id?: string;
+  shopId: string;
+  soldBy: string;
+  soldByName: string;
+
+  customerName: string;
+  customerPhone: string;
+
+  ticketNumber: string;
+
+  amountOwed: number;
+  amountPaid: number;
+
+  subtotal: number;
+  taxAmount: number;
+  totalAmount: number;
+  totalItemCount: number;
+  totalProfit: number;
+
+  isCredit: boolean;
+  creditStatus: "pending" | "paid" | "partial";
+
+  paymentMethod: string; // e.g. "credit"
+
+  date: string;       // sale date
+  createdAt: string;
+  updatedAt: string;
+  dueDate: string;
+
+  refunded: boolean;
+
+  items: Array<{
+    itemId?: string;
+    productName?: string;
+    quantity?: number;
+    costPrice?: number;
+    sellingPrice?: number;
+    total?: number;
+  }>;
+
+  payments: Array<{
+    amount?: number;
+    date?: string;
+    method?: string;
+  }>;
+}
+
+export interface CreditResponse {
+  success: boolean;
+  message: string;
+  data: {
+    page: number;
+    pages: number;
+    total: number;
+    tickets: CreditSale[];
   };
 }
 

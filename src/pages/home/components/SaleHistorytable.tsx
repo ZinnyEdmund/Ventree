@@ -10,15 +10,18 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { Icon } from "@iconify/react";
-import { Eye, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import type { SaleHistoryItem } from "../../../types/general";
+import ErrorState from "../../../components/common/ErrorState"; // ADD THIS IMPORT
 // import { formatDate, formatTime } from "../../../lib/helper";
 
 
 interface SalesHistoryTableProps {
   sales: SaleHistoryItem[];
   isLoading?: boolean;
+  error?: Error | null;        // ADD THIS PROP ✅
   onView: (sale: SaleHistoryItem) => void;
+  onRetry?: () => void;         // ADD THIS PROP ✅
 }
 
 const columnHelper = createColumnHelper<SaleHistoryItem>();
@@ -26,7 +29,9 @@ const columnHelper = createColumnHelper<SaleHistoryItem>();
 export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
   sales,
   isLoading = false,
+  error = null,              // ADD THIS ✅
   onView,
+  onRetry,                   // ADD THIS ✅
 }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
 
@@ -122,20 +127,6 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
           <div className="text-gray-700">{getTimeAgo(info.getValue())}</div>
         ),
       }),
-      // columnHelper.display({
-      //   id: "actions",
-      //   header: "Action",
-      //   cell: ({ row }) => (
-      //     <button
-      //       onClick={() => onView(row.original)}
-      //       className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2 text-blue-600"
-      //       title="View details"
-      //     >
-      //       <Eye size={18} />
-      //       <span className="text-sm">View</span>
-      //     </button>
-      //   ),
-      // }),
     ],
     [onView]
   );
@@ -158,6 +149,7 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
     },
   });
 
+  // LOADING STATE ✅
   if (isLoading) {
     return (
       <div className="bg-white rounded-lg p-8 flex items-center justify-center">
@@ -169,7 +161,21 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
     );
   }
 
-  
+  // ERROR STATE ✅ - ADD THIS BLOCK
+  if (error) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+        <ErrorState
+          errorCode="Error"
+          message={error.message || "Failed to load latest sales history. Please try again."}
+          onRetry={onRetry}
+          showRetryButton={!!onRetry}
+        />
+      </div>
+    );
+  }
+
+  // EMPTY STATE ✅
   if (sales.length === 0) {
     return (
       <div className="bg-white rounded-lg p-12 text-center">
@@ -187,6 +193,7 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
     );
   }
 
+  // SUCCESS STATE - SHOW DATA ✅
   return (
     <div className="bg-white rounded-lg overflow-hidden">
       {/* Desktop Table */}
@@ -244,14 +251,6 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
                     {formatCurrency(sale.lineTotal)}
                   </p>
                 </div>
-
-                {/* <button
-                  onClick={() => onView(sale)}
-                  className="ml-2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                  title="View details"
-                >
-                  <Eye size={20} className="text-blue-600" />
-                </button> */}
               </div>
 
               <div className="flex items-center justify-between text-sm">
@@ -270,38 +269,6 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
           );
         })}
       </div>
-
-      {/* Pagination */}
-      {/* {table.getRowModel().rows.length > 0 && (
-        <div className="border-t border-gray-200 px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} to{" "}
-              {Math.min(
-                (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
-                sales.length
-              )}{" "}
-              of {sales.length} sales
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={() => table.previousPage()}
-                disabled={!table.getCanPreviousPage()}
-                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Previous
-              </button>
-              <button
-                onClick={() => table.nextPage()}
-                disabled={!table.getCanNextPage()}
-                className="px-3 py-1 border border-gray-300 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Next
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
     </div>
   );
 };

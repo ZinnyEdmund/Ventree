@@ -20,7 +20,7 @@ export const RecordCreditPaymentModal: React.FC<RecordCreditPaymentModalProps> =
 }) => {
   const [recordCredit, { isLoading }] = useRecordCreditMutation();
   
-  const [formData, setFormData] = useState<RecordCreditPaymentDTO>({
+  const [formData] = useState<RecordCreditPaymentDTO>({
     amount: ticket.amountOwed,
     paymentMethod: "cash",
     receivedBy: currentUserId,
@@ -59,13 +59,16 @@ export const RecordCreditPaymentModal: React.FC<RecordCreditPaymentModalProps> =
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="modal-bg z-40"
-        onClick={onClose}
-      />
+      <div 
+        className="modal-bg z-50 flex items-center justify-center p-4"
+        onClick={onClose} // Clicking backdrop closes modal
+      >
 
       {/* Modal */}
-      <div className="modal-bg z-50 flex items-center justify-center p-4">
+      <div 
+          className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl"
+          onClick={(e) => e.stopPropagation()} // Prevent modal content clicks from closing
+        >
         <div className="bg-white rounded-2xl w-full max-w-md max-h-[90vh] overflow-y-auto shadow-xl">
           {/* Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -251,7 +254,7 @@ export const RecordCreditPaymentModal: React.FC<RecordCreditPaymentModalProps> =
               </div>
 
               {/* Submit Button */}
-              {ticket.paymentMethod === "credit" && (
+              {ticket.paymentMethod === "credit" && ticket.creditStatus === "pending" && (
                 <button
                 type="submit"
                 // disabled={isLoading || formData.amount <= 0}
@@ -271,6 +274,7 @@ export const RecordCreditPaymentModal: React.FC<RecordCreditPaymentModalProps> =
             </form>
           </div>
         </div>
+      </div>
       </div>
     </>
   );

@@ -69,3 +69,36 @@ export function formatDate(dateString: string): string {
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
 }
+
+export const cleanObject = (obj: any): any => {
+  // Handle null, undefined, and empty strings
+  if (obj === null || obj === undefined || obj === "") return undefined;
+  
+  // Handle primitives (non-objects)
+  if (typeof obj !== "object") return obj;
+  
+  // Handle arrays
+  if (Array.isArray(obj)) {
+    const cleanedArray = obj
+      .map(item => cleanObject(item))
+      .filter(item => item !== undefined);
+    return cleanedArray.length > 0 ? cleanedArray : undefined;
+  }
+  
+  // Handle objects
+  const cleanedObj: Record<string, any> = {};
+  
+  for (const key in obj) {
+    if (!obj.hasOwnProperty(key)) continue; // Skip inherited properties
+    
+    const cleanedValue = cleanObject(obj[key]);
+    
+    // Only add to cleanedObj if value is not undefined
+    if (cleanedValue !== undefined) {
+      cleanedObj[key] = cleanedValue;
+    }
+  }
+  
+  // Return undefined if object is empty after cleaning, otherwise return the cleaned object
+  return Object.keys(cleanedObj).length > 0 ? cleanedObj : undefined;
+};
