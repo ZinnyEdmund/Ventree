@@ -5,6 +5,7 @@ import OnboardWrapper from "../layouts/onboardWrapper";
 import OnboardLayout from "../layouts/onboardLayout";
 import MainLayout from "../layouts/mainLayout";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import PublicRoute from "../components/common/PublicRoute"; // Add this import
 import { Home } from "../pages/home";
 import { ManageStocks } from "../pages/stocks";
 import RecordSale from "../pages/sales/RecordSales";
@@ -38,11 +39,11 @@ function AppRoutes() {
     <Suspense fallback={<LoadingSpinner />}>
       <BrowserRouter>
         <Routes>
-          {/* Onboarding */}
-          <Route path="/" element={<LandingPage />} />
+          {/* Public Pages - Wrapped with PublicRoute to redirect logged-in users */}
+          <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
 
-          {/* Authentication */}
-          <Route path="/" element={<OnboardWrapper component={<OnboardLayout />} />}>
+          {/* Authentication Pages - Wrapped with PublicRoute */}
+          <Route path="/" element={<PublicRoute><OnboardWrapper component={<OnboardLayout />} /></PublicRoute>}>
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/otp" element={<Otp />} />

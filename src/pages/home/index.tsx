@@ -35,6 +35,7 @@ export const Home = () => {
   const {
     data: salesItemsData,
     isLoading: isLoadingSales,
+    refetch: refetchSales,
   } = useGetSalesItemsByShopQuery(user?.shopId || "", {
     skip: !user?.shopId,
   });

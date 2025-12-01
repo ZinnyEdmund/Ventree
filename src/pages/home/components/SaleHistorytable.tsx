@@ -169,6 +169,7 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
     );
   }
 
+  
   if (sales.length === 0) {
     return (
       <div className="bg-white rounded-lg p-12 text-center">
@@ -244,13 +245,13 @@ export const SalesHistoryTable: React.FC<SalesHistoryTableProps> = ({
                   </p>
                 </div>
 
-                <button
+                {/* <button
                   onClick={() => onView(sale)}
                   className="ml-2 p-2 hover:bg-gray-100 rounded-lg transition-colors"
                   title="View details"
                 >
                   <Eye size={20} className="text-blue-600" />
-                </button>
+                </button> */}
               </div>
 
               <div className="flex items-center justify-between text-sm">
