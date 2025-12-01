@@ -124,7 +124,7 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
           {/* Navigation */}
           <nav className="space-y-2 mb-6">
-            {/* {isOwner && ( */}
+            {isOwner && (
             <MobileNavLink
               to="/home"
               icon="ic:outline-house"
@@ -132,7 +132,7 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               isActive={isActive("/home")}
               onClick={onClose}
             />
-            {/* )} */}
+          )}
 
             {isOwner && (
               <MobileNavLink
@@ -363,12 +363,13 @@ function DesktopSidebar() {
       </div>
 
       <nav className="flex-1 space-y-3 w-full">
-        {/* {isOwner && ( */}
+        {isOwner && (
         <SidebarItem
           to="/home"
           icon={<Icon icon="ic:outline-house" width="24" height="24" />}
           label="Home"
         />
+        )}
 
         <SidebarItem
           to="/record-sales"
