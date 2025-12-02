@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 const navLinks = [
   { to: '#hero', label: 'Home' },
@@ -11,6 +12,7 @@ const navLinks = [
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -63,6 +65,7 @@ export default function Navbar() {
           {/* Button - Right (Desktop) */}
           <div className="hidden md:block animate-[fadeInRight_0.6s_ease-out]">
             <button 
+            onClick={() => navigate("/register")}
               className="w-full md:w-50 btn btn-primary border active:border-tertiary transition-all duration-300 hover:scale-105 hover:shadow-lg"
             >
               Get Started
