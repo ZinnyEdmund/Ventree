@@ -5,6 +5,7 @@ import OnboardWrapper from "../layouts/onboardWrapper";
 import OnboardLayout from "../layouts/onboardLayout";
 import MainLayout from "../layouts/mainLayout";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import PublicRoute from "../components/common/PublicRoute"; // Add this import
 import { Home } from "../pages/home";
 import { ManageStocks } from "../pages/stocks";
 import RecordSale from "../pages/sales/RecordSales";
@@ -20,6 +21,7 @@ import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
 import LandingPage from "../pages/landingpage/LandingPage";
 import { HistoryPage } from "../pages/history";
+import { NotFoundPage } from "../pages/NotFoundPage";
 
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
@@ -38,11 +40,11 @@ function AppRoutes() {
     <Suspense fallback={<LoadingSpinner />}>
       <BrowserRouter>
         <Routes>
-          {/* Onboarding */}
-          <Route path="/" element={<LandingPage />} />
+          {/* Public Pages - Wrapped with PublicRoute to redirect logged-in users */}
+          <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
 
-          {/* Authentication */}
-          <Route path="/" element={<OnboardWrapper component={<OnboardLayout />} />}>
+          {/* Authentication Pages - Wrapped with PublicRoute */}
+          <Route path="/" element={<PublicRoute><OnboardWrapper component={<OnboardLayout />} /></PublicRoute>}>
             <Route path="/register" element={<RegisterPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/otp" element={<Otp />} />
@@ -75,6 +77,8 @@ function AppRoutes() {
           <Route path="/help-center" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
           <Route path="/about-us" element={<ProtectedRoute><AboutApp /></ProtectedRoute>} />
           
+          {/* ✅ 404 Catch-All Route - MUST BE LAST */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </Suspense>

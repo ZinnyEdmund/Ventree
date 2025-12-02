@@ -380,6 +380,78 @@ export interface ICreateExpense {
   notes?: string; // optional notes (since you may or may not include it)
 }
 
+// --- Notifications stuff
+export enum NotificationType {
+  LOW_STOCK = 'low_stock',
+  OUT_OF_STOCK = 'out_of_stock',  
+  SALE_COMPLETED = 'sale_completed'
+}
+
+// matches what backend sends exactly
+export interface INotification {
+  _id: string;
+  shopId: string;
+  staffId?: string;
+  inventoryId?: string;
+  message: string;
+  isRead: boolean;
+  type: NotificationType;
+  metadata?: Record<string, any>; // backend sometimes adds extra stuff here
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface NotificationState {
+  notifications: INotification[];
+  unreadCount: number;
+  isConnected: boolean;
+  connectionError: string | null;
+  lastUpdated: string | null;
+}
+
+export interface NotificationMessage {
+  type: 'notification';
+  data: INotification;
+}
+
+export interface ConnectionConfirmation {
+  message: string;
+  userId: string;
+  shopId: string;
+  role: Role;
+}
+
+// for the helper functions
+export interface NotificationDisplay {
+  icon: string;
+  title: string;
+  color: string;
+}
+
+export interface NotificationResponse extends BaseResponse<INotification[]> {}
+export interface CreateNotificationResponse extends BaseResponse<INotification> {}  
+export interface UpdateNotificationResponse extends BaseResponse<INotification> {}
+
+export interface CreateNotificationDto {
+  shopId: string;
+  staffId?: string;
+  inventoryId?: string; 
+  message: string;
+  type: NotificationType;
+  metadata?: Record<string, any>;
+}
+
+export interface UpdateNotificationDto {
+  isRead?: boolean; // probably only thing we'll update
+}
+
+export interface NotificationQueryParams {
+  shopId: string;
+  limit?: number;
+  offset?: number;
+  unreadOnly?: boolean;
+}
+
 export interface ShopOwner {
   name: string;
 }
@@ -482,6 +554,22 @@ export interface Sale {
   __v: number;
 }
 
+export interface salesResponse {
+  _id: string;
+  amountOwed: number;
+  amountPaid?: number;
+  creditStatus: string;
+  date: string; // or Date if you parse it
+  isCredit: boolean;
+  paymentMethod: "cash" | "transfer" | "pos" | string;
+  refunded: boolean;
+  soldByName: string;
+  ticketNumber: string;
+  totalAmount: number;
+  totalItemCount: number;
+  customerName?: string
+}
+
 export interface SaleHistoryItem {
   _id: string;
   ticketNumber: string;
@@ -547,7 +635,66 @@ export interface SalesResponse {
     page: number;
     pages: number;
     total: number;
-    sales: Sale[];
+    tickets: salesResponse[];
+  };
+}
+
+export interface CreditSale {
+  _id?: string;
+  shopId: string;
+  soldBy: string;
+  soldByName: string;
+
+  customerName: string;
+  customerPhone: string;
+
+  ticketNumber: string;
+
+  amountOwed: number;
+  amountPaid: number;
+
+  subtotal: number;
+  taxAmount: number;
+  totalAmount: number;
+  totalItemCount: number;
+  totalProfit: number;
+
+  isCredit: boolean;
+  creditStatus: "pending" | "paid" | "partial";
+
+  paymentMethod: string; // e.g. "credit"
+
+  date: string;       // sale date
+  createdAt: string;
+  updatedAt: string;
+  dueDate: string;
+
+  refunded: boolean;
+
+  items: Array<{
+    itemId?: string;
+    productName?: string;
+    quantity?: number;
+    costPrice?: number;
+    sellingPrice?: number;
+    total?: number;
+  }>;
+
+  payments: Array<{
+    amount?: number;
+    date?: string;
+    method?: string;
+  }>;
+}
+
+export interface CreditResponse {
+  success: boolean;
+  message: string;
+  data: {
+    page: number;
+    pages: number;
+    total: number;
+    tickets: CreditSale[];
   };
 }
 
@@ -560,4 +707,12 @@ export interface SalesItemsResponse {
     page: number;
     pages: number;
   };
+}
+
+export interface RecordCreditPaymentDTO {
+  amount: number;
+  paymentMethod: "cash" | "transfer";
+  receivedBy: string;             // staff ID
+  transactionReference?: string;
+  notes?: string;
 }

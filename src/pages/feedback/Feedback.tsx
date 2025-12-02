@@ -115,14 +115,14 @@ export default function Feedback() {
             <address className="space-y-2 not-italic">
               <a
                 href={`mailto:${CONTACT_INFO.email}`}
-                className="text-black body hover:text-blue-600 transition-colors block"
+                className="text-black body hover:text-SB transition-colors block"
                 aria-label={`Email support at ${CONTACT_INFO.email}`}
               >
                 {CONTACT_INFO.email}
               </a>
               <a
                 href={`tel:${CONTACT_INFO.phone}`}
-                className="text-black body hover:text-blue-600 transition-colors block"
+                className="text-black body hover:text-SB transition-colors block"
                 aria-label={`Call support at ${CONTACT_INFO.phone}`}
               >
                 {CONTACT_INFO.phone}

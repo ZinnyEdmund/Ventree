@@ -6,12 +6,6 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../../state/store";
 
 // Types
-type NotificationSettings = {
-  salesReport: boolean;
-  lowOnStock: boolean;
-  outOfStock: boolean;
-};
-
 type UserProfile = {
   shopName: string;
   ownerName: string;
@@ -20,7 +14,11 @@ type UserProfile = {
 
 type SettingsData = {
   profile: UserProfile;
-  notifications: NotificationSettings;
+  notifications: {
+    salesReport: boolean;
+    lowOnStock: boolean;
+    outOfStock: boolean;
+  };
 };
 
 // API Functions
@@ -35,30 +33,12 @@ const settingsApi = {
     if (!response.ok) throw new Error('Failed to fetch settings');
     return response.json();
   },
-
-  updateNotifications: async (shopId: string, notifications: NotificationSettings): Promise<void> => {
-    const response = await fetch(`https://backenddomain/shops/${shopId}/notifications`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-      body: JSON.stringify(notifications),
-    });
-    
-    if (!response.ok) throw new Error('Failed to update notifications');
-  },
 };
 
 export default function Settings() {
-  const [notifications, setNotifications] = useState<NotificationSettings>({
-    salesReport: false,
-    lowOnStock: false,
-    outOfStock: false,
-  });
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   // Get user data from Redux auth state
   const user = useSelector((state: RootState) => state.auth.user);
@@ -76,7 +56,6 @@ export default function Settings() {
       try {
         setIsLoading(true);
         const data = await settingsApi.fetchSettings(shopId);
-        setNotifications(data.notifications);
         setProfile(data.profile);
       } catch (error) {
         toast.error('Failed to load settings');
@@ -89,32 +68,6 @@ export default function Settings() {
     loadSettings();
   }, [shopId]);
 
-  // Toggle notification with API update
-  const toggleNotification = async (key: keyof NotificationSettings) => {
-    if (!shopId) {
-      toast.error('Please login again');
-      return;
-    }
-
-    const newNotifications = { ...notifications, [key]: !notifications[key] };
-    
-    // Optimistic update
-    setNotifications(newNotifications);
-    
-    try {
-      setIsSaving(true);
-      await settingsApi.updateNotifications(shopId, newNotifications);
-      toast.success('Notification preference updated');
-    } catch (error) {
-      // Revert on error
-      setNotifications(notifications);
-      toast.error('Failed to update notification');
-      console.error(error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
   const settingsLinks = [
     {
       section: "Profile",
@@ -123,6 +76,7 @@ export default function Settings() {
           to: "/my-profile",
           icon: "octicon:person-16",
           label: profile?.shopName || user?.shopName || "My Profile",
+          disabled: false, // Keep profile enabled
         },
       ],
     },
@@ -133,6 +87,7 @@ export default function Settings() {
           to: "/change-password",
           icon: "ic:outline-https",
           label: "Change Password",
+          disabled: true,
         },
       ],
     },
@@ -143,6 +98,7 @@ export default function Settings() {
           to: "/help-center",
           icon: "ic:outline-help-outline",
           label: "Help Center / Feedback",
+          disabled: true,
         },
       ],
     },
@@ -153,15 +109,13 @@ export default function Settings() {
           to: "/about-us",
           icon: "ic:outline-report",
           label: "About Us",
+          disabled: true,
         },
       ],
     },
   ];
 
-  const notificationItems: Array<{
-    key: keyof NotificationSettings;
-    label: string;
-  }> = [
+  const notificationItems = [
     { key: "salesReport", label: "Sales report" },
     { key: "lowOnStock", label: "Low on stock" },
     { key: "outOfStock", label: "Out of stock" },
@@ -170,7 +124,7 @@ export default function Settings() {
   if (isLoading) {
     return (
       <main className="flex justify-center items-center min-h-screen bg-bg">
-        <div className="text-center">
+        <div className="text-center justify-center">
           <Icon icon="line-md:loading-loop" width="48" height="48" className="text-secondary" />
           <p className="text-black mt-4">Loading settings...</p>
         </div>
@@ -206,31 +160,62 @@ export default function Settings() {
                 aria-label={`${section} Settings`}
                 className="bg-white rounded-lg shadow-sm"
               >
-                {items.map(({ to, icon, label }) => (
-                  <Link
+                {items.map(({ to, icon, label, disabled }) => (
+                  <div
                     key={to}
-                    to={to}
-                    className="flex items-center justify-between p-2 hover:bg-gray-50 transition"
+                    className="relative"
+                    onMouseEnter={() => disabled && setHoveredItem(to)}
+                    onMouseLeave={() => setHoveredItem(null)}
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-secondary">
-                        <Icon icon={icon} width="24" height="24" />
-                      </span>
-                      <span className="text-black web-small">{label}</span>
-                    </div>
-                    <Icon
-                      icon="ic:outline-arrow-forward-ios"
-                      width="20"
-                      height="20"
-                      aria-hidden="true"
-                    />
-                  </Link>
+                    {disabled ? (
+                      <div className="flex items-center justify-between p-2 opacity-40 cursor-not-allowed">
+                        <div className="flex items-center gap-3">
+                          <span className="text-secondary">
+                            <Icon icon={icon} width="24" height="24" />
+                          </span>
+                          <span className="text-black web-small">{label}</span>
+                        </div>
+                        <Icon
+                          icon="ic:outline-arrow-forward-ios"
+                          width="20"
+                          height="20"
+                          aria-hidden="true"
+                        />
+                      </div>
+                    ) : (
+                      <Link
+                        to={to}
+                        className="flex items-center justify-between p-2 hover:bg-gray-50 transition"
+                      >
+                        <div className="flex items-center gap-3">
+                          <span className="text-secondary">
+                            <Icon icon={icon} width="24" height="24" />
+                          </span>
+                          <span className="text-black web-small">{label}</span>
+                        </div>
+                        <Icon
+                          icon="ic:outline-arrow-forward-ios"
+                          width="20"
+                          height="20"
+                          aria-hidden="true"
+                        />
+                      </Link>
+                    )}
+                    
+                    {/* Tooltip */}
+                    {disabled && hoveredItem === to && (
+                      <div className="absolute left-1/2 -translate-x-1/2 -top-10 bg-gray-800 text-white text-xs px-3 py-1.5 rounded shadow-lg whitespace-nowrap z-10">
+                        Disabled
+                        <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+                      </div>
+                    )}
+                  </div>
                 ))}
               </nav>
             </section>
           ))}
 
-          {/* Notification Section */}
+          {/* Notification Section - ALL DISABLED */}
           <section>
             <h2 className="h7 text-black my-3">Push Notification</h2>
             <nav
@@ -240,36 +225,35 @@ export default function Settings() {
               {notificationItems.map(({ key, label }) => (
                 <div
                   key={key}
-                  className="flex items-center justify-between p-3 shadow-sm rounded-lg hover:bg-gray-50 transition"
+                  className="relative"
+                  onMouseEnter={() => setHoveredItem(`notification-${key}`)}
+                  onMouseLeave={() => setHoveredItem(null)}
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-secondary">
-                      <Icon
-                        icon="ic:baseline-charging-station"
-                        width="24"
-                        height="24"
-                      />
-                    </span>
-                    <span className="text-black web-small">{label}</span>
-                  </div>
-                  <button
-                    onClick={() => toggleNotification(key)}
-                    disabled={isSaving}
-                    aria-label={`Toggle ${label} notification`}
-                    aria-pressed={notifications[key]}
-                    className="w-[48px] h-[24px] rounded-full flex items-center px-1 cursor-pointer transition focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{
-                      backgroundColor: notifications[key]
-                        ? "#1EC131"
-                        : "#A2A3A2",
-                    }}
-                  >
+                  <div className="flex items-center justify-between p-3 shadow-sm rounded-lg opacity-40 cursor-not-allowed">
+                    <div className="flex items-center gap-3">
+                      <span className="text-secondary">
+                        <Icon
+                          icon="ic:baseline-charging-station"
+                          width="24"
+                          height="24"
+                        />
+                      </span>
+                      <span className="text-black web-small">{label}</span>
+                    </div>
                     <div
-                      className={`w-[18px] h-[18px] bg-white rounded-full transition ${
-                        notifications[key] ? "translate-x-6" : "translate-x-0"
-                      }`}
-                    />
-                  </button>
+                      className="w-[48px] h-[24px] rounded-full flex items-center px-1 bg-gray-300"
+                    >
+                      <div className="w-[18px] h-[18px] bg-white rounded-full" />
+                    </div>
+                  </div>
+                  
+                  {/* Tooltip */}
+                  {hoveredItem === `notification-${key}` && (
+                    <div className="absolute left-1/2 -translate-x-1/2 -top-10 bg-gray-800 text-white text-xs px-3 py-1.5 rounded shadow-lg whitespace-nowrap z-10">
+                      Disabled
+                      <div className="absolute left-1/2 -translate-x-1/2 top-full w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-800"></div>
+                    </div>
+                  )}
                 </div>
               ))}
             </nav>

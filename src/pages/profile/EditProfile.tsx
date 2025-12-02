@@ -10,6 +10,7 @@ import {
   useProfileFormValidation
 } from "../../components/common/profileValidation";
 import { useProfileAPI } from "../../components/common/profileApi";
+import { useDispatch } from "react-redux"; 
 
 
 type FormState = {
@@ -69,6 +70,7 @@ export default function EditProfile() {
   const [fetchLoading, setFetchLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const navigate = useNavigate();
+    const dispatch = useDispatch(); 
 
   // Custom hooks
   const { isLoading, submit } = useProfileFormSubmit();
@@ -92,7 +94,7 @@ export default function EditProfile() {
     };
 
     loadProfile();
-  }, [fetchProfile]);
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -107,20 +109,16 @@ export default function EditProfile() {
   };
 
   const handleSubmit = async () => {
-    console.log("Submit button clicked");
-    console.log("Form data:", formData);
 
     // Validate form
     if (!validateAll(formData)) {
-      console.log("Validation failed:", errors);
       return;
     }
 
-    console.log("Validation passed, submitting...");
 
     // Submit form
     await submit(
-      () => updateProfile(formData),
+      () => updateProfile(formData, dispatch),
       "Profile updated successfully!",
       () => {
         setShowSuccess(true);

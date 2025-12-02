@@ -26,7 +26,7 @@ export default function ProfilePage() {
         setError(null);
         setLoading(true);
         const data = await fetchProfile();
-        
+
         setProfileData({
           shopName: data.businessName,
           shopType: data.businessType,
@@ -64,10 +64,17 @@ export default function ProfilePage() {
       <div className="min-h-screen flex items-center justify-center bg-white p-4">
         <div className="text-center max-w-md">
           <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Icon icon="ph:warning" width="32" height="32" className="text-red-600" />
+            <Icon
+              icon="ph:warning"
+              width="32"
+              height="32"
+              className="text-red-600"
+            />
           </div>
           <h2 className="h4 text-black mb-2">Failed to Load Profile</h2>
-          <p className="body text-gray-600 mb-6">{error || "Profile data not found"}</p>
+          <p className="body text-gray-600 mb-6">
+            {error || "Profile data not found"}
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="btn btn-primary"
@@ -115,7 +122,10 @@ export default function ProfilePage() {
           {/* Owner Details */}
           <dl className="space-y-6 mb-10 pb-10 border-b border-gray-100">
             {profileFields.map(({ label, value, isPhone }) => (
-              <div key={label} className="flex justify-between items-center gap-4">
+              <div
+                key={label}
+                className="flex justify-between items-center gap-4"
+              >
                 <dt className="h5 text-black shrink-0">{label}</dt>
                 <dd className="body text-black text-right truncate min-w-0">
                   {isPhone ? (

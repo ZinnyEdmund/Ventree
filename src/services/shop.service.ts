@@ -5,7 +5,7 @@ import type { BaseResponse, DashboardResponse, IShop, KYCData, SubmitKYCInfo, Ti
 export const shopApi = createApi({
   reducerPath: 'shopApi',
   baseQuery: baseQueryWithLogout,
-  tagTypes: ['Shop', 'Sales', 'Expenses'],
+  tagTypes: ['Shop'],
   endpoints: (builder) => ({
     addKYCInfo: builder.mutation<BaseResponse<KYCData>, { shopId: string; data: SubmitKYCInfo }>({
       query: ({ shopId, data }) => ({
@@ -35,7 +35,7 @@ export const shopApi = createApi({
           url: `/v1/user/shop/${shopId}/dashboard?period=${period}`,
           method: 'GET',
         }),
-        providesTags: ['Shop', 'Sales', 'Expenses'],
+        providesTags: ['Shop'],
         keepUnusedDataFor: 3600, // keep data for 1 hour
     }),  
   }),

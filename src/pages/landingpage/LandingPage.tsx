@@ -16,11 +16,11 @@ export default function LandingPage() {
         <section id="hero">
           <Hero />
         </section>
-        <section id="about">
-          <About />
-        </section>
         <section id="how-it-works">
           <Steps />
+        </section>
+        <section id="about">
+          <About />
         </section>
         <CTA />
         <Testimonials />
