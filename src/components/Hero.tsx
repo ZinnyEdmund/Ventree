@@ -48,7 +48,7 @@ export default function Hero() {
             </p>
             <button
               onClick={() => navigate("/register")}
-              className={`w-full md:w-80 btn btn-sec active:border-tertiary transition-all duration-700 delay-300 hover:scale-105 hover:shadow-lg ${
+              className={`w-full md:w-80 btn btn-primary active:border-tertiary transition-all duration-700 delay-300 hover:scale-105 hover:shadow-lg ${
                 isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
               }`}
             >
