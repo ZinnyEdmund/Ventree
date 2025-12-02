@@ -292,7 +292,7 @@ export const AddGoodsModal: React.FC<AddGoodsModalProps> = ({
             <div className="grid grid-cols-2 gap-4">
               {/* FIX 2: Allow quantity to be 0 */}
               <TextInput
-                label="Initial Quantity"
+                label="Quantity"
                 placeholder="Enter quantity"
                 type="number"
                 value={formData.quantity === 0 ? "0" : formData.quantity || ""}

@@ -13,7 +13,7 @@ import { logout } from "../state/Store/authSlice";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../state/store";
 
-function MobileHeader({ onMenuClick, onNotificationClick, showDot }: {
+function MobileHeader({ onMenuClick, onNotificationClick }: {
   onMenuClick: () => void;
   onNotificationClick: () => void;
   showDot: boolean;
@@ -32,7 +32,7 @@ function MobileHeader({ onMenuClick, onNotificationClick, showDot }: {
           </div>
 
           {/* Icons */}
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <button onClick={onNotificationClick} className="p-1 relative">
               <Icon
                 icon="ic:outline-notifications"
@@ -52,7 +52,7 @@ function MobileHeader({ onMenuClick, onNotificationClick, showDot }: {
                 className="text-secondary"
               />
             </button>
-          </div>
+          </div> */}
            
         </div>
 
