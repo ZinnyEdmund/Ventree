@@ -81,6 +81,7 @@
 import { toast } from "sonner";
 import { Download, RefreshCw } from "lucide-react";
 import { useExportProfitSummaryMutation } from "../../../services/analytics.service";
+import { calculateProfitMargin } from "../../../lib/helper";
 
 // Backend data structure
 interface NetProfitTrendProps {
@@ -300,14 +301,14 @@ export const NetProfitTrend: React.FC<NetProfitTrendProps> = ({
                 <td className="py-3 px-4">
                   <span
                     className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                      item.profit >= 50
+                      calculateProfitMargin(item.profit, item.revenue) >= 50
                         ? "bg-green-100 text-green-800"
-                        : item.profit >= 30
+                        : calculateProfitMargin(item.profit, item.revenue) >= 30
                         ? "bg-yellow-100 text-yellow-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {item.profit.toFixed(1)}%
+                    {calculateProfitMargin(item.profit, item.revenue)}%
                   </span>
                 </td>
               </tr>
