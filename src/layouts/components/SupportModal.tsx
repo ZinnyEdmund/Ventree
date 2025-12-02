@@ -25,7 +25,7 @@ export function SupportModal({ onClose }: { onClose: () => void }) {
         <div className="p-3 space-y-2">
           {/* Help Center */}
           <Link to={"/help"} className="flex items-start gap-4 w-full text-left hover:bg-gray-50 rounded-xl p-3 transition-colors">
-            <div className="w-12 h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-10 bg-gray-200 rounded-full flex items-center justify-center shrink-0">
             <Icon icon="material-symbols-light:contact-support-rounded" width="24px" className="text-grey" />
             </div>
             <div>
@@ -36,7 +36,7 @@ export function SupportModal({ onClose }: { onClose: () => void }) {
 
           {/* Send Feedback */}
           <Link to={"/help"} className="flex items-start gap-4 w-full text-left hover:bg-gray-50 p-4 rounded-xl transition-colors">
-            <div className="w-12 h-10 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+            <div className="w-12 h-10 bg-gray-200 rounded-full flex items-center justify-center shrink-0">
             <Icon icon="material-symbols-light:feedback-rounded" width="24px" className="text-grey" />
             </div>
             <div>

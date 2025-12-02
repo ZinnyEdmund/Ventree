@@ -52,8 +52,8 @@ export const SalesTeamCard: React.FC<SalesTeamCardProps> = ({
         <h2 className="h4 text-secondary mb-2">
               Sales Team
         </h2>
-        <div className="bg-white rounded-lg border border-secondary-5 p-6 flex items-center justify-between mb-8">
-          <div className="space-y-1">
+        <div className="bg-white space-y-4 md:space-y-0 rounded-lg border border-secondary-5 p-6 flex items-center flex-col md:flex-row justify-start md:justify-between mb-8 ">
+          <div className="space-y-1 w-full md:w-auto">
             <div className="flex items-center gap-2 text-sm text-gray-600">
               <Icon icon="mdi:account-group" width="20" height="20" />
               <span>Sales Persons</span>
@@ -68,7 +68,7 @@ export const SalesTeamCard: React.FC<SalesTeamCardProps> = ({
   
           <button
             onClick={() => setShowAddModal(true)}
-            className="hidden md:block btn btn-primary"
+            className="w-full md:w-auto md:block btn btn-primary"
             disabled={salesPersons.length >= maxPersons || isSubmitting}
           >
             Add Sales Person

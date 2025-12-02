@@ -41,7 +41,7 @@ export function NotificationModal({ onClose }: { onClose: () => void }) {
                   className="flex items-start gap-3 p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer"
                   onClick={() => markAsRead(notif._id)}
                 >
-                  <div className="flex-shrink-0 mt-2">
+                  <div className="shrink-0 mt-2">
                     <div className={`w-2 h-2 rounded-full ${notif.isRead ? "bg-gray-300" : "bg-primary-1"}`} />
                   </div>
 
