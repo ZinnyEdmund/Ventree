@@ -1,93 +1,132 @@
 import { useSelector } from "react-redux";
 import type { RootState } from "../../state/store";
 import type { FormState } from "../../components/common/profileTypes";
-import { getAccessTokenCookie } from "../../lib/cookies";
+import { getAccessTokenCookie, getRefreshTokenCookie } from "../../lib/cookies";
+import type { Dispatch } from "redux";
+
+// Define a type for the user object with all possible fields
+interface UserWithShopData {
+  shopId?: string;
+  userName?: string;
+  ownerName?: string;
+  shopName?: string;
+  businessName?: string;
+  phoneNumber?: string;
+  shopType?: string;
+  businessType?: string;
+  address?: string;
+}
 
 export const useProfileAPI = () => {
-  // Get shopId from Redux store
+  // Get user data from Redux store
   const user = useSelector((state: RootState) => state.auth.user);
   const isLoggedIn = useSelector((state: RootState) => state.auth.isLoggedIn);
-  const shopId = user?.shopId;
+  const isInitialized = useSelector(
+    (state: RootState) => state.auth._initialized
+  );
 
-  // Debug logs
-  console.log("=== Profile API Debug ===");
-  console.log("User from Redux:", user);
-  console.log("Is Logged In:", isLoggedIn);
-  console.log("Shop ID:", shopId);
-  console.log("=======================");
+  // Extract shopId correctly
+  const shopId = (user as UserWithShopData | null)?.shopId;
 
   const fetchProfile = async (): Promise<FormState> => {
+    // Check if auth is initialized first
+    if (!isInitialized) {
+      throw new Error("Authentication initializing. Please wait...");
+    }
+
+    if (!isLoggedIn || !user) {
+      throw new Error("Please log in to view your profile.");
+    }
+
     if (!shopId) {
-      console.error("Shop ID missing! User object:", user);
       throw new Error("Shop ID not found. Please log in again.");
     }
 
-    try {
-      console.log("Fetching profile for shopId:", shopId);
-      
-      // Get token from cookies
-      const token = getAccessTokenCookie();
-      
-      const response = await fetch(`http://localhost:8000/shop/${shopId}/profile`, {
-        headers: {
-          "Content-Type": "application/json",
-          ...(token && { "Authorization": `Bearer ${token}` }),
-        },
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to fetch profile: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      return {
-        ownerName: data.ownerName || data.owner_name || "",
-        businessName: data.businessName || data.shopName || "",
-        phoneNumber: data.phoneNumber || data.phone_number || "",
-        businessType: data.businessType || data.shopType || "",
-        address: data.address || "",
-      };
-    } catch (error) {
-      console.error("Error fetching profile:", error);
-      throw error;
-    }
+    // OPTIMIZED: Use Redux data directly instead of fetching from backend
+    const userObj = user as UserWithShopData;
+
+    return {
+      ownerName: userObj.userName || userObj.ownerName || "",
+      businessName: userObj.shopName || userObj.businessName || "",
+      phoneNumber: userObj.phoneNumber || "",
+      businessType: userObj.shopType || userObj.businessType || "",
+      address: userObj.address || "",
+    };
   };
 
-  const updateProfile = async (formData: FormState): Promise<void> => {
+  const updateProfile = async (
+    formData: FormState,
+    dispatch: Dispatch
+  ): Promise<void> => {
+    if (!isInitialized) {
+      throw new Error("Authentication initializing. Please wait...");
+    }
+
+    if (!isLoggedIn) {
+      throw new Error("Please log in to update your profile.");
+    }
+
     if (!shopId) {
       throw new Error("Shop ID not found. Please log in again.");
     }
 
     try {
-      console.log("Updating profile for shopId:", shopId);
-      
-      // Get token from cookies
-      const token = getAccessTokenCookie();
-      
-      const response = await fetch(`http://localhost:8000/shop/${shopId}/profile`, {
-        method: "PUT",
-        headers: { 
-          "Content-Type": "application/json",
-          ...(token && { "Authorization": `Bearer ${token}` }),
-        },
-        body: JSON.stringify({
-          ownerName: formData.ownerName,
-          shopName: formData.businessName,
-          phoneNumber: formData.phoneNumber,
-          shopType: formData.businessType,
-          address: formData.address,
-        }),
-      });
+      // Try access token first, then refresh token as fallback
+      let token = getAccessTokenCookie();
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `Failed to update profile: ${response.status}`);
+      if (!token) {
+        token = getRefreshTokenCookie(); // Add this line
       }
 
-      // Parse response to ensure it was successful
-      await response.json();
+      if (!token) {
+        throw new Error("Authentication token missing. Please log in again.");
+      }
+
+      // FIX: Corrected URL with proper parenthesis
+      const response = await fetch(
+        `https://ventree-backend-1.onrender.com/api/v1/shop/${shopId}/profile`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            ownerName: formData.ownerName,
+            shopName: formData.businessName,
+            phoneNumber: formData.phoneNumber,
+            shopType: formData.businessType,
+            address: formData.address,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          throw new Error("Session expired. Please log in again.");
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || `Failed to update profile: ${response.status}`
+        );
+      }
+
+     await response.json();
+
+      // Update Redux store with new data
+      dispatch({
+        type: "auth/updateUser",
+        payload: {
+          userName: formData.ownerName,
+          ownerName: formData.ownerName,
+          shopName: formData.businessName,
+          businessName: formData.businessName,
+          phoneNumber: formData.phoneNumber,
+          shopType: formData.businessType,
+          businessType: formData.businessType,
+          address: formData.address,
+        },
+      });
     } catch (error) {
       console.error("Error updating profile:", error);
       throw error;

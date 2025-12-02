@@ -20,11 +20,11 @@ function MobileHeader({ onMenuClick, onNotificationClick, showDot }: {
 }) {
 
   return (
-      <header className="lg:hidden fixed px-6 top-0 left-0 right-0  z-50 bg-bg">
-        <div className="flex items-center justify-between py-3">
-          {/* Search Bar */}
-          <div className="flex items-center gap-2 border border-subtle-2 px-3 py-2 rounded-full flex-1 max-w-[65%]">
-            <input
+    <header className="lg:hidden fixed px-6 top-0 left-0 right-0  z-50 bg-bg">
+      <div className="flex items-center justify-between py-3">
+        {/* Search Bar */}
+        <div className="flex items-center gap-2  px-3 py-2 rounded-full flex-1 max-w-[65%]">
+          {/* <input
               type="text"
               placeholder="Search Goods"
               className="bg-transparent outline-none flex-1 text-sm text-subtle"
@@ -53,8 +53,30 @@ function MobileHeader({ onMenuClick, onNotificationClick, showDot }: {
               />
             </button>
           </div>
+           
         </div>
-      </header>
+
+        {/* Icons */}
+        <div className="flex items-center gap-3">
+          <button onClick={onNotificationClick} className="p-1">
+            <Icon
+              icon="ic:outline-notifications"
+              width="24"
+              height="24"
+              className="text-black"
+            />
+          </button>
+          <button onClick={onMenuClick} className="p-1">
+            <Icon
+              icon="material-symbols:menu"
+              width="24"
+              height="24"
+              className="text-secondary"
+            />
+          </button>
+        </div>
+      </div>
+    </header>
   );
 }
 
@@ -69,9 +91,7 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
   const { user, _initialized } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  
-  const isOwner = user?.role === 'owner';
-
+  const isOwner = user?.role === "owner";
 
   if (!isOpen) return null;
 
@@ -81,16 +101,13 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="modal-bg "
-        onClick={onClose}
-      />
+      <div className="modal-bg " onClick={onClose} />
 
       {/* Drawer */}
       <aside className="lg:hidden fixed top-0 right-0 bottom-0 w-[280px] bg-black z-50 overflow-y-auto">
@@ -115,32 +132,31 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             </div>
             <div>
               <h2 className="text-white text-sm font-medium">
-                {user ? truncateTextWithStringMethod(user.shopName || user.shopName, 15) : "User"}
+                {user
+                  ? truncateTextWithStringMethod(
+                      user.shopName || user.shopName,
+                      15
+                    )
+                  : "User"}
               </h2>
-              <p className="text-accent text-xs capitalize">{user?.role || "User"}</p>
+              <p className="text-accent text-xs capitalize">
+                {user?.role || "User"}
+              </p>
             </div>
           </div>
 
           {/* Navigation */}
           <nav className="space-y-2 mb-6">
-            {/* {isOwner && ( */}
-              <MobileNavLink
-                to="/home"
-                icon="ic:outline-house"
-                label="Home"
-                isActive={isActive("/home")}
-                onClick={onClose}
-              />
-            {/* )} */}
             {isOwner && (
-              <MobileNavLink
-                to="/setup-shop"
-                icon="ic:outline-store"
-                label="Set Up Shop"
-                isActive={isActive("/setup-shop")}
-                onClick={onClose}
-              />
-            )}
+            <MobileNavLink
+              to="/home"
+              icon="ic:outline-house"
+              label="Home"
+              isActive={isActive("/home")}
+              onClick={onClose}
+            />
+          )}
+
             {isOwner && (
               <MobileNavLink
                 to="/stocks"
@@ -159,6 +175,24 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
             />
             {isOwner && (
               <MobileNavLink
+                to="/expenses"
+                icon="ic:outline-remove"
+                label="Expenses"
+                isActive={isActive("/expenses")}
+                onClick={onClose}
+              />
+            )}
+            {isOwner && (
+              <MobileNavLink
+                to="/history"
+                icon="ic:outline-history"
+                label="Sales History"
+                isActive={isActive("/history")}
+                onClick={onClose}
+              />
+            )}
+            {isOwner && (
+              <MobileNavLink
                 to="/insights"
                 icon="ic:outline-assessment"
                 label="Business Insights"
@@ -166,6 +200,17 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
                 onClick={onClose}
               />
             )}
+
+            {isOwner && (
+              <MobileNavLink
+                to="/setup-shop"
+                icon="ic:outline-store"
+                label="Set Up Shop"
+                isActive={isActive("/setup-shop")}
+                onClick={onClose}
+              />
+            )}
+
             {isOwner && (
               <MobileNavLink
                 to="/notification"
@@ -256,22 +301,24 @@ function DesktopHeader({
   showDot: boolean;
 }) {
   const { user, _initialized } = useSelector((state: RootState) => state.auth);
-  
+
+
   return (
     <header className="hidden bg-white w-full lg:block border border-secondary-5 rounded-lg">
       <div className="flex items-center bg-transparent justify-between  py-3 px-5 rounded-lg">
         {/* Search Bar */}
-        <div className="flex items-center gap-2 border border-subtle-2 px-3 py-2 rounded-full w-1/4">
+        {/* <div className="flex items-center gap-2 border border-subtle-2 px-3 py-2 rounded-full w-1/4">
           <input
             type="text"
             placeholder="Search Goods"
             className="bg-transparent outline-none flex-1 text-sm text-subtle"
           />
-        </div>
+        </div> */}
+        <div></div>
 
         {/* Header Icons */}
-        <div className="flex items-center gap-4 relative">
-          <button onClick={onNotificationClick} className="relative">
+        <div className="flex items-center gap-6 relative">
+          <button onClick={onNotificationClick}>
             <Icon
               icon="ic:outline-notifications"
               width="24"
@@ -282,7 +329,7 @@ function DesktopHeader({
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></div>
             )}
           </button>
-          <div className="flex items-center justify-center gap-2 my-auto">
+          <div className="flex items-center justify-center gap-4 my-auto">
             <div className="w-8 h-8 rounded-full bg-secondary justify-center flex m-auto items-center">
               <Icon
                 icon="octicon:person-16"
@@ -299,14 +346,15 @@ function DesktopHeader({
               <p className="text-accent text-xs capitalize">{!_initialized ? "..." : user?.role || "User"}</p>
             </div>
           </div>
-          <div>
+          <div className=""></div>
+          {/* <div>
             <Icon
               icon="material-symbols-light:keyboard-arrow-down-rounded"
               width="24"
               height="24"
               className="text-black"
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Modals */}
@@ -344,7 +392,7 @@ function DesktopSidebar() {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
@@ -354,79 +402,63 @@ function DesktopSidebar() {
       </div>
 
       <nav className="flex-1 space-y-3 w-full">
-        {/* {isOwner && ( */}
+        {isOwner && (
+        <SidebarItem
+          to="/home"
+          icon={<Icon icon="ic:outline-house" width="24" height="24" />}
+          label="Home"
+        />
+        )}
+
+        <SidebarItem
+          to="/record-sales"
+          icon={<Icon icon="ic:outline-add" width="24" height="24" />}
+          label="Record Sales"
+        />
+
+        {isOwner && (
           <SidebarItem
-            to="/home"
+            to="/stocks"
             icon={
-              <Icon
-                icon="ic:outline-house"
-                width="24"
-                height="24"
-              />
+              <Icon icon="ic:outline-shopping-bag" width="24" height="24" />
             }
-            label="Home"
+            label="Manage Stocks"
           />
-        {/* )} */}
+        )}
+
+        {isOwner && (
+          <SidebarItem
+            to="/expenses"
+            icon={<Icon icon="ic:outline-remove" width="24" height="24" />}
+            label="Expenses"
+          />
+        )}
+        {isOwner && (
+          <SidebarItem
+            to="/history"
+            icon={<Icon icon="ic:outline-history" width="24" height="24" />}
+            label="Sales History"
+          />
+        )}
+        {isOwner && (
+          <SidebarItem
+            to="/insights"
+            icon={<Icon icon="ic:outline-assessment" width="24" height="24" />}
+            label="Business Insights"
+          />
+        )}
         {isOwner && (
           <SidebarItem
             to="/setup-shop"
-            icon={
-              <Icon
-                icon="ic:outline-store"
-                width="24"
-                height="24"
-              />
-            }
+            icon={<Icon icon="ic:outline-store" width="24" height="24" />}
             label="Set Up Shop"
           />
         )}
         {isOwner && (
           <SidebarItem
-            to="/stocks"
-            icon={
-              <Icon
-                icon="ic:outline-shopping-bag"
-                width="24"
-                height="24"
-              />
-            }
-            label="Manage Stocks"
-          />
-        )}
-        <SidebarItem
-          to="/record-sales"
-          icon={
-            <Icon
-              icon="ic:outline-add"
-              width="24"
-              height="24"
-            />
-          }
-          label="Record Sales"
-        />
-        {isOwner && (
-          <SidebarItem
-            to="/insights"
-            icon={
-              <Icon
-                icon="ic:outline-assessment"
-                width="24"
-                height="24"
-              />
-            }
-            label="Business Insights"
-          />
-        )}
-        
-        {isOwner && (
-          <SidebarItem
             to="/notification"
             icon={
-              <Icon
-                icon="ic:outline-notifications"
-                width="24"
-                height="24"
-              />
+              <Icon icon="ic:outline-notifications" width="24" height="24" />
             }
             label="Notification"
           />
@@ -438,13 +470,7 @@ function DesktopSidebar() {
           {isOwner && (
             <SidebarItem
               to="/settings"
-              icon={
-                <Icon
-                  icon="ic:outline-settings"
-                  width="24"
-                  height="24"
-                />
-              }
+              icon={<Icon icon="ic:outline-settings" width="24" height="24" />}
               label="Settings"
             />
           )}
@@ -529,7 +555,7 @@ export default function MainLayout() {
 
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-bg text-text">
+    <div className="flex h-screen max-w-[1500px] mx-auto overflow-hidden bg-bg text-text">
       {/* Mobile Header */}
       <MobileHeader
         onMenuClick={() => setIsMobileMenuOpen(true)}

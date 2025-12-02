@@ -2,6 +2,7 @@ import { ChevronDown } from "lucide-react";
 import clsx from "clsx";
 
 interface SelectInputProps {
+  label?: string;
   name: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
@@ -9,9 +10,11 @@ interface SelectInputProps {
   placeholder: string;
   required?: boolean;
   className?: string; // 👈 new
+  disabled?: boolean
 }
 
 export default function SelectInput({
+  label,
   name,
   value,
   onChange,
@@ -19,9 +22,17 @@ export default function SelectInput({
   placeholder,
   required,
   className, // 👈 new
+  disabled
 }: SelectInputProps) {
   return (
-    <div className={clsx("relative w-full", className)}>
+    <div>
+      {label && (
+        <label className="block mb-2 text-sm font-medium text-black">
+          {label}
+        </label>
+      )}
+
+<div className={clsx("relative w-full", className)}>
       <select
         name={name}
         value={value}
@@ -31,6 +42,7 @@ export default function SelectInput({
           "focus:ring-glow"
         )}
         required={required}
+        disabled={disabled}
       >
         <option value="">{placeholder}</option>
         {options.map((opt) => (
@@ -44,6 +56,8 @@ export default function SelectInput({
         size={18}
       />
     </div>
+    </div>
+    
   );
 }
 

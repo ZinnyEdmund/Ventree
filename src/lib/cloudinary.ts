@@ -20,7 +20,6 @@ export const uploadFile = async (file: File) => {
     )
     if (response.status === 200) {
       // toast.success('Upload successful')
-      console.log(response.data)
       return response.data
     } else {
       toast.error('Upload not successful, try again!')

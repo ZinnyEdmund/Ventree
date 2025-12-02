@@ -68,7 +68,7 @@ export const baseQueryWithLogout: BaseQueryFn<
       );
 
       if (refreshResult.data && !refreshResult.error) {
-        console.log('Token refresh response received:', refreshResult.data);
+        console.log('Token refresh response received:');
         
         // Handle different response structures
         const data = refreshResult.data as 

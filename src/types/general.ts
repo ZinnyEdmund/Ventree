@@ -22,27 +22,30 @@ export interface CreateStaffInput {
   role?: string;
 }
 
-export enum PaymentMethodOptions { 
+export enum PaymentMethodOptions {
   cash = "cash",
-  card = "card",
-  mobile = "mobile", 
-  bankTransfer= "bank_transfer"
+  transfer = "transfer",
+  pos = "pos",
+  credit = "credit",
+}
+
+export interface RecordSaleItemDto {
+  itemId: string;
+  quantity: number;
+  sellingPrice: number;
 }
 
 export interface RecordSaleDto {
-  shopId: string;                     // Required - MongoId
-  itemId: string;                     // Required - MongoId
-  quantity: number;                   // Required - 1 to 10,000
-  soldBy: string;                     // Required - MongoId
-  paymentMethod: PaymentMethodOptions
-  discount?: number;                  // Optional - 0 to 50
-  customerName?: string;              // Optional - 2 to 100 chars
-  customerPhone?: string;             // Optional - Valid international phone
-  notes?: string;                     // Optional - Max 500 chars
+  shopId: string;
+  items: RecordSaleItemDto[];
+  soldBy: string;
+  paymentMethod: PaymentMethodOptions;
+  customerName?: string;
+  customerPhone?: string;
+  customerAddress?: string;
+  dueDate?: string;
+  notes?: string;
   transactionReference?: string;
-  sellingPrice?: number;
-  taxAmount?: number;
-  profitPercentage: string;
 }
 
 export interface UpdateStaffInput {
@@ -51,6 +54,41 @@ export interface UpdateStaffInput {
   password?: string;
   role?: string;
   isActive?: boolean;
+}
+
+export enum EnumBusinessType {
+  RETAIL = "retail",
+  WHOLESALE = "wholesale",
+  MANUFACTURER = "manufacturer",
+  OTHER = "other"
+}
+
+export interface UpdateShopDTO {
+  shopName?: string;
+  phoneNumber?: string;
+  ownerName?: string;
+  businessType?: EnumBusinessType; // or: businessTypeValues[number]
+  address?: string;
+}
+
+export interface SubmitKYCInfo {
+  address: string;
+  businessType: EnumBusinessType;
+}
+export interface KYCData {
+  id: string;
+  shopName: string;
+  businessType: string;
+  address: string;
+  kycStatus: string;        // or "verified" | "pending" | "rejected"
+  kycSubmittedAt: string;   // ISO timestamp
+}
+
+export interface StaffListData {
+  page: number;
+  pages: number;
+  total: number;
+  staff: Staff[];
 }
 
 export interface StaffResponse {
@@ -96,9 +134,9 @@ export interface ClientType {
   user: User;  // relation to User
 }
 
-export interface ClientProfile extends BaseResponse<ClientType> {}
+export type ClientProfile = BaseResponse<ClientType>;
 
-export interface ServiceProviderProfile extends BaseResponse<{ 
+export type ServiceProviderProfile = BaseResponse<{ 
   id: number;
   userId: number;
   fullName: string;
@@ -119,7 +157,7 @@ export interface ServiceProviderProfile extends BaseResponse<{
 
   user: User;  // relation to User
   // services: ServiceProviderService[]; // if you want type for this, see below
-}> {}
+}>;
 
 
 // --- Auth Requests
@@ -161,16 +199,16 @@ export interface ResetPasswordRequest {
 // --- Base Response
 export interface BaseResponse<T = unknown> {
   success: boolean;
-  message: string;
+  message?: string;
   data: T;
 }
 
 // --- Auth Responses
-export interface AuthResponse extends BaseResponse<{
+export type AuthResponse = BaseResponse<{
   accessToken: string;
   refreshToken: string;
   user: User;
-}> {}
+}>;
 
 export interface Staff {
   id: string;
@@ -211,10 +249,10 @@ export interface LoginResponse {
 }
 
 // Refresh token response - may use either BaseResponse format or direct data format
-export interface RefreshTokenResponse extends BaseResponse<{
+export type RefreshTokenResponse = BaseResponse<{
   accessToken: string;
   refreshToken: string;
-}> {}
+}>;
 
 // Alternative format (if API returns data directly like LoginResponse)
 export interface RefreshTokenDataResponse {
@@ -412,4 +450,269 @@ export interface NotificationQueryParams {
   limit?: number;
   offset?: number;
   unreadOnly?: boolean;
+}
+
+export interface ShopOwner {
+  name: string;
+}
+
+export interface IShop {
+  _id: string;
+  shopName: string;
+  phoneNumber: string;
+  businessType: EnumBusinessType;
+  isVerified: boolean;
+  kycStatus: string;
+  address: string;
+  createdAt: string;
+  updatedAt: string;
+  kycSubmittedAt: string;
+  __v: number;
+  owner: ShopOwner;
+}
+
+export interface DashboardResponse {
+  success: boolean;
+  data: {
+    shop: Shop;
+    owner: Owner;
+    staff: Staff;
+    dashboard: DashboardStats;
+  };
+}
+
+export interface Shop {
+  id: string;
+  shopName: string;
+  phoneNumber: string;
+  businessType: string;
+  isVerified: boolean;
+  kycStatus: string;
+  owner: Owner;
+}
+
+export interface Owner {
+  name: string;
+  phoneNumber: string;
+}
+
+export interface Staff {
+  id: string;
+  staffName: string;
+  phoneNumber: string;
+  role: string;
+  isActive: boolean;
+  createdAt?: string;   // or Date if you want
+  updatedAt?: string;   // or Date if you want
+}
+
+export interface DashboardStats {
+  period: string;
+  sales: number;
+  expenses: number;
+  lowStockItems: number;
+  profit: number;
+}
+
+export enum TimePeriod {
+  DAILY = "today",
+  WEEKLY = "week",
+}
+
+export interface SoldBy {
+  _id: string;
+  staffName: string;
+}
+
+export interface Sale {
+  _id: string;
+  shopId: string;
+  itemId: string;
+  itemName: string;
+  itemCategory: string;
+  quantitySold: number;
+  costPrice: number;
+  sellingPrice: number;
+  totalAmount: number;
+  amountPaid: number;
+  amountOwed: number;
+  discount: number;
+  taxAmount: number;
+  profitAmount: number;
+  paymentMethod: string;
+  isCredit: boolean;
+  creditStatus: string;
+  refunded: boolean;
+  payments: unknown[]; // If needed, define a detailed payment interface
+  soldBy?: SoldBy;
+  soldByName?: string;
+
+  date: string;
+  createdAt: string;
+  updatedAt: string;
+
+  __v: number;
+}
+
+export interface salesResponse {
+  _id: string;
+  amountOwed: number;
+  amountPaid?: number;
+  creditStatus: string;
+  date: string; // or Date if you parse it
+  isCredit: boolean;
+  paymentMethod: "cash" | "transfer" | "pos" | string;
+  refunded: boolean;
+  soldByName: string;
+  ticketNumber: string;
+  totalAmount: number;
+  totalItemCount: number;
+  customerName?: string
+}
+
+export interface SaleHistoryItem {
+  _id: string;
+  ticketNumber: string;
+  soldBy: string;
+  soldByName: string;
+  paymentMethod: string;
+  date: string;
+  refunded: boolean;
+  ticketId: string;
+  itemId: string;
+  itemName: string;
+  itemCategory: string;
+  quantitySold: number;
+  costPrice: number;
+  sellingPrice: number;
+  discount: number;
+  lineTotal: number;
+  lineProfit: number;
+  customerName?: string;
+  customerPhone?: string;
+  customerAddress?: string;
+  dueDate?: string;
+}
+
+export interface SaleTicketItem {
+  itemId: string;
+  itemName: string;
+  itemCategory: string;
+  quantitySold: number;
+  costPrice: number;
+  sellingPrice: number;
+  discount: number;
+  lineTotal: number;
+  lineProfit: number;
+}
+
+export interface SaleTicket {
+  _id: string;
+  ticketNumber: string;
+  shopId: string;
+  items: SaleTicketItem[];
+  subtotal: number;
+  taxAmount: number;
+  totalAmount: number;
+  totalProfit: number;
+  totalItemCount: number;
+  soldBy: string;
+  soldByName: string;
+  paymentMethod: PaymentMethodOptions;
+  date: string;
+  refunded: boolean;
+  isCredit: boolean;
+  creditStatus: string;
+  amountPaid: number;
+  amountOwed: number;
+  payments: unknown[];
+}
+
+export interface SalesResponse {
+  success: boolean;
+  message: string;
+  data: {
+    page: number;
+    pages: number;
+    total: number;
+    tickets: salesResponse[];
+  };
+}
+
+export interface CreditSale {
+  _id?: string;
+  shopId: string;
+  soldBy: string;
+  soldByName: string;
+
+  customerName: string;
+  customerPhone: string;
+
+  ticketNumber: string;
+
+  amountOwed: number;
+  amountPaid: number;
+
+  subtotal: number;
+  taxAmount: number;
+  totalAmount: number;
+  totalItemCount: number;
+  totalProfit: number;
+
+  isCredit: boolean;
+  creditStatus: "pending" | "paid" | "partial";
+
+  paymentMethod: string; // e.g. "credit"
+
+  date: string;       // sale date
+  createdAt: string;
+  updatedAt: string;
+  dueDate: string;
+
+  refunded: boolean;
+
+  items: Array<{
+    itemId?: string;
+    productName?: string;
+    quantity?: number;
+    costPrice?: number;
+    sellingPrice?: number;
+    total?: number;
+  }>;
+
+  payments: Array<{
+    amount?: number;
+    date?: string;
+    method?: string;
+  }>;
+}
+
+export interface CreditResponse {
+  success: boolean;
+  message: string;
+  data: {
+    page: number;
+    pages: number;
+    total: number;
+    tickets: CreditSale[];
+  };
+}
+
+export interface SalesItemsResponse {
+  success: boolean;
+  message: string;
+  data: {
+    items: SaleHistoryItem[];
+    total: number;
+    page: number;
+    pages: number;
+  };
+}
+
+export interface RecordCreditPaymentDTO {
+  amount: number;
+  paymentMethod: "cash" | "transfer";
+  receivedBy: string;             // staff ID
+  transactionReference?: string;
+  notes?: string;
 }

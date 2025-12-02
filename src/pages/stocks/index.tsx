@@ -1,322 +1,328 @@
 // ============================================
-// ManageStocks.tsx - Properly Integrated with RTK Query
+// ManageStocks.tsx - Optimized with New Inventory Service
 // ============================================
-import { useState, useEffect, useMemo } from "react";
-import { StatCard } from "../home/components/StatCard";
-import { useAddGoodsModal } from "../../hooks/useAddGoodsModal";
-import { AddGoodsModal, type GoodsFormData } from "./components/AddGoodsModal";
-import { GoodsTable } from "./components/GoodsTable";
-import Modal from "../../components/ui/modal";
-import { toast } from "sonner";
-import {
-  useFetchInventoryQuery,
-  useCreateInventoryMutation,
-  useUpdateInventoryMutation,
-  useDeleteInventoryMutation,
-} from "../../services/stocks.service";
-import type { Stocks } from "../../types/general";
-import { stats } from "../../lib/dummyData";
+import { useState, useMemo } from "react";
 import { useSelector } from "react-redux";
+import { toast } from "sonner";
 import type { RootState } from "../../state/store";
 
+import { AddGoodsModal, type GoodsFormData } from "./components/AddGoodsModal";
+import { GoodsTable } from "./components/GoodsTable";
+import { DeleteConfirmModal } from "./components/DeleteConfirmModal";
+import { useDebounce } from "../../hooks/useDebounce";
+import LoadingState from "../../components/common/LoadingState";
+import ErrorState from "../../components/common/ErrorState";
+import { useCreateInventoryMutation, useDeleteInventoryMutation, useGetInventoryListQuery, useUpdateInventoryMutation } from "../../services/stocks.service";
+import { cleanObject } from "../../lib/helper";
+import { handleApiError } from "../../lib/errorHandler";
+
 export const ManageStocks = () => {
-  const { isOpen, openModal, closeModal } = useAddGoodsModal();
-  const [salesSuccessModal, setSalesSuccessModal] = useState(false);
-  const [editMode, setEditMode] = useState<string | null>(null);
-  const [deleteConfirmModal, setDeleteConfirmModal] = useState<string | null>(null);
-  const shop = useSelector((state: RootState) => state.auth.user);
-  
-  // Get shopId from your auth state or context
-  // TODO: Replace with actual shopId from your Redux store/context
-  const shopId = shop?.shopId || ""; 
+  // ============================================
+  // State Management
+  // ============================================
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<string | null>(null);
+  const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(5);
+  const [sortBy, setSortBy] = useState<"name" | "createdAt" | "sellingPrice" | "availableQuantity">("name");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
+  const { user } = useSelector((state: RootState) => state.auth);
+  const shopId = user?.shopId || "";
 
-  // Fetch inventory data using RTK Query
+  // Debounced search for backend query
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
+  // ============================================
+  // RTK Query Hooks
+  // ============================================
   const {
     data: inventoryResponse,
     isLoading,
+    isFetching,
     isError,
     error,
     refetch,
-  } = useFetchInventoryQuery(shopId);
+  } = useGetInventoryListQuery(
+    {
+      shopId,
+      search: debouncedSearch || undefined,
+      page,
+      limit: pageSize,
+      sortBy,
+      sortOrder,
+    },
+    {
+      skip: !shopId,
+    }
+  );
 
-  const [createInventory] = useCreateInventoryMutation();
-  const [updateInventory] = useUpdateInventoryMutation();
+  const [createInventory, { isLoading: isCreating }] = useCreateInventoryMutation();
+  const [updateInventory, { isLoading: isUpdating }] = useUpdateInventoryMutation();
   const [deleteInventory, { isLoading: isDeleting }] = useDeleteInventoryMutation();
 
-  // Transform Stocks data to match GoodsTable structure
+  // ============================================
+  // Data Transformation
+  // ============================================
   const goods = useMemo(() => {
-    if (!inventoryResponse?.data) return [];
-    
-    return inventoryResponse.data.items.map((stock: Stocks) => ({
-      id: stock._id,
-      product: stock.name,
-      costPrice: stock.costPrice,
-      sellingPrice: stock.sellingPrice,
-      quantity: stock.availableQuantity,
-      category: stock.category,
-      sku: stock.sku,
-      unit: stock.unit,
-      isLowStock: stock.isLowStock,
-      isOutOfStock: stock.isOutOfStock,
-      reorderLevel: stock.reorderLevel,
+    if (!inventoryResponse?.data?.items) return [];
+
+    return inventoryResponse.data.items.map((item) => ({
+      id: item._id,
+      product: item.name,
+      costPrice: item.costPrice,
+      sellingPrice: item.sellingPrice,
+      quantity: item.availableQuantity,
+      category: item.category,
+      sku: item.sku,
+      unit: item.unit,
+      isLowStock: item.isLowStock,
+      isOutOfStock: item.isOutOfStock,
+      reorderLevel: item.reorderLevel,
     }));
   }, [inventoryResponse]);
 
-  // Calculate stats from actual inventory data
-//   const calculatedStats = useMemo(() => {
-//     if (!inventoryResponse?.data) {
-//       return {
-//         totalItems: 0,
-//         lowStockCount: 0,
-//         totalValue: 0,
-//         expectedProfit: 0,
-//       };
-//     }
+  const pagination = useMemo(() => ({
+    total: inventoryResponse?.data?.total || 0,
+    page: inventoryResponse?.data?.page || 1,
+    pages: inventoryResponse?.data?.pages || 1,
+  }), [inventoryResponse]);
 
-//     const stocks = inventoryResponse.data;
-
-//     return {
-//       totalItems: stocks.length,
-//       lowStockCount: stocks.filter((s: Stocks) => s.isLowStock).length,
-//       totalValue: stocks.reduce(
-//         (sum: number, s: Stocks) => sum + s.costPrice * s.availableQuantity,
-//         0
-//       ),
-//       expectedProfit: stocks.reduce(
-//         (sum: number, s: Stocks) => 
-//           sum + (s.sellingPrice - s.costPrice) * s.availableQuantity,
-//         0
-//       ),
-//     };
-//   }, [inventoryResponse]);
-
-  // Handle form submission (Create or Update)
-  const handleAddGoods = async (formData: GoodsFormData) => {
+  // ============================================
+  // Event Handlers
+  // ============================================
+  const handleAddGoods = async (rawFormDate: GoodsFormData) => {
+    const formData = cleanObject(rawFormDate)
     try {
-      if (editMode) {
+      if (editingItemId) {
         // Update existing item
         await updateInventory({
           shopId,
-          itemId: editMode,
+          itemId: editingItemId,
           name: formData.productName,
-          initialQuantity: formData.quantity,
-          availableQuantity: formData.quantity,
-          unit: formData.measurement,
+          category: formData.category || "General",
           costPrice: formData.costPrice,
           sellingPrice: formData.sellingPrice,
-          category: formData.category || "General",
-          reorderLevel: formData.reorderLevel || 10,
+          minSellingPrice: formData.minSellingPrice,
+          unit: formData.measurement,
+          initialQuantity: formData.quantity,
+          availableQuantity: formData.quantity,
+          reorderLevel: formData.reorderLevel,
+          description: formData.description,
+          barcode: formData.barcode,
+          supplier: formData.supplier,
         }).unwrap();
 
-        toast.success("Goods updated successfully!");
-        setEditMode(null);
+        toast.success("Item updated successfully!");
       } else {
         // Create new item
         await createInventory({
           shopId,
           name: formData.productName,
-          initialQuantity: formData.quantity,
-          unit: formData.measurement,
+          category: formData.category || "General",
           costPrice: formData.costPrice,
           sellingPrice: formData.sellingPrice,
-          category: formData.category || "General",
-          reorderLevel: formData.reorderLevel || 10,
+          minSellingPrice: formData.minSellingPrice,
+          initialQuantity: formData.quantity,
+          unit: formData.measurement,
+          reorderLevel: formData.reorderLevel,
+          description: formData.description,
+          barcode: formData.barcode,
+          supplier: formData.supplier,
         }).unwrap();
-   
-        toast.success("Goods added successfully!");
-        // setSalesSuccessModal(true);
+
+        toast.success("Item added successfully!");
       }
 
-      closeModal();
+      setIsAddModalOpen(false);
+      setEditingItemId(null);
     } catch (error: any) {
-      const errorMessage = 
-        error?.data?.message || 
-        error?.message || 
-        "Failed to save goods";
-      toast.error(errorMessage);
-      throw error;
+      handleApiError(error)
     }
   };
 
-  // Handle edit
   const handleEdit = (id: string) => {
-    const item = inventoryResponse?.data?.items.find((s: Stocks) => s._id === id);
-    if (item) {
-      setEditMode(id);
-      openModal();
-    }
+    setEditingItemId(id);
+    setIsAddModalOpen(true);
   };
 
-  // Handle delete
-  const handleDelete = async (id: string) => {
-    setDeleteConfirmModal(id);
+  const handleDeleteClick = (id: string) => {
+    setDeletingItemId(id);
   };
 
-  const confirmDelete = async () => {
-    if (!deleteConfirmModal) return;
+  const handleDeleteConfirm = async () => {
+    if (!deletingItemId) return;
 
     try {
       await deleteInventory({
         shopId,
-        itemId: deleteConfirmModal,
+        itemId: deletingItemId,
       }).unwrap();
 
-      toast.success("Goods deleted successfully!");
-      setDeleteConfirmModal(null);
+      toast.success("Item deleted successfully!");
+      setDeletingItemId(null);
     } catch (error: any) {
-      const errorMessage = 
-        error?.data?.message || 
-        error?.message || 
-        "Failed to delete goods";
-      toast.error(errorMessage);
+      handleApiError(error)
     }
+  };
+
+  const handleSort = (field: typeof sortBy) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(field);
+      setSortOrder("asc");
+    }
+    setPage(1); // Reset to first page on sort
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearchTerm(value);
+    setPage(1); // Reset to first page on search
+  };
+
+  const handleModalClose = () => {
+    setIsAddModalOpen(false);
+    setEditingItemId(null);
   };
 
   // Get initial data for edit mode
   const getInitialData = () => {
-    if (!editMode || !inventoryResponse?.data) return undefined;
-    
-    const stock = inventoryResponse.data.items.find((s: Stocks) => s._id === editMode);
-    if (!stock) return undefined;
+    if (!editingItemId || !inventoryResponse?.data?.items) return undefined;
+
+    const item = inventoryResponse.data.items.find((i) => i._id === editingItemId);
+    if (!item) return undefined;
 
     return {
-      id: stock._id,
-      product: stock.name,
-      costPrice: stock.costPrice,
-      sellingPrice: stock.sellingPrice,
-      quantity: stock.availableQuantity,
-      measurement: stock.unit,
-      category: stock.category,
-      reorderLevel: stock.reorderLevel,
+      id: item._id,
+      product: item.name,
+      costPrice: item.costPrice,
+      sellingPrice: item.sellingPrice,
+      minSellingPrice: item.minSellingPrice,
+      quantity: item.availableQuantity,
+      measurement: item.unit,
+      category: item.category,
+      reorderLevel: item.reorderLevel,
+      description: item.description,
+      barcode: item.barcode,
+      supplier: item.supplier,
     };
   };
 
-  // Handle error state
-  useEffect(() => {
-    if (isError) {
-      const errorMessage = 
-        (error as any)?.data?.message || 
-        (error as any)?.message || 
-        "Failed to load inventory data";
-      toast.error(errorMessage);
-    }
-  }, [isError, error]);
+  // ============================================
+  // Loading State
+  // ============================================
+  if (isLoading && !inventoryResponse) {
+    return <LoadingState text="Loading inventory..." size="lg" />;
+  }
 
+  // ============================================
+  // Error State
+  // ============================================
+  if (isError && !inventoryResponse) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <ErrorState
+          errorCode="500"
+          message={
+            (error as any)?.data?.message ||
+            (error as any)?.message ||
+            "Failed to load inventory data."
+          }
+          onRetry={refetch}
+        />
+      </div>
+    );
+  }
+
+  // ============================================
+  // Render
+  // ============================================
   return (
     <section className="py-6">
       {/* Header */}
-      <article className="mb-2">
+      <article className="mb-6">
         <h1 className="h4 md:text-3xl text-secondary mb-2">Goods Management</h1>
-        <p className="text-black">Easily track and manage your shop items</p>
+        <p className="text-gray-600">
+          Easily track and manage your shop items
+        </p>
       </article>
 
-      {/* Stats Grid */}
-      <main className="py-3 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {stats.map((stat, index) => (
-          <StatCard
-            key={index}
-            icon={stat.Icon}
-            title={stat.title}
-            value={stat.value}
-            description={stat.description}
-            variant={stat.variant}
-          />
-        ))}
-      </main>
-
-      {/* Error State */}
-      {isError && (
+      {/* Error Banner (when data exists but refresh fails) */}
+      {isError && inventoryResponse && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-error">
-            Failed to load inventory. Please try again.
-          </p>
-          <button
-            onClick={() => refetch()}
-            className="mt-2 text-sm text-red-600 hover:text-red-800 underline"
-          >
-            Retry
-          </button>
+          <div className="flex items-start gap-3">
+            <svg
+              className="w-6 h-6 text-error shrink-0 mt-0.5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+            <div className="flex-1">
+              <p className="text-red-800 font-medium">Failed to refresh data</p>
+              <p className="text-sm text-red-600 mt-1">
+                {(error as any)?.data?.message || "Showing cached data"}
+              </p>
+            </div>
+            <button
+              onClick={() => refetch()}
+              className="text-red-600 hover:text-red-800 text-sm font-medium"
+            >
+              Retry
+            </button>
+          </div>
         </div>
       )}
 
       {/* Goods Table */}
-      <div className="py-3">
-        <GoodsTable
-          goods={goods}
-          onAddNew={() => {
-            setEditMode(null);
-            openModal();
-          }}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          isLoading={isLoading}
-        />
-      </div>
-
-      {/* Add/Edit Goods Modal */}
-      <AddGoodsModal
-        isOpen={isOpen}
-        onClose={() => {
-          closeModal();
-          setEditMode(null);
-        }}
-        onSubmit={handleAddGoods}
-        initialData={getInitialData()}
-        isEditMode={!!editMode}
+      <GoodsTable
+        goods={goods}
+        isLoading={isFetching && !inventoryResponse}
+        pagination={pagination}
+        searchTerm={searchTerm}
+        sortBy={sortBy}
+        sortOrder={sortOrder}
+        onAddNew={() => setIsAddModalOpen(true)}
+        onEdit={handleEdit}
+        onDelete={handleDeleteClick}
+        onSearchChange={handleSearchChange}
+        onPageChange={handlePageChange}
+        onSort={handleSort}
       />
 
-      {/* Success Modal */}
-      {salesSuccessModal && (
-        <Modal
-          removeIcon={false}
-          isOpen={salesSuccessModal}
-          onClose={() => setSalesSuccessModal(false)}
-          status="success"
-          title="Success!"
-          description="Goods Added Successfully"
-          size="md"
-        >
-          <div className="flex justify-center gap-3 pt-10">
-            <button
-              onClick={() => setSalesSuccessModal(false)}
-              className="px-10 btn btn-sec"
-            >
-              Go Back
-            </button>
-          </div>
-        </Modal>
-      )}
+      {/* Add/Edit Modal */}
+      <AddGoodsModal
+        isOpen={isAddModalOpen}
+        onClose={handleModalClose}
+        onSubmit={handleAddGoods}
+        initialData={getInitialData()}
+        isEditMode={!!editingItemId}
+        isLoading={isCreating || isUpdating}
+      />
 
       {/* Delete Confirmation Modal */}
-      {deleteConfirmModal && (
-        <Modal
-          removeIcon={false}
-          isOpen={!!deleteConfirmModal}
-          onClose={() => setDeleteConfirmModal(null)}
-          status="error"
-          title="Confirm Delete"
-          description="Are you sure you want to delete this item? This action cannot be undone."
-          size="md"
-        >
-          <div className="flex justify-center gap-3 pt-10">
-            <button
-              onClick={() => setDeleteConfirmModal(null)}
-              className="px-10 btn btn-tertiary"
-              disabled={isDeleting}
-            >
-              Cancel
-            </button>
-            <button
-              onClick={confirmDelete}
-              className="px-10 btn btn-error"
-              disabled={isDeleting}
-            >
-              {isDeleting ? "Deleting..." : "Delete"}
-            </button>
-          </div>
-        </Modal>
-      )}
+      <DeleteConfirmModal
+        isOpen={!!deletingItemId}
+        onClose={() => setDeletingItemId(null)}
+        onConfirm={handleDeleteConfirm}
+        isLoading={isDeleting}
+        itemName={
+          goods.find((g) => g.id === deletingItemId)?.product || "this item"
+        }
+      />
     </section>
   );
 };

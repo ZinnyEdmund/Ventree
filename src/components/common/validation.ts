@@ -54,7 +54,7 @@ export const formatNigerianPhoneNumber = (phoneNumber: string): string => {
   }
   
   // Ensure it starts with +234
-  return cleaned;
+  return "+" + cleaned;
 };
 
 /**

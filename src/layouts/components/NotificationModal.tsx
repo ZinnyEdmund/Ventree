@@ -10,7 +10,8 @@ export function NotificationModal({ onClose }: { onClose: () => void }) {
   const recentNotifications = notifications.slice(0, 5);
 
   return (
-    <div className="flex items-start justify-end fixed inset-0 z-40 px-12">
+    <div className="flex items-start justify-end fixed inset-0 z-40 px-12"
+    onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-xl mt-16 mr-4">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-gray-200">

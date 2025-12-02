@@ -110,7 +110,7 @@ export default function OtpPage() {
         toast.success(result.message || "Phone number verified successfully! Please login to continue.");
         
         // Redirect to login page
-        navigate('/home');
+        navigate('/login');
       }
     } catch (error: any) {
       handleApiError(error);

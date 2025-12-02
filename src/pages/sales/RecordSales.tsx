@@ -1,18 +1,13 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { Icon } from "@iconify/react";
-import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { useDispatch, useSelector } from "react-redux";
 import { LoaderCircle } from "lucide-react";
 import { useCreateSalesMutation } from "../../services/sales.service"; // Adjust path as needed
 import type { RootState } from "../../state/store"; // Adjust path as needed
 import { handleApiError } from "../../lib/errorHandler";
-import { useFetchInventoryQuery } from "../../services/stocks.service";
-import {
-  PaymentMethodOptions,
-  type InventoryData,
-  type Stocks,
-} from "../../types/general";
+import { useGetInventoryListQuery } from "../../services/stocks.service";
+import { PaymentMethodOptions, type RecordSaleDto } from "../../types/general";
 import TextInput from "../../components/ui/textInput";
 import {
   addDraftGood,
@@ -24,6 +19,9 @@ import {
   clearDraftSales,
   syncDraftWithInventory,
 } from "../../state/Store/draftSalesSlice";
+import { useDebounce } from "../../hooks/useDebounce";
+import type { InventoryData, Stocks } from "../../types/inventory";
+import ErrorState from "../../components/common/ErrorState";
 
 interface Good {
   itemId: string;
@@ -42,8 +40,9 @@ interface PaymentMethodMap {
 
 const PAYMENT_METHODS: PaymentMethodMap[] = [
   { label: "Cash", value: PaymentMethodOptions.cash },
-  { label: "Credit", value: PaymentMethodOptions.card },
-  { label: "Transfer", value: PaymentMethodOptions.bankTransfer },
+  { label: "Transfer", value: PaymentMethodOptions.transfer },
+  // { label: "POS", value: PaymentMethodOptions.pos },
+  { label: "Credit", value: PaymentMethodOptions.credit },
 ];
 
 export default function RecordSale() {
@@ -55,27 +54,63 @@ export default function RecordSale() {
   );
 
   const [name, setName] = useState("");
-  // const [isEditing, setIsEditing] = useState(false);
-  // const [paymentMethod, setPaymentMethod] = useState<PaymentMethodOptions | "">(PaymentMethodOptions.cash);
   const [showDropdown, setShowDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerAddress, setCustomerAddress] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [transactionReference, setTransactionReference] = useState("");
+  const [notes, setNotes] = useState("");
 
   // Get shopId and user info from Redux store
   const { user } = useSelector((state: RootState) => state.auth);
   const shopId = user?.shopId || "";
   const soldBy = user?.userId || "";
-  const soldByName = user?.userName || "";
 
   // Fetch inventory
+  // const {
+  //   data: inventoryResponse,
+  //   isLoading: isLoadingInventory,
+  //   isError: isInventoryError,
+  //   error: inventoryError,
+  // } = useFetchInventoryQuery(shopId, { pollingInterval: 30000 });
+
+  // Debounced search for backend query
+  const debouncedSearch = useDebounce(searchTerm, 500);
+
   const {
     data: inventoryResponse,
     isLoading: isLoadingInventory,
     isError: isInventoryError,
     error: inventoryError,
-  } = useFetchInventoryQuery(shopId, { pollingInterval: 30000 });
+    refetch,
+  } = useGetInventoryListQuery(
+    {
+      shopId,
+      search: debouncedSearch || undefined,
+    },
+    {
+      skip: !shopId,
+    }
+  );
+
+  // if (inventoryError) {
+  //   return (
+  //       <ErrorState
+  //         message="Failed to load Inventory. Please try again." 
+  //         onRetry={refetch}
+  //       />
+  //   );
+  // }
 
   // Create sales mutation
   const [createSales, { isLoading: isCreatingSale }] = useCreateSalesMutation();
+
+  const isCreditSale = paymentMethod === PaymentMethodOptions.credit;
+  const requiresTransactionReference =
+    paymentMethod === PaymentMethodOptions.transfer ||
+    paymentMethod === PaymentMethodOptions.pos;
 
   // Extract inventory items
   const inventoryItems: InventoryData = useMemo(() => {
@@ -84,42 +119,43 @@ export default function RecordSale() {
     );
   }, [inventoryResponse]);
 
-  // Filter inventory based on search
-  const filteredInventory = useMemo(() => {
-    if (!searchTerm.trim()) return inventoryItems.items;
-    const search = searchTerm.toLowerCase();
-    return inventoryItems.items.filter((item) =>
-      item.name.toLowerCase().includes(search)
-    );
-  }, [inventoryItems, searchTerm]);
-
   // Sync draft goods with current inventory stock levels
+  // ✅ NEW - Only updates items that ARE in the current search results
   useEffect(() => {
     if (goods.length > 0 && inventoryItems.items.length > 0) {
-      const stockUpdates = goods.map((good) => {
-        const currentItem = inventoryItems.items.find(
-          (item) => item._id === good.itemId
-        );
-        return {
-          itemId: good.itemId,
-          availableStock: currentItem?.availableQuantity || 0,
-        };
-      });
+      const stockUpdates = goods
+        .map((good) => {
+          const currentItem = inventoryItems.items.find(
+            (item) => item._id === good.itemId
+          );
+
+          // ✅ Only return update if item is found in current inventory
+          if (!currentItem) return null;
+
+          return {
+            itemId: good.itemId,
+            availableStock: currentItem.availableQuantity,
+          };
+        })
+        .filter(Boolean); // Remove null entries
 
       // Check if any stock levels have changed significantly
       const hasStockChanges = stockUpdates.some((update) => {
-        const existingGood = goods.find((g) => g.itemId === update.itemId);
+        const existingGood = goods.find((g) => g.itemId === update?.itemId);
         return (
-          existingGood && existingGood.availableStock !== update.availableStock
+          existingGood && existingGood.availableStock !== update?.availableStock
         );
       });
 
       if (hasStockChanges) {
-        dispatch(syncDraftWithInventory(stockUpdates));
+        const cleanUpdates = stockUpdates.filter(
+          (u): u is { itemId: string; availableStock: number } => u !== null
+        );
 
-        // Check for items that now have insufficient stock
+        dispatch(syncDraftWithInventory(cleanUpdates));
+
         goods.forEach((good) => {
-          const update = stockUpdates.find((u) => u.itemId === good.itemId);
+          const update = cleanUpdates.find((u) => u.itemId === good.itemId);
           const requestedQty = parseFloat(good.quantity) || 0;
 
           if (
@@ -143,6 +179,19 @@ export default function RecordSale() {
       handleApiError(inventoryError);
     }
   }, [isInventoryError, inventoryError]);
+
+  useEffect(() => {
+    if (!isCreditSale) {
+      setCustomerName("");
+      setCustomerPhone("");
+      setCustomerAddress("");
+      setDueDate("");
+    }
+
+    if (!requiresTransactionReference) {
+      setTransactionReference("");
+    }
+  }, [isCreditSale, requiresTransactionReference]);
 
   const handleSelectItem = useCallback(
     (item: Stocks) => {
@@ -230,6 +279,11 @@ export default function RecordSale() {
   }, []);
 
   const handleRecord = useCallback(async () => {
+    if (!shopId || !soldBy) {
+      toast.error("Missing shop or staff information. Please sign in again.");
+      return;
+    }
+
     if (goods.length === 0) {
       toast.error("Please add at least one item before recording a sale.");
       return;
@@ -252,6 +306,25 @@ export default function RecordSale() {
       return;
     }
 
+    if (isCreditSale) {
+      if (!customerName.trim()) {
+        toast.error("Customer name is required for credit sales.");
+        return;
+      }
+
+      if (!customerPhone.trim()) {
+        toast.error("Customer phone number is required for credit sales.");
+        return;
+      }
+    }
+
+    if (requiresTransactionReference && !transactionReference.trim()) {
+      toast.error(
+        "Transaction reference is required for POS or transfer sales."
+      );
+      return;
+    }
+
     // Final stock validation before submission
     const stockIssues = goods.filter((item) => {
       const qty = parseFloat(item.quantity);
@@ -268,61 +341,106 @@ export default function RecordSale() {
       return;
     }
 
+    const itemsPayload = goods.map((item) => ({
+      itemId: item.itemId,
+      quantity: parseFloat(item.quantity),
+      sellingPrice: item.price,
+    }));
+
+    const payload: RecordSaleDto = {
+      shopId,
+      soldBy,
+      paymentMethod,
+      items: itemsPayload,
+    };
+
+    if (isCreditSale) {
+      payload.customerName = customerName.trim();
+      payload.customerPhone = customerPhone.trim();
+      if (customerAddress.trim()) {
+        payload.customerAddress = customerAddress.trim();
+      }
+      if (dueDate) {
+        const dueDateIso = new Date(dueDate).toISOString();
+        payload.dueDate = dueDateIso;
+      }
+    }
+
+    if (transactionReference.trim()) {
+      payload.transactionReference = transactionReference.trim();
+    }
+
+    if (notes.trim()) {
+      payload.notes = notes.trim();
+    }
+
     try {
-      // Create sales records for each item
-      const salesPromises = goods.map((item) => {
-        const qty = parseFloat(item.quantity);
-        const totalAmount = qty * item.price;
-        const costTotal = qty * item.costPrice;
-        const profitAmount = totalAmount - costTotal;
-        const profitPercentage =
-          costTotal > 0
-            ? ((profitAmount / costTotal) * 100).toFixed(2)
-            : "0.00";
+      const response = await createSales(payload).unwrap();
+      const ticketNumber = response?.data?.ticketNumber;
 
-        return createSales({
-          shopId,
-          itemId: item.itemId,
-          quantity: qty,
-          sellingPrice: item.price,
-          discount: 0,
-          taxAmount: 0,
-          profitPercentage,
-          soldBy,
-          paymentMethod,
-        }).unwrap();
-      });
-
-      await Promise.all(salesPromises);
-
-      toast.success("Sale Recorded Successfully!");
+      toast.success(
+        ticketNumber
+          ? `Sale ${ticketNumber} recorded successfully!`
+          : "Sale recorded successfully!"
+      );
 
       // Reset form
       dispatch(clearDraftSales());
       setName("");
       setSearchTerm("");
+      setCustomerName("");
+      setCustomerPhone("");
+      setCustomerAddress("");
+      setDueDate("");
+      setTransactionReference("");
+      setNotes("");
     } catch (error) {
       handleApiError(error);
     }
-  }, [goods, paymentMethod, shopId, soldBy, soldByName, createSales]);
+  }, [
+    shopId,
+    soldBy,
+    goods,
+    paymentMethod,
+    isCreditSale,
+    requiresTransactionReference,
+    customerName,
+    customerPhone,
+    customerAddress,
+    dueDate,
+    transactionReference,
+    notes,
+    createSales,
+    dispatch,
+  ]);
 
   const total = goods.reduce((sum, item) => {
     const qty = parseFloat(item.quantity) || 0;
     return sum + qty * item.price;
   }, 0);
 
+
+  // ✅ 12. NOW CHECK FOR ERROR (after all hooks!)
+  if (inventoryError) {
+    return (
+      <ErrorState
+        message="Failed to load Inventory. Please try again." 
+        onRetry={refetch}
+      />
+  )};
+
   return (
     <section className="flex flex-col w-full py-6 sm:py-8">
       {/* Header */}
       <div className="relative mb-8 sm:mb-6">
-        <Link to="/home" className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
+        {/* <Link to="/home" className="absolute left-0 top-1/2 -translate-y-1/2 hidden md:inline">
           <Icon
             icon="iconamoon:arrow-left-6-circle-light"
             width="24"
             height="24"
             aria-hidden="true"
           />
-        </Link>
+        </Link> */}
 
         <h2 className="h4 font-semibold text-secondary text-center">
           Sale 0001
@@ -354,22 +472,15 @@ export default function RecordSale() {
               />
 
               <span className="absolute inset-y-0 right-3 flex items-center pointer-events-none">
-                {isLoadingInventory ? (
+                {isLoadingInventory && (
                   <LoaderCircle width={20} className="animate-spin" />
-                ) : (
-                  <Icon
-                    icon="ic:outline-arrow-drop-down-circle"
-                    width="22"
-                    height="22"
-                    aria-hidden="true"
-                  />
                 )}
               </span>
 
               {/* Dropdown for filtered inventory */}
-              {showDropdown && filteredInventory.length > 0 && (
+              {showDropdown && inventoryItems.items.length > 0 && (
                 <div className="absolute z-10 w-full mt-1 bg-white border border-secondary-4 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                  {filteredInventory.map((item) => (
+                  {inventoryItems.items.map((item) => (
                     <button
                       key={item._id}
                       type="button"
@@ -399,13 +510,15 @@ export default function RecordSale() {
                 </div>
               )}
 
-              {showDropdown && searchTerm && filteredInventory.length === 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-secondary-4 rounded-md shadow-lg p-4">
-                  <p className="body-small text-subtle-text text-center">
-                    No products found
-                  </p>
-                </div>
-              )}
+              {showDropdown &&
+                searchTerm &&
+                inventoryItems.items.length === 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white border border-secondary-4 rounded-md shadow-lg p-4">
+                    <p className="body-small text-subtle-text text-center">
+                      No products found
+                    </p>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -417,6 +530,7 @@ export default function RecordSale() {
           <h3 className="h4 text-secondary">List of Goods</h3>
           {goods.length > 0 && (
             <button
+            className="cursor-pointer"
               onClick={() => dispatch(setDraftEditing(!isEditing))}
               aria-label={isEditing ? "Done editing" : "Edit goods"}
             >
@@ -457,7 +571,7 @@ export default function RecordSale() {
                 goods.map((item, index) => (
                   <tr
                     key={`${item.itemId}-${index}`}
-                    className="border-b last:border-none border-secondary-4 hover:bg-gray-50  transition"
+                    className="border-b last:border-none border-secondary-4 transition"
                   >
                     <td className="pr-4 py-5 sm:py-4">
                       <div className="max-w-[120px] sm:max-w-none">
@@ -507,7 +621,7 @@ export default function RecordSale() {
                       <td className="px-1 sm:px-6 py-4">
                         <button
                           onClick={() => handleDelete(index)}
-                          className="text-error hover:text-error-dark transition"
+                          className="text-error hover:text-error-dark transition cursor-pointer"
                           aria-label={`Delete ${item.name}`}
                         >
                           <Icon
@@ -535,11 +649,11 @@ export default function RecordSale() {
       {/* Payment Method */}
       <div className="mt-6 sm:mt-4 mb-8">
         <h3 className="h4 text-secondary mb-4">Payment Method</h3>
-        <div className="flex items-center gap-3 sm:gap-4 px-4 py-6 border border-secondary-5 rounded-md bg-white">
+        <div className="flex items-center justify-between gap-3 sm:gap-4 px-4 py-6 border border-secondary-5 rounded-md bg-white">
           {PAYMENT_METHODS.map((method) => (
             <label
               key={method.value}
-              className="flex items-center w-1/3 cursor-pointer gap-2"
+              className="flex items-center w-1/4 cursor-pointer gap-2"
             >
               <input
                 type="radio"
@@ -548,7 +662,9 @@ export default function RecordSale() {
                 checked={paymentMethod === method.value}
                 onChange={(e) =>
                   dispatch(
-                    setDraftPaymentMethod(e.target.value as PaymentMethodOptions)
+                    setDraftPaymentMethod(
+                      e.target.value as PaymentMethodOptions
+                    )
                   )
                 }
                 className="hidden"
@@ -584,6 +700,74 @@ export default function RecordSale() {
             </label>
           ))}
         </div>
+      </div>
+
+      {isCreditSale && (
+        <div className="mb-8">
+          <h3 className="h4 text-secondary mb-4">Credit Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <TextInput
+              label="Customer Name"
+              placeholder="e.g. John Doe"
+              value={customerName}
+              onChange={(e) => setCustomerName(e.target.value)}
+              required
+            />
+            <TextInput
+              label="Customer Phone"
+              placeholder="e.g. 08012345678"
+              value={customerPhone}
+              onChange={(e) => setCustomerPhone(e.target.value)}
+              required
+            />
+            <TextInput
+              label="Customer Address (Optional)"
+              placeholder="Enter address"
+              value={customerAddress}
+              onChange={(e) => setCustomerAddress(e.target.value)}
+            />
+            {/* <div className="flex flex-col">
+              <label className="block link-small text-black mb-2">
+                Due Date (Optional)
+              </label>
+              <input
+                type="date"
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+                className="w-full bg-white body-small border border-secondary-4 rounded-md px-3 py-3 focus:ring-2 focus:ring-tertiary outline-none"
+              />
+            </div> */}
+            <TextInput
+              label="Due Date (Optional)"
+              placeholder="Select Date"
+              type="date"
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+              // required
+            />
+          </div>
+        </div>
+      )}
+
+      {requiresTransactionReference && (
+        <div className="mb-8">
+          <h3 className="h4 text-secondary mb-4">Transaction Reference</h3>
+          <TextInput
+            placeholder="Enter transaction reference"
+            value={transactionReference}
+            onChange={(e) => setTransactionReference(e.target.value)}
+          />
+        </div>
+      )}
+
+      <div className="mb-8">
+        <h3 className="h4 text-secondary mb-2">Notes (Optional)</h3>
+        <textarea
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+          placeholder="Add any notes about this sale"
+          className="w-full bg-white body-small border border-secondary-4 rounded-md px-3 py-3 min-h-[120px] focus:ring-2 focus:ring-tertiary outline-none"
+        />
       </div>
 
       {/* Record Button */}

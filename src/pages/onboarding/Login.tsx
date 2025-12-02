@@ -47,18 +47,12 @@ export default function Login() {
       // Format phone number to Nigerian international format
       const formattedPhoneNumber = formatNigerianPhoneNumber(phoneNumber);
 
-      console.log({
-        shopName: shopName.trim(),
-        phoneNumber: formattedPhoneNumber,
-        password,
-      });
 
       const result = await loginMutation({
         shopName: shopName.trim(),
         phoneNumber: formattedPhoneNumber,
         password,
       }).unwrap();
-      console.log(result);
       // console.log('Login result:', result);
       if (result.success && result.data) {
         const { accessToken, refreshToken, role, owner, shop, staff } =
@@ -66,7 +60,7 @@ export default function Login() {
 
         // Construct user object from API response
         const user = {
-          userId: role === "owner" ? shop?.id || "" : staff?.id || "",
+          userId: role === "owner" ? staff?.id || shop?.id || "" : staff?.id || "",
           shopId: shop?.id || "",
           shopName: shop?.shopName || "",
           phoneNumber: owner?.phoneNumber || shop?.phoneNumber || "",
@@ -93,7 +87,6 @@ export default function Login() {
         });
       }
     } catch (error) {
-      console.log(error);
       handleApiError(error);
     }
   };

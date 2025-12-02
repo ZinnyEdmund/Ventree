@@ -42,47 +42,57 @@ export default function VentreeFAQ() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 bg-primary-6 text-primary-1 border border-primary-1 px-4 py-2 rounded-xl text-sm font-medium mb-6">
-            <Icon icon="bi:stars" width="20" height="20" />
+          <div className="inline-flex items-center gap-2 bg-primary-6 text-primary-1 border border-primary-1 px-4 py-2 rounded-xl text-sm font-medium mb-6 animate-[fadeInDown_0.6s_ease-out]">
+            <Icon icon="bi:stars" width="20" height="20" className="animate-[spin_2s_ease-in-out_infinite]" />
             <span>FAQs</span>
           </div>
-          <h1 className="h2 text-black">Questions, answered.</h1>
+          <h1 className="h2 text-black animate-[fadeInUp_0.6s_ease-out_0.1s] opacity-0 [animation-fill-mode:forwards]">
+            Questions, answered.
+          </h1>
         </div>
 
         {/* FAQ Items */}
         <div className="space-y-4">
           {faqs.map((faq, index) => {
             const isOpen = openIndex === index;
-            
             return (
               <div
                 key={index}
-                className="overflow-hidden border-b border-secondary-6"
+                className="overflow-hidden border-b border-secondary-6 animate-[fadeInUp_0.5s_ease-out] opacity-0 [animation-fill-mode:forwards] transition-all duration-300 hover:border-primary-1"
+                style={{ animationDelay: `${0.2 + index * 0.1}s` }}
               >
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full px-6 py-5 flex items-center justify-between text-left"
+                  className="w-full px-6 py-5 flex items-center justify-between text-left transition-all duration-300 hover:bg-primary-6/20"
                   aria-expanded={isOpen}
                 >
                   <span className="text-lg font-semibold text-black pr-4">
                     {faq.question}
                   </span>
-                  {isOpen ? (
-                    <ChevronUp className="w-5 h-5 text-grey shrink-0" />
-                  ) : (
-                    <ChevronDown className="w-5 h-5 text-grey shrink-0" />
-                  )}
+                  <div className={`transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`}>
+                    {isOpen ? (
+                      <ChevronUp className="w-5 h-5 text-grey shrink-0" />
+                    ) : (
+                      <ChevronDown className="w-5 h-5 text-grey shrink-0" />
+                    )}
+                  </div>
                 </button>
-                {isOpen && (
+                <div
+                  className={`transition-all duration-300 ease-in-out ${
+                    isOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
                   <div className="px-6 pb-5 pt-0">
                     <p className="text-grey leading-relaxed">{faq.answer}</p>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}
         </div>
       </div>
+
+
     </div>
   );
 }
