@@ -21,6 +21,7 @@ import Feedback from "../pages/feedback/Feedback";
 import AboutApp from "../pages/about/AboutApp";
 import LandingPage from "../pages/landingpage/LandingPage";
 import { HistoryPage } from "../pages/history";
+import { NotFoundPage } from "../pages/NotFoundPage";
 
 
 const RegisterPage = lazy(() => import("../pages/onboarding/Signup"));
@@ -76,6 +77,8 @@ function AppRoutes() {
           <Route path="/help-center" element={<ProtectedRoute><Feedback /></ProtectedRoute>} />
           <Route path="/about-us" element={<ProtectedRoute><AboutApp /></ProtectedRoute>} />
           
+          {/* ✅ 404 Catch-All Route - MUST BE LAST */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>
     </Suspense>

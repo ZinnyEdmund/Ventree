@@ -4,6 +4,7 @@ interface ErrorStateProps {
   message?: string;
   onRetry?: () => void;
   showRetryButton?: boolean;
+  btnMsg?: string
 }
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
@@ -12,6 +13,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
   message = "Something went wrong but don't worry.",
   onRetry,
   showRetryButton = true,
+  btnMsg,
 }) => {
   return (
     // Full-screen overlay
@@ -42,7 +44,7 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
             onClick={onRetry}
             className="btn btn-primary min-w-40 justify-center"
           >
-            <span>Try Again</span>
+            <span>{btnMsg ? btnMsg : "Try Again"}</span>
           </button>
         )}
       </div>
