@@ -195,7 +195,7 @@ export const BusinessInsightsPage = () => {
 
   // State for analytics filters
   const [days] = useState(7);
-  const [limit] = useState(10);
+  const [limit] = useState(5);
 
   // Dashboard data (for stats cards)
   const {
@@ -237,6 +237,8 @@ export const BusinessInsightsPage = () => {
     skip: !shopId,
     pollingInterval: 60000, // Poll every minute
   });
+
+  console.log(lowStockData)
 
   // 4. Expenses Breakdown
   const {

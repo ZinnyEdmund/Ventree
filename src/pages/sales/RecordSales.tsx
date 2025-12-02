@@ -41,7 +41,7 @@ interface PaymentMethodMap {
 const PAYMENT_METHODS: PaymentMethodMap[] = [
   { label: "Cash", value: PaymentMethodOptions.cash },
   { label: "Transfer", value: PaymentMethodOptions.transfer },
-  { label: "POS", value: PaymentMethodOptions.pos },
+  // { label: "POS", value: PaymentMethodOptions.pos },
   { label: "Credit", value: PaymentMethodOptions.credit },
 ];
 
@@ -639,7 +639,7 @@ export default function RecordSale() {
       {/* Payment Method */}
       <div className="mt-6 sm:mt-4 mb-8">
         <h3 className="h4 text-secondary mb-4">Payment Method</h3>
-        <div className="flex items-center gap-3 sm:gap-4 px-4 py-6 border border-secondary-5 rounded-md bg-white">
+        <div className="flex items-center justify-between gap-3 sm:gap-4 px-4 py-6 border border-secondary-5 rounded-md bg-white">
           {PAYMENT_METHODS.map((method) => (
             <label
               key={method.value}
