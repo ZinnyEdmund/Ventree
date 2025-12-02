@@ -26,7 +26,6 @@ export default function ProfilePage() {
         setError(null);
         setLoading(true);
         const data = await fetchProfile();
-        console.log("Fetched profile data:", data);
 
         setProfileData({
           shopName: data.businessName,

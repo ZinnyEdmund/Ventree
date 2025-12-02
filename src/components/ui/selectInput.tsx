@@ -10,6 +10,7 @@ interface SelectInputProps {
   placeholder: string;
   required?: boolean;
   className?: string; // 👈 new
+  disabled?: boolean
 }
 
 export default function SelectInput({
@@ -21,6 +22,7 @@ export default function SelectInput({
   placeholder,
   required,
   className, // 👈 new
+  disabled
 }: SelectInputProps) {
   return (
     <div>
@@ -40,6 +42,7 @@ export default function SelectInput({
           "focus:ring-glow"
         )}
         required={required}
+        disabled={disabled}
       >
         <option value="">{placeholder}</option>
         {options.map((opt) => (

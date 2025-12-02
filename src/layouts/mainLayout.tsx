@@ -13,14 +13,12 @@ import { logout } from "../state/Store/authSlice";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../state/store";
 
-// Mobile Header Component
-function MobileHeader({
-  onMenuClick,
-  onNotificationClick,
-}: {
+function MobileHeader({ onMenuClick, onNotificationClick, showDot }: {
   onMenuClick: () => void;
   onNotificationClick: () => void;
+  showDot: boolean;
 }) {
+
   return (
     <header className="lg:hidden fixed px-6 top-0 left-0 right-0  z-50 bg-bg">
       <div className="flex items-center justify-between py-3">
@@ -30,7 +28,32 @@ function MobileHeader({
               type="text"
               placeholder="Search Goods"
               className="bg-transparent outline-none flex-1 text-sm text-subtle"
-            /> */}
+            />
+          </div>
+
+          {/* Icons */}
+          <div className="flex items-center gap-3">
+            <button onClick={onNotificationClick} className="p-1 relative">
+              <Icon
+                icon="ic:outline-notifications"
+                width="24"
+                height="24"
+                className="text-black"
+              />
+              {showDot && (
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></div>
+              )}
+            </button>
+            <button onClick={onMenuClick} className="p-1">
+              <Icon
+                icon="material-symbols:menu"
+                width="24"
+                height="24"
+                className="text-secondary"
+              />
+            </button>
+          </div>
+           
         </div>
 
         {/* Icons */}
@@ -124,7 +147,7 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
 
           {/* Navigation */}
           <nav className="space-y-2 mb-6">
-            {/* {isOwner && ( */}
+            {isOwner && (
             <MobileNavLink
               to="/home"
               icon="ic:outline-house"
@@ -132,7 +155,7 @@ function MobileMenu({ isOpen, onClose }: MobileMenuProps) {
               isActive={isActive("/home")}
               onClick={onClose}
             />
-            {/* )} */}
+          )}
 
             {isOwner && (
               <MobileNavLink
@@ -258,15 +281,15 @@ function MobileNavLink({
   );
 }
 
-// Desktop Header Component
-function DesktopHeader({
-  onNotificationClick,
-  showNotifications,
-  showProfile,
-  showSupport,
-  setShowNotifications,
-  setShowProfile,
+function DesktopHeader({ 
+  onNotificationClick, 
+  showNotifications, 
+  showProfile, 
+  showSupport, 
+  setShowNotifications, 
+  setShowProfile, 
   setShowSupport,
+  showDot 
 }: {
   onNotificationClick: () => void;
   showNotifications: boolean;
@@ -275,8 +298,10 @@ function DesktopHeader({
   setShowNotifications: (show: boolean) => void;
   setShowProfile: (show: boolean) => void;
   setShowSupport: (show: boolean) => void;
+  showDot: boolean;
 }) {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, _initialized } = useSelector((state: RootState) => state.auth);
+
 
   return (
     <header className="hidden bg-white w-full lg:block border border-secondary-5 rounded-lg">
@@ -300,6 +325,9 @@ function DesktopHeader({
               height="24"
               className="text-black"
             />
+            {showDot && (
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"></div>
+            )}
           </button>
           <div className="flex items-center justify-center gap-4 my-auto">
             <div className="w-8 h-8 rounded-full bg-secondary justify-center flex m-auto items-center">
@@ -313,13 +341,9 @@ function DesktopHeader({
 
             <div>
               <h2 className="text-xs">
-                {user
-                  ? truncateTextWithStringMethod(user.shopName, 15)
-                  : "User"}
+                {!_initialized ? "Loading..." : user ? truncateTextWithStringMethod(user.shopName, 15) : "User"}
               </h2>
-              <p className="text-accent text-xs capitalize">
-                {user?.role || "User"}
-              </p>
+              <p className="text-accent text-xs capitalize">{!_initialized ? "..." : user?.role || "User"}</p>
             </div>
           </div>
           <div className=""></div>
@@ -346,10 +370,25 @@ function DesktopHeader({
 
 // Desktop Sidebar Component
 function DesktopSidebar() {
-  const { user } = useSelector((state: RootState) => state.auth);
+  const { user, _initialized } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const isOwner = user?.role === "owner";
+
+  // don't show user stuff until auth is fully loaded
+  if (!_initialized) {
+    return (
+      <aside className="hidden lg:flex w-[280px] bg-black py-6 px-3 flex-col">
+        <div className="text-2xl font-bold mb-8 px-6">
+          <img src="/images/logo-white.svg" alt="logo" width={100} />
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-white text-sm">Loading...</div>
+        </div>
+      </aside>
+    );
+  }
+
+  const isOwner = user?.role === 'owner';
 
   const handleLogout = () => {
     dispatch(logout());
@@ -363,12 +402,13 @@ function DesktopSidebar() {
       </div>
 
       <nav className="flex-1 space-y-3 w-full">
-        {/* {isOwner && ( */}
+        {isOwner && (
         <SidebarItem
           to="/home"
           icon={<Icon icon="ic:outline-house" width="24" height="24" />}
           label="Home"
         />
+        )}
 
         <SidebarItem
           to="/record-sales"
@@ -498,19 +538,29 @@ export default function MainLayout() {
   const [showProfile, setShowProfile] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  // const menuRef = useRef<HTMLDivElement | null>(null);
+  const [lastSeenCount, setLastSeenCount] = useState(0);
+  const { unreadCount } = useSelector((state: RootState) => state.notifications);
 
   // Prevent body scroll when open
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
   }, [isMobileMenuOpen]);
 
+  const showDot = unreadCount > lastSeenCount;
+
+  const handleNotificationClick = () => {
+    setShowNotifications(true);
+    setLastSeenCount(unreadCount); // remember what count we've seen
+  };
+
+
   return (
     <div className="flex h-screen max-w-[1500px] mx-auto overflow-hidden bg-bg text-text">
       {/* Mobile Header */}
       <MobileHeader
         onMenuClick={() => setIsMobileMenuOpen(true)}
-        onNotificationClick={() => setShowNotifications(true)}
+        onNotificationClick={handleNotificationClick}
+        showDot={showDot}
       />
 
       {/* Mobile Menu Drawer */}
@@ -527,13 +577,14 @@ export default function MainLayout() {
         {/* Desktop Header */}
         <div className="sticky top-0 z-10 bg-white">
           <DesktopHeader
-            onNotificationClick={() => setShowNotifications(true)}
+            onNotificationClick={handleNotificationClick}
             showNotifications={showNotifications}
             showProfile={showProfile}
             showSupport={showSupport}
             setShowNotifications={setShowNotifications}
             setShowProfile={setShowProfile}
             setShowSupport={setShowSupport}
+            showDot={showDot}
           />
         </div>
 
