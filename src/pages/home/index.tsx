@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { actions, notifications } from "../../lib/dummyData";
+import { actions } from "../../lib/dummyData";
 import { StatCard } from "./components/StatCard";
 import { ActionCard } from "./components/ActionButtons";
 import { SectionHeader } from "./components/SectionHeader";
 import { SalesHistoryTable } from "./components/SaleHistorytable";
-import { NotificationItem } from "./components/NotificationTable";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../state/store";
