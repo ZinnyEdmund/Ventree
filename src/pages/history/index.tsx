@@ -347,7 +347,7 @@ export const HistoryPage = () => {
   
   // Pagination state
   const [page, setPage] = useState(1);
-  const [limit] = useState(20);
+  const [limit] = useState(10);
 
   // Debounce search input
   useEffect(() => {

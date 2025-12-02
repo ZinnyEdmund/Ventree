@@ -111,7 +111,7 @@ export const useProfileAPI = () => {
         );
       }
 
-      const result = await response.json();
+     await response.json();
 
       // Update Redux store with new data
       dispatch({
