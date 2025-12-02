@@ -102,3 +102,8 @@ export const cleanObject = (obj: any): any => {
   // Return undefined if object is empty after cleaning, otherwise return the cleaned object
   return Object.keys(cleanedObj).length > 0 ? cleanedObj : undefined;
 };
+
+export const calculateProfitMargin = (profit: number, revenue: number): number => {
+  if (revenue === 0) return 0; // avoid division by zero
+  return (profit / revenue) * 100;
+};

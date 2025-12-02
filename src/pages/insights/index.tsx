@@ -238,8 +238,6 @@ export const BusinessInsightsPage = () => {
     pollingInterval: 60000, // Poll every minute
   });
 
-  console.log(lowStockData)
-
   // 4. Expenses Breakdown
   const {
     data: expensesData,
@@ -265,7 +263,7 @@ export const BusinessInsightsPage = () => {
     },
     { skip: !shopId }
   );
-  
+  console.log(profitData)
 
   // ============================================
   // Helper Functions
