@@ -52,7 +52,7 @@ export default function ProtectedRoute({
   const isAuthenticated = hasTokens && isLoggedIn && !!user;
   // Redirect to login if not authenticated
   if (!isAuthenticated) {
-    // return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   // Check role-based access
