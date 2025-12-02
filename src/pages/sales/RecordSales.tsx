@@ -532,7 +532,7 @@ export default function RecordSale() {
                 goods.map((item, index) => (
                   <tr
                     key={`${item.itemId}-${index}`}
-                    className="border-b last:border-none border-secondary-4 hover:bg-gray-50  transition"
+                    className="border-b last:border-none border-secondary"
                   >
                     <td className="pr-4 py-5 sm:py-4">
                       <div className="max-w-[120px] sm:max-w-none">
