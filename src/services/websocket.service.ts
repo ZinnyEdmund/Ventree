@@ -90,7 +90,7 @@ export class WebSocketService {
       }
     });
 
-    this.socket.on('connect_error', (error) => {
+    this.socket.on('connect_error', (error: any) => {
       console.error('Connection failed:', error.message);
       store.dispatch(setConnectionStatus(false));
       store.dispatch(setConnectionError(error.message));
@@ -106,7 +106,7 @@ export class WebSocketService {
       console.log('Socket connected');
     });
 
-    this.socket.on('disconnect', (reason) => {
+    this.socket.on('disconnect', (reason: string) => {
       console.log('Disconnected:', reason);
       store.dispatch(setConnectionStatus(false));
       this.isConnecting = false;
@@ -119,7 +119,7 @@ export class WebSocketService {
       }
     });
 
-    this.socket.on('reconnect', (attemptNumber) => {
+    this.socket.on('reconnect', (attemptNumber: any) => {
       console.log(`Reconnected after ${attemptNumber} attempts`);
     });
 
