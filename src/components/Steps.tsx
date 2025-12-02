@@ -17,7 +17,7 @@ const STEPS: readonly StepCardProps[] = [
   },
   {
     icon: "stash:pencil-writing",
-    title: "Mannage goods",
+    title: "Manage goods",
     description: "Enter your stock and prices"
   },
   {

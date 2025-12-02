@@ -30,14 +30,14 @@ const settingsApi = {
       },
     });
     
-    if (!response.ok) throw new Error('Failed to fetch settings');
+    // if (!response.ok) throw new Error('Failed to fetch settings');
     return response.json();
   },
 };
 
 export default function Settings() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [isLoading, setIsLoading] = useState(true);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   // Get user data from Redux auth state
@@ -48,20 +48,20 @@ export default function Settings() {
   useEffect(() => {
     if (!shopId) {
       toast.error('Please login again');
-      setIsLoading(false);
+      // setIsLoading(false);
       return;
     }
 
     const loadSettings = async () => {
       try {
-        setIsLoading(true);
+        // setIsLoading(true);
         const data = await settingsApi.fetchSettings(shopId);
         setProfile(data.profile);
       } catch (error) {
-        toast.error('Failed to load settings');
+        // toast.error('Failed to load settings');
         console.error(error);
       } finally {
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     };
 
@@ -76,7 +76,7 @@ export default function Settings() {
           to: "/my-profile",
           icon: "octicon:person-16",
           label: profile?.shopName || user?.shopName || "My Profile",
-          disabled: false, // Keep profile enabled
+          disabled: true, // Keep profile enabled
         },
       ],
     },
@@ -121,16 +121,16 @@ export default function Settings() {
     { key: "outOfStock", label: "Out of stock" },
   ];
 
-  if (isLoading) {
-    return (
-      <main className="flex justify-center items-center min-h-screen bg-bg">
-        <div className="text-center justify-center">
-          <Icon icon="line-md:loading-loop" width="48" height="48" className="text-secondary" />
-          <p className="text-black mt-4">Loading settings...</p>
-        </div>
-      </main>
-    );
-  }
+  // if (isLoading) {
+  //   return (
+  //     <main className="flex justify-center items-center min-h-screen bg-bg">
+  //       <div className="text-center justify-center">
+  //         <Icon icon="line-md:loading-loop" width="48" height="48" className="text-secondary" />
+  //         <p className="text-black mt-4">Loading settings...</p>
+  //       </div>
+  //     </main>
+  //   );
+  // }
 
   return (
     <main className="flex justify-center min-h-screen pb-6 md:px-1 bg-bg">
